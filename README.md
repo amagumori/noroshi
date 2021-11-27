@@ -48,6 +48,13 @@ if updated via internet, would only display a "Encrypted: Local Only" message as
 
 ---
 
+the radio stores contact sets, from entire-community-level to smaller subgroups.
+
+files are worked on a sans-internet computer, then updates are encrypted and synced to radio.
+
+radio then transfers updates to each user, who holds a copy of the total state.
+this happens over LTE
+
 ## Hardware Design
 
 **AS SIMPLE AS POSSIBLE**
