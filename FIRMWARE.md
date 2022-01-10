@@ -1,5 +1,8 @@
 # firmware structure
 
+microphone interface: 
+
+https://infocenter.nordicsemi.com/index.jsp?topic=%2Fcom.nordic.infocenter.nrf52832.ps.v1.1%2Fpdm.html
 
 ## transmit
 
