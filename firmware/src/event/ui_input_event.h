@@ -5,7 +5,7 @@
 
 enum ui_input_type {
   POWER_BUTTON,
-  PUSH_BUTTON
+  PTT_BUTTON
   // and many more
 };
 
