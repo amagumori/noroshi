@@ -6,16 +6,28 @@ set(SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 ## fix later for debug build etc
 set(CMAKE_C_FLAGS "-std=c11")
 
-find_package(Zephyr HINTS $ENV{ZEPHYR_BASE})
+find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
-if ( ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.11.0" ) 
-  file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS ${SOURCE_DIR}/*.c ${SOURCE_DIR}/*.h)
-else() 
-  file(GLOB SOURCE_FILES ${SOURCE_DIR}/*.c ${SOURCE_DIR}/*.h ${SOURCE_DIR}/*/*.h */*.cpp)
-endif()
+project(noroshi)
+
+zephyr_include_directories(src)
 
 include_directories(${SOURCE_DIR})
 
-add_library(noroshi SHARED
-  ${SOURCE_FILES}
+zephyr_library_include_directories(
+  src/lwm2m
+  src/ui
+  src/events
+  src/hw
+  src/module
 )
+
+add_subdirectory(src/ui)
+add_subdirectory(src/event)
+add_subdirectory(src/module)
+add_subdirectory(src/hw)
+#add_subdirectory(src/lwm2m) nah
+
+add_subdirectory(external)
+
+target_sources(noroshi PRIVATE src/main.c)
