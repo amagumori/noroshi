@@ -1,6 +1,60 @@
 # ansible
 
-### a low-power device capable of 3 modes of radio communication
+### a low-power, secure push-to-talk device 
+
+#### in the future, a portable silent sneakernet terminal, and a medium of secure data sync over other radio methods 
+
+**1/22/22**
+
+completely dropping the whole LWm2m thing
+
+MQTT with QOS-1 (ack'd) frames.
+assemble in order on the recipient end.
+send a header with frame count.
+
+### RTOS modules (zephyr)
+
+UI module - UI events, interactions through LVGL
+
+HW module - the physical buttons - this is tightly coupled to UI and could even combine ...?
+
+MODEM module - self explanatory
+
+do you separate out MQTT protocol layer into its own module? leaning towards ...no...
+
+
+*radio protocol over LTE*
+
+i wanted to just do LWm2m and i'll fall back if my idea ends up not working, but...
+
+we essentially just want in-order packet delivery.
+
+so, you make a recording using the PDM microphone, let's say 30 seconds max transmit time.
+
+this gets split into frames, with a header:
+
+**header**
+
++ u32 id of transmitter
+
++ u16 frame count
+
++ u32[] recipient ids, and if this[0] is 0 then it's a public message.  server handles that
+
+**frame**
+
++ u16 sequence number
+
++ u16 buffer of FRAMESIZE 
+
+but actually i don't like this.  i think..
+
+header: transmitter id, recipients
+
+frame: sequence number, buffer, bool done?
+
+this way we can opportunistically shove encoded frames out the door
+instead of filling a on-device buffer first.
 
 *LTE-M / NB-IoT*
 
