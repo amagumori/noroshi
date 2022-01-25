@@ -17,17 +17,30 @@
  * 
  */
 
+// incoming codec messages.  sort this out later between the radio module and here
+i16 recv_buffer[2048];
+
 i16 mic_buffer[1024];
 i16 buf2[1024];
 
-u32 num_speech_samples;
+// named as such bc we're gonna have a value for the samples being read to speaker
+// so this is outgoing (incoming???) samples off the mic being encoded 
+u32 num_tx_samples;
+u32 num_rx_samples;
 u32 num_modem_samples;
 
+// for DECODE / RX side only
+size_t num_input_samples, num_output_samples;
+
 i16 *speech_in;
+i16 *speech_out;
 i16 *modem_out;
+i16 *modem_in;
 
 // this is gonna be the final output buffer we pull from in the LTE radio
-i16 *codec_buffer_out;
+i16 *encode_buffer_out;
+// this is what's gonna be filled with PCM and be pushed to the speaker GPIO or whatever.
+i16 *decode_buffer_out;
 
 // FreeDV / Codec2 expects s16s so this works.
 
@@ -79,13 +92,17 @@ int init_freedv( i16 *output_buffer ) {
     return err;
   }
 
-  num_speech_samples = freedv_get_n_max_speech_samples(freedv);
+  num_tx_samples = freedv_get_n_max_speech_samples(freedv);
+  num_rx_samples = freedv_get_n_max_speech_samples(freedv);
   num_modem_samples = freedv_get_n_max_modem_samples(freedv);
 
-  speech_in = realloc( speech_in, sizeof(short) * num_speech_samples );
+  speech_in = realloc( speech_in, sizeof(short) * num_tx_samples );
+  speech_out = realloc( speech_out , sizeof(short) * num_rx_samples);
+  // same buffer size for tx and rx for now 
   modem_out = realloc( modem_out , sizeof(short) * num_modem_samples );
+  modem_in = realloc( modem_in , sizeof(short) * num_modem_samples );
 
-  codec_buffer_out = output_buffer;
+  encode_buffer_out = output_buffer;
 
   InitializedFlag = true;
 }
@@ -112,9 +129,21 @@ int stop_listening( void ) {
 
 int encode_and_write( void ) {
 
-  while ( fread( speech_in, sizeof(i16), num_speech_samples, mic_buffer) == num_speech_samples ) {
+  while ( fread( speech_in, sizeof(i16), num_tx_samples, mic_buffer) == num_tx_samples ) {
     freedv_tx(freedv, modem_out, speech_in );
-    fwrite(modem_out, sizeof(i16), num_modem_samples, codec_buffer_out);
+    fwrite(modem_out, sizeof(i16), num_modem_samples, encode_buffer_out);
+  }
+}
+
+// drive speaker with I2S; use EasyDMA with two buffers - a "playing" buffer and a 
+// "preparing" buffer, basically classic double buffering.
+// we're going to throw PCM blocks straight at that buffer from this function.
+
+int decode_and_write( void ) {
+  while ( fread(demod_in, sizeof(i16), num_rx_samples, recv_buffer ) == num_rx_samples ) {
+    num_output_samples = freedv_rx(freedv, speech_out, modem_in);
+    num_input_samples = freedv_nin(freedv);
+    fwrite(speech_out, sizeof(short), num_output_samples, decode_buffer_out);
   }
 }
 

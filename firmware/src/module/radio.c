@@ -685,6 +685,12 @@ static int init_client( struct mqtt_client *client ) {
     return err;
   }
 
+  // check if mic / codec is setup
+
+  if ( is_initialized() != true ) {
+    // LOG_ERR
+  }
+
   client->broker = &broker;
   client->evt_cb = mqtt_event_handler;
   client->client_id.utf8 = get_client_id();
