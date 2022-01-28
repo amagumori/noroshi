@@ -29,6 +29,7 @@
 #include "../events/ui_event.h"
 
 #include "../hw/mic.c"
+
 /* 
  *
  * CERTIFICATE PROVISIONING
@@ -90,26 +91,6 @@ struct data_msg {
     struct app_event app;
     struct radio_event radio;
   } module;
-};
-
-// types of data sent out 
-enum data_type {
-  AUDIO_UNENC,
-  AUDIO_ENC,
-  NETWORK,
-  // a lot more.
-};
-
-struct data_buffer {
-  char *buf;
-  size_t len;
-};
-
-struct radio_event_type {
-  RADIO_SEND_AUDIO,
-  RADIO_RECV_AUDIO,
-  RADIO_ERROR,
-  //etc
 };
 
 struct radio_event {
@@ -208,7 +189,6 @@ struct modem_neighbor_cells {
   i64 timestamp;
 };
 
-
 struct modem_event {
   struct event_header header;
   enum modem_event_type type;
@@ -227,16 +207,6 @@ EVENT_TYPE_DECLARE(modem_event);
 
 // RING BUFFERS
 
-enum tx_type {
-  // WHO KNOWS.
-};
-
-struct radio_transmission {
-  // we can drop client_id because it's a MQTT param.
-  tx_type type;
-  i16 buffer[MAX_TX_SAMPLES];
-};
-
 // static later
 struct radio_transmission incoming_messages[RADIO_MAX_MESSAGES];
 int incoming_messages_head;
@@ -254,12 +224,8 @@ K_MSGQ_DEFINE(msgq_data, sizeof(struct data_msg), DATA_QUEUE_ENTRY_COUNT, DATA_Q
  * call PDM initialization code for the mic and codec in mic.h
  */
 
-int init_radio( void ) {
-  int err;
-
-
-}
-
+/*
+ 
 int init_radio( void ) {
   // @TODO stubb
   u32 my_id = get_my_id();
@@ -274,25 +240,12 @@ int init_radio( void ) {
   return 0;
 }
 
+*/
+
 // completely drop the asset_tracker style event approach.
 // instead write the handlers for MQTT events and extend it later IF needed.
 // still use the kernel message Q tho
 
-
-// doing this the dumbest and least generic way first.
-static void send_data( struct radio_event_type type, struct data_buffer *data ) {
-  struct radio_event *event = new_radio_event();
-  event->type = type;
-
-  event->data.buf = data->buf;
-  event->data.len = data->len;
-
-  radio_list_add(data->buf, data->len, type);
-  EVENT_SUBMIT(event);
-
-  data->buf = NULL;
-  data->len = 0;
-}
 
 static int init_modem_data( void ) {
   int err;
@@ -809,6 +762,22 @@ void publish( struct mqtt_client *client, u16 *data, size_t len ) {
 	return mqtt_publish(client, &param);
 }
 
+// so this way we'll 
+void publish_message_header( struct mqtt_client *client, msg_header *msg, size_t len ) {
+  struct mqtt_publish_param param;
+
+  param.message.topic.qos = MQTT_QOS_1_AT_LEAST_ONCE;
+  param.message.topic.topic.utf8 = CONFIG_MQTT_PUB_TOPIC;
+	param.message.topic.topic.size = strlen(CONFIG_MQTT_PUB_TOPIC);
+  // this probably doesn't work.
+	param.message.payload.data = (u8 *) data;
+	param.message.payload.len  = len;
+	param.message_id = sys_rand32_get();
+	param.dup_flag = 0;
+	param.retain_flag = 0;
+ 
+}
+
 // when in doubt, do it the dumbest way possible
 void publish_sequenced( struct mqtt_client *client, u16 *data, size_t len, u16 seq ) {
   struct mqtt_publish_param param;
@@ -817,7 +786,6 @@ void publish_sequenced( struct mqtt_client *client, u16 *data, size_t len, u16 s
   param.message.topic.topic.utf8 = CONFIG_MQTT_PUB_TOPIC;
 	param.message.topic.topic.size = strlen(CONFIG_MQTT_PUB_TOPIC);
 	param.message.payload.data = data;
-  param.message.payload.num  = number;
 	param.message.payload.len  = len;
 	param.message_id = sys_rand32_get();
 	param.dup_flag = 0;
