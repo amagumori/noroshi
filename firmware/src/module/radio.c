@@ -18,9 +18,8 @@
 
 #define AUDIO_BUFFER_SIZE 2048  // man i dunno
 #define MODEM_BUFFER_SIZE 2048  // man i dunno
-#define RADIO_MAX_MESSAGES 10   // man i dunno 
-#define MAX_TX_SAMPLES 21000    // at 700 samples / s this is 30 seconds.
-                                // "enough time for anyone"
+#define MAX_RADIO_MESSAGE_SIZE 21000  // 700 samples/s - 30 seconds
+#define RADIO_MAX_MESSAGES 10   // max received messages in rx bfufer
 
 #include "modules_common.h"
 // #include "users.h"
@@ -794,6 +793,52 @@ void publish( struct mqtt_client *client, u16 *data, size_t len ) {
 	return mqtt_publish(client, &param);
 }
 
+// when in doubt, do it the dumbest way possible
+void publish_sequenced( struct mqtt_client *client, u16 *data, size_t len, u16 seq ) {
+  struct mqtt_publish_param param;
+
+  param.message.topic.qos = QOS;
+  param.message.topic.topic.utf8 = CONFIG_MQTT_PUB_TOPIC;
+	param.message.topic.topic.size = strlen(CONFIG_MQTT_PUB_TOPIC);
+	param.message.payload.data = data;
+  param.message.payload.num  = number;
+	param.message.payload.len  = len;
+	param.message_id = sys_rand32_get();
+	param.dup_flag = 0;
+	param.retain_flag = 0;
+
+	data_print("Publishing: ", data, len);
+	LOG_INF("to topic: %s len: %u",
+		CONFIG_MQTT_PUB_TOPIC,
+		(unsigned int)strlen(CONFIG_MQTT_PUB_TOPIC));
+
+	return mqtt_publish(client, &param);
+}
+
+int transmit( u16 *mic_buffer, size_t len ) {
+  u16 *p = mic_buffer;
+  u16 seq = 0;
+
+  size_t chunk_size = CONFIG_MQTT_PAYLOAD_BUFFER_SIZE;
+
+  // we want to extend mqtt_param->payload struct to include a packet number to do in-order
+
+  while ( p < len ) {
+    publish_sequenced( client, mic_buffer, chunk_size, seq );
+    p += chunk_size;
+    seq++;
+  }
+}
+
+int read_payload ( struct mqtt_client *client, struct mqtt_publish_message *msg ) {
+  u16 seq = msg->payload.seq;
+  u16 offset = number * CONFIG_MQTT_PAYLOAD_BUFFER_SIZE;
+  // uh oh
+  memcpy(&output_buffer + offset, msg->payload.data, msg->payload.len); 
+  message_chunks_remaining--;
+  // this is absolutely not the way
+}
+
 void mqtt_event_handler( struct mqtt_client *client, struct mqtt_evt *evt ) {
   int err;
 
@@ -818,6 +863,10 @@ void mqtt_event_handler( struct mqtt_client *client, struct mqtt_evt *evt ) {
 		LOG_INF("MQTT PUBLISH result=%d len=%d",
 			evt->result, p->message.payload.len);
 		err = publish_get_payload(c, p->message.payload.len);
+
+    if ( p.user_hash != me ) {
+      read_payload( client, p.message );
+    }
 
     /*
 		if (err >= 0) {
