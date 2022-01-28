@@ -773,6 +773,22 @@ static int subscribe( void ) {
   return mqtt_subscribe(&client, &sub_list);
 }
 
+/* 
+ * ok so i think the idea is:
+ *
+ * first message has a header containing total seq count (number of messages / chunks).
+ *
+ * this is transmitted with QOS 1 so you ack it.
+ *
+ * after that you straight up just throw messages into the void
+ * if you get em you get em if you don't you dont.
+ *
+ * fill the speaker buffer as the messages come in - once you receive the last packet
+ * in the sequence, fill what you didn't receive with silence (?) and call the interrupt (???)
+ *
+ */
+
+
 void publish( struct mqtt_client *client, u16 *data, size_t len ) {
   struct mqtt_publish_param param;
 

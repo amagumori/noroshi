@@ -4,6 +4,36 @@
 
 #### in the future, a portable silent sneakernet terminal, and a medium of secure data sync over other radio methods 
 
+## TO DO
+
++ in-depth look at what's needed in the UI, how many inputs, how many views, and what they look like.  get concrete lists and trees for this.
+
++ suss out an explicit plan for doing voice over MQTT and what that protocol looks like.
+
++ begin testing radio module, delete all the cruft.
+
++ I2S interface to mic, speaker, and line out.  put this into the HW design in Kicad as well.
+
++ crypto - begin to look at what a secure talkgroup looks like and how to handle session establishment and TX / RX.
+
+--
+
+### wifi side - ESP8266
+
+take a look at ESP datasheet.
+
+my community versioned filesystem idea but certain items are ONLY synced in person, not over the internet.  
+
+**1/27/22**
+
+[I2S documentation for spekker](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fstruct_nrf91%2Fstruct%2Fnrf9160.html&cp=2_0)
+
+probably handle mic and speaker with both sides of the I2S interface for better quality than PDM
+
+the I2S driver already implements dubble bubfering behind the scenes, so that's one less thing to do, this way we can shove audio frames coming off the MQTT interface directly towards the I2S RX / TX buffers and then just play what we get, configuring the RXTXDCNT.MAXWORDS as needed.
+
+
+
 **1/22/22**
 
 completely dropping the whole LWm2m thing
