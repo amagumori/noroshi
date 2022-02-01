@@ -32,14 +32,12 @@ struct hw_msg {
 u32 num_tx_samples;
 u32 num_rx_samples;
 u32 num_modem_samples;
-
 // for DECODE / RX side only
 size_t num_input_samples, num_output_samples;
-
-i16 *speech_in;
-i16 *speech_out;
-i16 *modem_out;
-i16 *modem_in;
+i16 *speech_incoming;
+i16 *speech_outgoing;
+i16 *codec_incoming;
+i16 *codec_outgoing;
 
 const struct freedv *freedv;
 
@@ -48,10 +46,12 @@ bool WriteFlag = 0;
 bool InitializedFlag = 0;
 const nrfx_pdm_config_t config;
 
-// this is gonna be the final output buffer we pull from in the LTE radio
-i16 *encode_buffer_out;
+// ??? lol
+#define OUTGOING_BUFFER_SIZE ( AUDIO_FRAME_BUF_BYTES * 100 )
+#define SPEAKER_BUFFER_SIZE  I2S_PLAY_BUF_COUNT
+i16 *outgoing_message_buffer;
 // this is what's gonna be filled with PCM and be pushed to the speaker GPIO or whatever.
-i16 *decode_buffer_out;
+i16 *speaker_speaker_buffer;
 
 // this will point directly at the stream coming off the air 
 u16 *incoming_message_buffer;
@@ -103,6 +103,8 @@ int cleanup ( char *buffer ) {
 int configure( void ) {
   int err;
 
+  init_freedv(outgoing_message_buffer);
+
   rx_config.word_size = AUDIO_SAMPLE_BIT_WIDTH;
   rx_config.channels = AUDIO_NUM_CHANNELS;
   rx_config.format = I2S_FMT_DATA_FORMAT_I2S;
@@ -140,21 +142,28 @@ int configure( void ) {
 // even though we "TX" the mic data and "RX" the incoming messages.
 // LOL
 
-int start_rx( void ) {
+int start_listening( void ) {
   int err;
   // "receiving" from the microphone 
   err = i2s_trigger( rx_device, I2S_DIR_RX, I2S_TRIGGER_START );
   if ( err !== 0 ) {
     LOG_ERR( "RX: i2s trigger start error: %d.", err );
+    return err;
   }
+  // this is probably the wrong check.
+  while ( i2s_buf_read( rx_device, speech_incoming, AUDIO_FRAME_BUF_BYTES ) == 0 ) {
+    encode_and_send();
+  }
+
+  SEND_EVENT( i2s, EVENT_TX_BUFFER_READY ); 
   return err;
 }
 
-int stop_rx( void ) {
+int stop_listening( void ) {
   int err;
-  err = i2s_trigger( rx_device, I2S_DIR_RX, I2S_TRIGGER_DRAIN );
+  err = i2s_trigger( rx_device, I2S_DIR_RX, I2S_TRIGGER_STOP );
   if ( err !== 0 ) {
-    LOG_ERR( "RX: i2s trigger drain error: %d.", err );
+    LOG_ERR( "RX: i2s trigger stop error: %d.", err );
   }
   return err;
 }
@@ -168,26 +177,34 @@ int start_tx( void ) {
     LOG_ERR("TX: i2s trigger start error: %d.", err );
     return err;
   }
-  i2s_buf_write( tx_device, incoming_message_buffer, incoming_message_size);
+}
+
+int tx_speaker ( size_t size ) {
+  SEND_EVENT( i2s, EVENT_I2S_PLAYING );
+  i2s_buf_write( tx_device, speaker_buffer, size ); 
 }
 
 int stop_tx( void ) {
-
+  int err;
+  err = i2s_trigger( tx_device, I2S_DIR_TX, I2S_TRIGGER_DRAIN );
+  if ( err !== 0 ) {
+    LOG_ERROR("TX: i2s trigger drain error: %d.", err);
+  }
+  SEND_EVENT( i2s, EVENT_I2S_DONE_PLAYING );
 }
 
 int event_handler ( struct hw_msg *msg ) {
   if ( IS_EVENT( msg, hw, HW_EVENT_PTT_DOWN ) ) { 
-    start_rx();
+    start_listening();
   }
   if ( IS_EVENT( msg, hw, HW_EVENT_PTT_UP ) ) {
-    stop_rx();
+    stop_listening();
   }
 
   if ( IS_EVENT( msg, radio, RADIO_EVENT_INCOMING_MSG_DONE ) ) {
     incoming_message_buffer = msg->module.buffer.ptr;
     incoming_message_size   = msg->module.buffer.len;
-    encode_and_write();
-    start_tx();
+    decode_and_play();
   }
 }
 
@@ -196,9 +213,12 @@ int event_handler ( struct hw_msg *msg ) {
  */
 
 
-int init_freedv( i16 *output_buffer ) {
+int init_freedv( i16 *outgoing_buffer ) {
 
   u32 error = 0;
+
+  outgoing_buffer = malloc( OUTGOING_BUFFER_SIZE );
+  speaker_buffer  = malloc( SPEAKER_BUFFER_SIZE  );
 
   freedv = freedv_open(FREEDV_MODE_700D);
   if ( freedv == NULL ) {
@@ -208,38 +228,51 @@ int init_freedv( i16 *output_buffer ) {
 
   num_tx_samples = freedv_get_n_max_speech_samples(freedv);
   num_rx_samples = freedv_get_n_max_speech_samples(freedv);
-  num_modem_samples = freedv_get_n_max_modem_samples(freedv);
+  num_codec_samples = freedv_get_n_max_modem_samples(freedv);
 
-  speech_in = realloc( speech_in, sizeof(short) * num_tx_samples );
-  speech_out = realloc( speech_out , sizeof(short) * num_rx_samples);
-  // same buffer size for tx and rx for now 
-  modem_out = realloc( modem_out , sizeof(short) * num_modem_samples );
-  modem_in = realloc( modem_in , sizeof(short) * num_modem_samples );
+  // there is no way to name these that's not confusing.
+  // "outgoing" speech is coming in from the microphone going "out" to the server.
+  // "incoming" speech is from the mqtt client going "in" to the speaker.
+  
+  speech_outgoing = realloc( speech_in, sizeof(short) * num_tx_samples );
+  speech_incoming = realloc( speech_out , sizeof(short) * num_rx_samples);
+  codec_outgoing  = realloc( codec_out, sizeof(short) * num_codec_samples);
+  codec_incoming  = realloc( codec_in,  sizeof(short) * num_codec_samples );
 
-  encode_buffer_out = output_buffer;
+  //speaker_speaker_buffer
+  //outgoing_message_buffer
 
   InitializedFlag = true;
 
 }
 
-int encode_and_write( void ) {
+int encode_and_send( void ) {
+  int offset = 0;
+  size_t len = num_tx_samples;
+  while ( offset < incoming_message_size ) {
+    memcpy( incoming_message_buffer + offset, speech_outgoing, num_tx_samples );
+    offset += num_tx_samples;
+    while ( fread( speech_outgoing, sizeof(i16), num_tx_samples, mic_buffer) == num_tx_samples ) {
+      freedv_tx(freedv, codec_outgoing, speech_outgoing);
+      // last argument is where we put encoded PCM.
+      fwrite(codec_outgoing, sizeof(i16), num_codec_samples, encode_buffer_out);
+      tx( num_codec_samples );
+    }
 
-  while ( fread( speech_in, sizeof(i16), num_tx_samples, mic_buffer) == num_tx_samples ) {
-    freedv_tx(freedv, modem_out, speech_in );
-    fwrite(modem_out, sizeof(i16), num_modem_samples, encode_buffer_out);
   }
 }
 
-// drive speaker with I2S; use EasyDMA with two buffers - a "playing" buffer and a 
-// "preparing" buffer, basically classic double buffering.
-// we're going to throw PCM blocks straight at that buffer from this function.
-
-int decode_and_write( void ) {
-  while ( fread(demod_in, sizeof(i16), num_rx_samples, recv_buffer ) == num_rx_samples ) {
-    num_output_samples = freedv_rx(freedv, speech_out, modem_in);
+int decode_and_play( void ) {
+  size_t offset = 0;
+  while ( offset < incoming_message_size ) {
+    offset += fread( codec_incoming, sizeof(i16), num_rx_samples, incoming_message_buffer );
+    num_output_samples = freedv_rx(freedv, speech_incoming, codec_incoming);
     num_input_samples = freedv_nin(freedv);
-    fwrite(speech_out, sizeof(short), num_output_samples, decode_buffer_out);
+    // last argument is where we put decoded PCM.
+    fwrite(speech_incoming, sizeof(short), num_output_samples, speaker_buffer);
+    tx_speaker( num_output_samples );
   }
+  i2s_trigger( tx_device, I2S_DIR_TX, I2S_TRIGGER_DRAIN );
 }
 
 
