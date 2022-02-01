@@ -6,12 +6,19 @@
 #include <event_manager_profiler.h>
 
 enum radio_event_type {
-  RADIO_EVENT_INCOMING_MSG,
+  RADIO_EVENT_INCOMING_MSG_START,
+  RADIO_EVENT_INCOMING_MSG_DONE,
   RADIO_EVENT_ERR
 };
 
 struct radio_data {
+  bool  end;
   char *buffer;
+  size_t len;
+};
+
+struct buffer_data {
+  char *ptr;
   size_t len;
 };
 
@@ -23,6 +30,7 @@ struct radio_event {
     u32 id;
     int err;
     struct radio_data data;
+    struct buffer_data buffer;
     // and more!
   } data;
 };

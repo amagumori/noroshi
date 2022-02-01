@@ -13,9 +13,7 @@
 #include "../codec/codec.h"
 #include "modem.h"
 
-#define AUDIO_BUFFER_SIZE 2048  // man i dunno
-#define MODEM_BUFFER_SIZE 2048  // man i dunno
-#define MAX_RADIO_MESSAGE_SIZE 21000  // 700 samples/s - 30 seconds
+#define MAX_MESSAGE_SIZE 21000  // 700 samples/s - 30 seconds
 #define RADIO_MAX_MESSAGES 10   // max received messages in rx bfufer
 
 #include "modules_common.h"
@@ -38,8 +36,16 @@ static uint16_t rx_buffer[CONFIG_MQTT_RECV_BUFFER_SIZE];
 static uint16_t tx_buffer[CONFIG_MQTT_TX_BUFFER_SIZE];
 static uint16_t payload_buffer[CONFIG_MQTT_PAYLOAD_BUFFER_SIZE];
 
+u16 front_audio_buffer[MAX_MESSAGE_SIZE];
+u16 back_audio_buffer[MAX_MESSAGE_SIZE];
+size_t audio_buffer_offset;
+u16 *audio_ptr;
+
 // MQTT_QOS_0_AT_MOST_ONCE
 static mqtt_qos QOS = 0x00;
+
+#define MAX_MQTT_MESSAGE 4096
+#define CHUNKED_MESSAGE_SIZE 4096   // set our chunk size here rather than using the max value
 
 static struct mqtt_client client;
 static struct sockaddr_storage broker;
@@ -49,32 +55,16 @@ static struct pollfd fds;
 
 struct radio_msg {
   union {
-    struct app_event app;
+    struct app_event   app;
     struct radio_event radio;
+    struct ui_event    ui;
+    struct i2s_event   i2s;
   } module;
 };
-
-// static later
-struct radio_transmission incoming_messages[RADIO_MAX_MESSAGES];
-int incoming_messages_head;
-struct radio_transmission my_transmission;
-
-static struct modem_data modem_buffer[MODEM_BUFFER_SIZE];
-static int modem_buffer_head;
 
 #define DATA_QUEUE_ENTRY_COUNT 10
 #define DATA_QUEUE_ALIGNMENT 4
 K_MSGQ_DEFINE(radio_msg_queue, sizeof(struct radio_msg), DATA_QUEUE_ENTRY_COUNT, DATA_QUEUE_ALIGNMENT);
-
-
-/*
- *
- * MODEM LAYER - LTE-level events
- *
- *
- */
-
-#endif /* CONFIG_LWM2M_CARRIER */
 
 /*
  * MQTT STUFF 
@@ -131,6 +121,9 @@ static int init_broker( void ) {
 
 static int init_client( struct mqtt_client *client ) {
   int err;
+
+  // roll all the local init into its own helper function
+  audio_buffer_offset = 0;
 
   mqtt_client_init(client);
 
@@ -302,21 +295,20 @@ void publish_sequenced( struct mqtt_client *client, u16 *data, size_t len, u16 s
 	return mqtt_publish(client, &param);
 }
 
-int transmit( u16 *mic_buffer, size_t len ) {
-  u16 *p = mic_buffer;
-  u16 seq = 0;
-
-  size_t chunk_size = CONFIG_MQTT_PAYLOAD_BUFFER_SIZE;
-
-  // we want to extend mqtt_param->payload struct to include a packet number to do in-order
-
-  while ( p < len ) {
-    publish_sequenced( client, mic_buffer, chunk_size, seq );
-    p += chunk_size;
-    seq++;
+int transmit( u16 *buffer, size_t len ) {
+  int count = len / CHUNKED_MESSAGE_SIZE;
+  // @TODO this drops the last chunk in the buffer bc of division behavior.
+  u16 *ptr = buffer;
+  for ( int i=0; i < count; i++ ) {
+    publish( client, ptr, CHUNKED_MESSAGE_SIZE);
+    ptr += CHUNKED_MESSAGE_SIZE;
   }
+  return 1;
 }
 
+/* 
+ * having sequenced transmissions is a whole other can of worms
+ * that can be attempted later.  not minimum viable thing.
 int read_payload ( struct mqtt_client *client, struct mqtt_publish_message *msg ) {
   u16 seq = msg->payload.seq;
   u16 offset = number * CONFIG_MQTT_PAYLOAD_BUFFER_SIZE;
@@ -324,6 +316,59 @@ int read_payload ( struct mqtt_client *client, struct mqtt_publish_message *msg 
   memcpy(&output_buffer + offset, msg->payload.data, msg->payload.len); 
   message_chunks_remaining--;
   // this is absolutely not the way
+}
+*/
+
+void switch_buffers( void ) {
+  if ( audio_ptr >= front_audio_buffer &&
+       audio_ptr <= front_audio_buffer + audio_buffer_offset ) {
+    memset( back_audio_buffer, 0, MAX_MESSAGE_SIZE );
+    audio_ptr = back_audio_buffer;
+  }
+  if ( audio_ptr >= back_audio_buffer &&
+       audio_ptr <= back_audio_buffer + audio_buffer_offset ) {
+    memset( front_audio_buffer, 0, MAX_MESSAGE_SIZE );
+    audio_ptr = front_audio_buffer;
+  }
+  else {
+    LOG_ERR("audio_ptr out of bounds. %x", audio_ptr);
+    LOG_ERR("front buffer: %x to %x", front_audio_buffer, front_audio_buffer + audio_buffer_offset);
+    LOG_ERR("back buffer: %x to %x", back_audio_buffer, back_audio_buffer + audio_buffer_offset);
+  }
+}
+
+// so this is just throwing our things into a circular buffer
+// which i think is the way
+int push_audio_payload ( struct mqtt_client *client, struct mqtt_publish_message *msg ) {
+  
+  if ( audio_buffer_offset + msg->payload.len >= MAX_MESSAGE_SIZE ) {
+    struct radio_event *evt = new_radio_event();
+    evt->type = RADIO_EVENT_INCOMING_MSG_DONE;
+    evt->buffer_data.ptr = audio_ptr;
+    evt->buffer_data.len = audio_buffer_offset;
+    switch_buffers();
+    EVENT_SUBMIT( evt );
+  }
+
+  memcpy( &audio_ptr + audio_buffer_offset, msg->payload.data, msg->payload.len );
+  audio_buffer_offset += msg->payload.len;
+
+  if ( msg->payload.end == true ) {
+    struct radio_event *evt = new_radio_event();
+    evt->type = RADIO_EVENT_INCOMING_MSG_DONE;
+    evt->buffer_data.ptr = audio_ptr;
+    evt->buffer_data.len = audio_buffer_offset;
+    switch_buffers();
+    EVENT_SUBMIT( evt );
+  }
+
+  return 1;
+}
+
+void i2s_event_handler ( struct radio_msg *msg ) {
+  if ( IS_EVENT ( msg, i2s, I2S_EVENT_TRANSMIT_READY ) ) {
+    transmit( msg->module.data.ptr, msg->module.data.len );
+  }
 }
 
 void mqtt_event_handler( struct mqtt_client *client, struct mqtt_evt *evt ) {
@@ -352,7 +397,7 @@ void mqtt_event_handler( struct mqtt_client *client, struct mqtt_evt *evt ) {
 		err = publish_get_payload(c, p->message.payload.len);
 
     if ( p.user_hash != me ) {
-      read_payload( client, p.message );
+      push_audio_payload( client, p.message );
     }
 
     /*
@@ -403,3 +448,5 @@ void mqtt_event_handler( struct mqtt_client *client, struct mqtt_evt *evt ) {
 		break;
 	}
 }
+
+#endif

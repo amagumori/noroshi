@@ -6,6 +6,8 @@
 
 ## TO DO
 
++ GPIO interface for buttons and leds.  reference sdk lib/dk_buttons
+
 + in-depth look at what's needed in the UI, how many inputs, how many views, and what they look like.  get concrete lists and trees for this.
 
 + suss out an explicit plan for doing voice over MQTT and what that protocol looks like.
