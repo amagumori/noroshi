@@ -9,8 +9,10 @@ static uint16_t payload_buffer[CONFIG_MQTT_PAYLOAD_BUFFER_SIZE];
 
 // MQTT_QOS_0_AT_MOST_ONCE
 static mqtt_qos QOS = 0x00;
+static struct mqtt_topic subscriptions[2];
 
-static struct mqtt_client client;
+struct mqtt_client client;
+bool   initialized_flag;
 static struct sockaddr_storage broker;
 static struct pollfd fds;
 
@@ -116,6 +118,7 @@ static int init_client( struct mqtt_client *client ) {
 	client->transport.type = MQTT_TRANSPORT_NON_SECURE;
 #endif
 
+  initialized_flag = true;
 	return err;
 }
 
@@ -137,6 +140,22 @@ static int fds_init(struct mqtt_client *c)
 }
 
 static int subscribe( void ) {
+  subscriptions[0] = {
+    .topic = {
+      .utf8 = "radio",
+      .size = strlen("radio")
+    },
+    .qos = QOS
+  };
+  subscriptions[1] = {
+    .topic = {
+      .utf8 = "info",
+      .size = strlen("info")
+    },
+    .qos = MQTT_QOS_1_AT_LEAST_ONCE
+  };
+
+  /*
   struct mqtt_topic sub_topic = {
     .topic = {
       .utf8 = CONFIG_MQTT_SUB_TOPIC,
@@ -144,11 +163,11 @@ static int subscribe( void ) {
     },
     .qos = QOS
   };
-
+  */
   const struct mqtt_subscription_list sub_list = {
-    .list = &sub_topic,
-    .list_count = 1,
-    .message_id = 1234 // ???
+    .list = &subscriptions,
+    .list_count = 2,
+    .message_id = 1234 // 1234 means sub to both i suppose.
   };
 
   // LOG( subbing to: "

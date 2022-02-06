@@ -58,8 +58,7 @@ static struct module_data self = {
 struct modem_param_info modem_info;
 
 static i16 rsrp_value_latest;
-// const k_tid_t module_thread; 
-// we'll wait to break everything out into threads
+const k_tid_t modem_thread; 
 
 struct modem_msg {
   union {
@@ -412,5 +411,261 @@ int lwm2m_carrier_event_handler(const lwm2m_carrier_event_t *evt)
 	return err;
 }
 
+/* @TODO
+ *
+ *
+ * REFACTOR FROM HERE 
+ *
+
+static int modem_data_init(void)
+{
+	int err;
+
+	err = modem_info_init();
+	if (err) {
+		LOG_INF("modem_info_init, error: %d", err);
+		return err;
+	}
+
+	err = modem_info_params_init(&modem_param);
+	if (err) {
+		LOG_INF("modem_info_params_init, error: %d", err);
+		return err;
+	}
+
+	err = modem_info_rsrp_register(modem_rsrp_handler);
+	if (err) {
+		LOG_INF("modem_info_rsrp_register, error: %d", err);
+		return err;
+	}
+
+	return 0;
+}
+
+static int setup(void)
+{
+	int err;
+
+	if (!IS_ENABLED(CONFIG_LWM2M_CARRIER)) {
+		err = lte_lc_init();
+		if (err) {
+			LOG_ERR("lte_lc_init, error: %d", err);
+			return err;
+		}
+	}
+
+	if (IS_ENABLED(CONFIG_MODEM_AUTO_REQUEST_POWER_SAVING_FEATURES)) {
+		err = configure_low_power();
+		if (err) {
+			LOG_ERR("configure_low_power, error: %d", err);
+			return err;
+		}
+	}
+
+	err = modem_data_init();
+	if (err) {
+		LOG_ERR("modem_data_init, error: %d", err);
+		return err;
+	}
+
+	return 0;
+}
+
+static void on_state_init(struct modem_msg_data *msg)
+{
+	if (IS_EVENT(msg, modem, MODEM_EVT_CARRIER_INITIALIZED)) {
+		int err;
+
+		state_set(STATE_DISCONNECTED);
+
+		err = at_cmd_init();
+		__ASSERT(err == 0, "Failed initializing at_cmd");
+
+		err = at_notif_init();
+		__ASSERT(err == 0, "Failed initializing at_notif");
+
+		err = setup();
+		__ASSERT(err == 0, "Failed running setup()");
+
+		SEND_EVENT(modem, MODEM_EVT_INITIALIZED);
+	}
+}
+
+static void on_state_disconnected(struct modem_msg_data *msg)
+{
+	if (IS_EVENT(msg, modem, MODEM_EVT_LTE_CONNECTED)) {
+		state_set(STATE_CONNECTED);
+	}
+
+	if (IS_EVENT(msg, modem, MODEM_EVT_LTE_CONNECTING)) {
+		state_set(STATE_CONNECTING);
+	}
+}
+
+static void on_state_connecting(struct modem_msg_data *msg)
+{
+	if (IS_EVENT(msg, app, APP_EVT_LTE_DISCONNECT)) {
+		int err;
+
+		err = lte_lc_offline();
+		if (err) {
+			LOG_ERR("LTE disconnect failed, error: %d", err);
+			SEND_ERROR(modem, MODEM_EVT_ERROR, err);
+			return;
+		}
+
+		state_set(STATE_DISCONNECTED);
+	}
+
+	if (IS_EVENT(msg, modem, MODEM_EVT_LTE_CONNECTED)) {
+		state_set(STATE_CONNECTED);
+	}
+}
+
+static void on_state_connected(struct modem_msg_data *msg)
+{
+	if (IS_EVENT(msg, modem, MODEM_EVT_LTE_DISCONNECTED)) {
+		state_set(STATE_DISCONNECTED);
+	}
+}
+
+static void on_all_states(struct modem_msg_data *msg)
+{
+	if (IS_EVENT(msg, app, APP_EVT_START)) {
+		int err;
+
+		if (IS_ENABLED(CONFIG_LWM2M_CARRIER)) {
+
+			return;
+		}
+
+		err = lte_connect();
+		if (err) {
+			LOG_ERR("Failed connecting to LTE, error: %d", err);
+			SEND_ERROR(modem, MODEM_EVT_ERROR, err);
+			return;
+		}
+	}
+
+	if (IS_EVENT(msg, app, APP_EVT_DATA_GET)) {
+		if (static_modem_data_requested(msg->module.app.data_list,
+						msg->module.app.count)) {
+
+			int err;
+
+			err = static_modem_data_get();
+			if (err) {
+				SEND_EVENT(modem,
+					MODEM_EVT_MODEM_STATIC_DATA_NOT_READY);
+			}
+		}
+
+		if (dynamic_modem_data_requested(msg->module.app.data_list,
+						 msg->module.app.count)) {
+
+			int err;
+
+			err = dynamic_modem_data_get();
+			if (err) {
+				SEND_EVENT(modem,
+					MODEM_EVT_MODEM_DYNAMIC_DATA_NOT_READY);
+			}
+		}
+
+		if (battery_data_requested(msg->module.app.data_list,
+					   msg->module.app.count)) {
+
+			int err;
+
+			err = battery_data_get();
+			if (err) {
+				SEND_EVENT(modem,
+					MODEM_EVT_BATTERY_DATA_NOT_READY);
+			}
+		}
+
+		if (neighbor_cells_data_requested(msg->module.app.data_list,
+						  msg->module.app.count)) {
+			int err;
+
+			err = neighbor_cells_measurement_start();
+			if (err) {
+				SEND_EVENT(modem, MODEM_EVT_NEIGHBOR_CELLS_DATA_NOT_READY);
+			}
+		}
+	}
+
+	if (IS_EVENT(msg, util, UTIL_EVT_SHUTDOWN_REQUEST)) {
+		lte_lc_power_off();
+		state_set(STATE_SHUTDOWN);
+		SEND_SHUTDOWN_ACK(modem, MODEM_EVT_SHUTDOWN_READY, self.id);
+	}
+}
+
+* to here
+*/
+
+static void entry_point(void)
+{
+	int err;
+	struct modem_msg msg;
+
+	self.thread_id = k_current_get();
+
+	err = module_start(&self);
+	if (err) {
+		LOG_ERR("Failed starting module, error: %d", err);
+		SEND_ERROR(modem, MODEM_EVT_ERROR, err);
+	}
+
+	if (IS_ENABLED(CONFIG_LWM2M_CARRIER)) {
+		state_set(STATE_INIT);
+	} else {
+		state_set(STATE_DISCONNECTED);
+		SEND_EVENT(modem, MODEM_EVT_INITIALIZED);
+
+		err = setup();
+		if (err) {
+			LOG_ERR("Failed setting up the modem, error: %d", err);
+			SEND_ERROR(modem, MODEM_EVT_ERROR, err);
+		}
+	}
+
+	while (true) {
+		module_get_next_msg(&self, &msg);
+
+		switch (state) {
+		case STATE_INIT:
+			on_state_init(&msg);
+			break;
+		case STATE_DISCONNECTED:
+			on_state_disconnected(&msg);
+			break;
+		case STATE_CONNECTING:
+			on_state_connecting(&msg);
+			break;
+		case STATE_CONNECTED:
+			on_state_connected(&msg);
+			break;
+		case STATE_SHUTDOWN:
+			/* The shutdown state has no transition. */
+			break;
+		default:
+			LOG_WRN("Invalid state: %d", state);
+			break;
+		}
+
+		on_all_states(&msg);
+	}
+}
+
+
+K_THREAD_DEFINE(modem_thread, CONFIG_MODEM_THREAD_STACK_SIZE,
+		entry_point, NULL, NULL, NULL,
+		K_LOWEST_APPLICATION_THREAD_PRIO, 0, 0);
+
+EVENT_LISTENER(MODULE, event_handler);
+EVENT_SUBSCRIBE_EARLY(MODULE, radio_event);
+EVENT_SUBSCRIBE(MODULE, hw_event );
 
 #endif

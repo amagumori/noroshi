@@ -26,6 +26,9 @@
 
 #include <logging/log.h>
 LOG_MODULE_REGISTER(MODULE, 1);   // log level 1 = ???
+
+const k_tid_t radio_thread;
+
 /* 
  *
  * DATA LAYER - PACKET-LEVEL EVENTS
@@ -43,6 +46,7 @@ u16 *audio_ptr;
 
 // MQTT_QOS_0_AT_MOST_ONCE
 static mqtt_qos QOS = 0x00;
+static struct mqtt_topic subscriptions[2];
 
 #define MAX_MQTT_MESSAGE 4096
 #define CHUNKED_MESSAGE_SIZE 4096   // set our chunk size here rather than using the max value
@@ -203,6 +207,22 @@ static int fds_init(struct mqtt_client *c)
 }
 
 static int subscribe( void ) {
+  subscriptions[0] = {
+    .topic = {
+      .utf8 = "radio",
+      .size = strlen("radio")
+    },
+    .qos = QOS
+  };
+  subscriptions[1] = {
+    .topic = {
+      .utf8 = "info",
+      .size = strlen("info")
+    },
+    .qos = MQTT_QOS_1_AT_LEAST_ONCE
+  };
+
+  /*
   struct mqtt_topic sub_topic = {
     .topic = {
       .utf8 = CONFIG_MQTT_SUB_TOPIC,
@@ -210,17 +230,18 @@ static int subscribe( void ) {
     },
     .qos = QOS
   };
-
+  */
   const struct mqtt_subscription_list sub_list = {
-    .list = &sub_topic,
-    .list_count = 1,
-    .message_id = 1234 // ???
+    .list = &subscriptions,
+    .list_count = 2,
+    .message_id = 1234 // 1234 means sub to both i suppose.
   };
 
   // LOG( subbing to: "
 
   return mqtt_subscribe(&client, &sub_list);
 }
+
 
 /* 
  * ok so i think the idea is:
@@ -238,12 +259,12 @@ static int subscribe( void ) {
  */
 
 
-void publish( struct mqtt_client *client, u16 *data, size_t len ) {
+void publish_radio( struct mqtt_client *client, u16 *data, size_t len ) {
   struct mqtt_publish_param param;
 
   param.message.topic.qos = QOS;
-  param.message.topic.topic.utf8 = CONFIG_MQTT_PUB_TOPIC;
-	param.message.topic.topic.size = strlen(CONFIG_MQTT_PUB_TOPIC);
+  param.message.topic.topic.utf8 = "radio";
+	param.message.topic.topic.size = strlen("radio");
 	param.message.payload.data = data;
 	param.message.payload.len = len;
 	param.message_id = sys_rand32_get();
@@ -251,46 +272,25 @@ void publish( struct mqtt_client *client, u16 *data, size_t len ) {
 	param.retain_flag = 0;
 
 	data_print("Publishing: ", data, len);
-	LOG_INF("to topic: %s len: %u",
-		CONFIG_MQTT_PUB_TOPIC,
-		(unsigned int)strlen(CONFIG_MQTT_PUB_TOPIC));
+	LOG_INF("to topic: %s", "radio")
 
 	return mqtt_publish(client, &param);
 }
 
-// so this way we'll 
-void publish_message_header( struct mqtt_client *client, msg_header *msg, size_t len ) {
+void publish_info( struct mqtt_client *client, u16 *data, size_t len ) {
   struct mqtt_publish_param param;
 
   param.message.topic.qos = MQTT_QOS_1_AT_LEAST_ONCE;
-  param.message.topic.topic.utf8 = CONFIG_MQTT_PUB_TOPIC;
-	param.message.topic.topic.size = strlen(CONFIG_MQTT_PUB_TOPIC);
-  // this probably doesn't work.
-	param.message.payload.data = (u8 *) data;
-	param.message.payload.len  = len;
-	param.message_id = sys_rand32_get();
-	param.dup_flag = 0;
-	param.retain_flag = 0;
- 
-}
-
-// when in doubt, do it the dumbest way possible
-void publish_sequenced( struct mqtt_client *client, u16 *data, size_t len, u16 seq ) {
-  struct mqtt_publish_param param;
-
-  param.message.topic.qos = QOS;
-  param.message.topic.topic.utf8 = CONFIG_MQTT_PUB_TOPIC;
-	param.message.topic.topic.size = strlen(CONFIG_MQTT_PUB_TOPIC);
+  param.message.topic.topic.utf8 = "info";
+	param.message.topic.topic.size = strlen("info");
 	param.message.payload.data = data;
-	param.message.payload.len  = len;
+	param.message.payload.len = len;
 	param.message_id = sys_rand32_get();
 	param.dup_flag = 0;
 	param.retain_flag = 0;
 
 	data_print("Publishing: ", data, len);
-	LOG_INF("to topic: %s len: %u",
-		CONFIG_MQTT_PUB_TOPIC,
-		(unsigned int)strlen(CONFIG_MQTT_PUB_TOPIC));
+	LOG_INF("to topic: %s.\n", "info");
 
 	return mqtt_publish(client, &param);
 }
@@ -448,5 +448,7 @@ void mqtt_event_handler( struct mqtt_client *client, struct mqtt_evt *evt ) {
 		break;
 	}
 }
+
+K_THREAD_DEFINE(
 
 #endif
