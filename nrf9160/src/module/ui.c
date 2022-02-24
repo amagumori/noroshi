@@ -2,12 +2,20 @@
 #include <event_manager.h>
 #include <event_manager_profiler.h>
 
+#include <device.h>
+#include <drivers/display.h>
+
 #include "users.h"
+
+#define LVGL_DISPLAY_DEV_NAME display
 
 #define MAX_USERS 24
 #define MAX_USERNAME_LENGTH 36 
 
 const char* icon_path = "./icon.bin";
+
+static const device *display_dev;
+static const lv_theme_t *theme;
 
 // LV_FONT_DECLARE( myfont );
 static const lv_font_t *font;
@@ -148,17 +156,14 @@ static bool event_handler( const struct event_header *eh ) {
     message_handler(&msg);
   }
 
-  if ( is_i2s_module_event( eh ) ) {
-    struct i2s_event *e = cast_i2s_event(eh);
-    struct ui_msg msg = {
-      .module.i2s = *event
-    };
-    message_handler(&msg);
-  }
   return false;
 }
 
 void init_ui( void ) {
+
+  display_dev = device_get_binding( LVGL_DISPLAY_DEV_NAME );
+  theme = lv_theme_get_act();
+
   for ( int i=0; i < SCREEN_COUNT; i++ ) {
     screens[i] = lv_obj_create(NULL, NULL);
   }
@@ -172,7 +177,6 @@ void init_ui( void ) {
   lv_obj_set_size(container, lv_pct(100), lv_pct(100));
   lv_obj_set_scroll_snap_y(container, LV_SCROLL_SNAP_CENTER);
  
-
   TEST_boot_label = lv_label_create( container, NULL );
   lv_obj_set_pos( TEST_boot_label, 50, 50);
   lv_label_set_text(TEST_boot_label, "booting!");
@@ -217,7 +221,6 @@ EVENT_LISTENER(MODULE, event_handler);
 EVENT_SUBSCRIBE_EARLY(MODULE, modem_event);
 EVENT_SUBSCRIBE_EARLY(MODULE, radio_event);
 EVENT_SUBSCRIBE_EARLY(MODULE, hw_event);
-EVENT_SUBSCRIBE_EARLY(MODULE, i2s_event);
 EVENT_SUBSCRIBE_EARLY(MODULE, server_event);
 
 SYS_INIT(setup, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);

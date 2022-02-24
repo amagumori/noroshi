@@ -6,6 +6,7 @@
 #include <modem/modem_info.h>
 #include <net/mqtt.h>
 #include <net/socket.h>
+#include <kernel.h> // mutex
 
 // CERTIFICATES GO HERE LOL
 // #include "certificates/certs.h"
@@ -23,11 +24,21 @@
 #include "../events/ui_event.h"
 
 #include "../hw/mic.c"
+#include "../hw/i2s.c"
 
 #include <logging/log.h>
 LOG_MODULE_REGISTER(MODULE, 1);   // log level 1 = ???
 
 const k_tid_t radio_thread;
+
+
+// I2S.h 
+extern i16 *outgoing_message_buffer;
+extern size_t outgoing_message_size;
+extern u16 *incoming_message_buffer;
+extern size_t incoming_message_size;
+extern struct k_mutex incoming_mutex;
+extern struct k_mutex outgoing_mutex;
 
 /* 
  *
@@ -35,12 +46,16 @@ const k_tid_t radio_thread;
  *
  */
 
-static uint16_t rx_buffer[CONFIG_MQTT_RECV_BUFFER_SIZE];
-static uint16_t tx_buffer[CONFIG_MQTT_TX_BUFFER_SIZE];
-static uint16_t payload_buffer[CONFIG_MQTT_PAYLOAD_BUFFER_SIZE];
+u16 mqtt_rx_buffer[CONFIG_MQTT_RX_BUFFER_SIZE];
+u16 mqtt_tx_buffer[CONFIG_MQTT_TX_BUFFER_SIZE];
 
-u16 front_audio_buffer[MAX_MESSAGE_SIZE];
-u16 back_audio_buffer[MAX_MESSAGE_SIZE];
+u16 tx_buffer[MAX_MESSAGE_SIZE];
+
+u16 rx_buffer_front[MAX_MESSAGE_SIZE];
+u16 rx_buffer_back[MAX_MESSAGE_SIZE];
+bool front;
+
+
 size_t audio_buffer_offset;
 u16 *audio_ptr;
 
@@ -128,6 +143,7 @@ static int init_client( struct mqtt_client *client ) {
 
   // roll all the local init into its own helper function
   audio_buffer_offset = 0;
+  front = true;
 
   mqtt_client_init(client);
 
@@ -152,10 +168,10 @@ static int init_client( struct mqtt_client *client ) {
   client->protocol_version = MQTT_VERSION_3_1_1;
 
  	/* MQTT buffers configuration */
-	client->rx_buf = rx_buffer;
-	client->rx_buf_size = sizeof(rx_buffer);
-	client->tx_buf = tx_buffer;
-	client->tx_buf_size = sizeof(tx_buffer);
+	client->rx_buf = mqtt_rx_buffer
+	client->rx_buf_size = sizeof(mqtt_rx_buffer);
+	client->tx_buf = mqtt_tx_buffer;
+	client->tx_buf_size = sizeof(mqtt_tx_buffer);
 
 	/* MQTT transport configuration */
 #if defined(CONFIG_MQTT_LIB_TLS)
@@ -295,14 +311,20 @@ void publish_info( struct mqtt_client *client, u16 *data, size_t len ) {
 	return mqtt_publish(client, &param);
 }
 
-int transmit( u16 *buffer, size_t len ) {
-  int count = len / CHUNKED_MESSAGE_SIZE;
+int transmit( void ) {
+  // MUTEX
+  k_mutex_lock( &outgoing_mutex );
+
+  int count = outgoing_message_size / CHUNKED_MESSAGE_SIZE;
+  
   // @TODO this drops the last chunk in the buffer bc of division behavior.
-  u16 *ptr = buffer;
+  u16 *ptr = outgoing_message_buffer;
   for ( int i=0; i < count; i++ ) {
     publish( client, ptr, CHUNKED_MESSAGE_SIZE);
     ptr += CHUNKED_MESSAGE_SIZE;
   }
+
+  k_mutex_unlock( &outgoing_mutex );
   return 1;
 }
 
@@ -320,20 +342,24 @@ int read_payload ( struct mqtt_client *client, struct mqtt_publish_message *msg 
 */
 
 void switch_buffers( void ) {
-  if ( audio_ptr >= front_audio_buffer &&
-       audio_ptr <= front_audio_buffer + audio_buffer_offset ) {
-    memset( back_audio_buffer, 0, MAX_MESSAGE_SIZE );
-    audio_ptr = back_audio_buffer;
+  if ( audio_ptr >= rx_buffer_front &&
+       audio_ptr <= rx_buffer_front + audio_buffer_offset ) {
+    memset( rx_buffer_back, 0, MAX_MESSAGE_SIZE );
+    audio_ptr = rx_buffer_back;
+    audio_buffer_offset = 0;
+    front = false;
   }
-  if ( audio_ptr >= back_audio_buffer &&
-       audio_ptr <= back_audio_buffer + audio_buffer_offset ) {
-    memset( front_audio_buffer, 0, MAX_MESSAGE_SIZE );
-    audio_ptr = front_audio_buffer;
+  if ( audio_ptr >= rx_buffer_back &&
+       audio_ptr <= rx_buffer_back + audio_buffer_offset ) {
+    memset( rx_buffer_front, 0, MAX_MESSAGE_SIZE );
+    audio_ptr = rx_buffer_front;
+    audio_buffer_offset = 0;
+    front = true;
   }
   else {
     LOG_ERR("audio_ptr out of bounds. %x", audio_ptr);
-    LOG_ERR("front buffer: %x to %x", front_audio_buffer, front_audio_buffer + audio_buffer_offset);
-    LOG_ERR("back buffer: %x to %x", back_audio_buffer, back_audio_buffer + audio_buffer_offset);
+    LOG_ERR("front buffer: %x to %x", rx_buffer_front, rx_buffer_front + audio_buffer_offset);
+    LOG_ERR("back buffer: %x to %x", rx_buffer_back, rx_buffer_back + audio_buffer_offset);
   }
 }
 
@@ -341,11 +367,17 @@ void switch_buffers( void ) {
 // which i think is the way
 int push_audio_payload ( struct mqtt_client *client, struct mqtt_publish_message *msg ) {
   
+  k_mutex_lock( &incoming_mutex );
+
   if ( audio_buffer_offset + msg->payload.len >= MAX_MESSAGE_SIZE ) {
     struct radio_event *evt = new_radio_event();
     evt->type = RADIO_EVENT_INCOMING_MSG_DONE;
-    evt->buffer_data.ptr = audio_ptr;
-    evt->buffer_data.len = audio_buffer_offset;
+    incoming_message_buffer = audio_ptr;
+    incoming_message_size   = audio_buffer_offset;
+
+    //evt->buffer_data.ptr = audio_ptr;
+    //evt->buffer_data.len = audio_buffer_offset;
+
     switch_buffers();
     EVENT_SUBMIT( evt );
   }
@@ -356,18 +388,20 @@ int push_audio_payload ( struct mqtt_client *client, struct mqtt_publish_message
   if ( msg->payload.end == true ) {
     struct radio_event *evt = new_radio_event();
     evt->type = RADIO_EVENT_INCOMING_MSG_DONE;
-    evt->buffer_data.ptr = audio_ptr;
-    evt->buffer_data.len = audio_buffer_offset;
+    incoming_message_buffer = audio_ptr;
+    incoming_message_size   = audio_buffer_offset;
     switch_buffers();
     EVENT_SUBMIT( evt );
   }
+
+  k_mutex_unlock( &incoming_mutex );
 
   return 1;
 }
 
 void i2s_event_handler ( struct radio_msg *msg ) {
   if ( IS_EVENT ( msg, i2s, I2S_EVENT_TRANSMIT_READY ) ) {
-    transmit( msg->module.data.ptr, msg->module.data.len );
+    transmit();
   }
 }
 
@@ -449,6 +483,8 @@ void mqtt_event_handler( struct mqtt_client *client, struct mqtt_evt *evt ) {
 	}
 }
 
-K_THREAD_DEFINE(
+K_THREAD_DEFINE(radio_thread, RADIO_THREAD_STACK_SIZE, 
+                entry_point, NULL, NULL, NULL,
+                PRIORITY, 0, 0 );
 
 #endif

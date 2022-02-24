@@ -4,8 +4,15 @@
 #include <drivers/i2s.h>
 #include <stdlib.h>
 #include <string.h>
+#include <kernel.h>     // mutex
+
 
 #include "freedv_api.h"
+
+// @TODO lol dummy values.  CHANGE THESE
+#define CODEC_THREAD_STACK_SIZE 24000   
+#define CODEC_PRIORITY 2
+
 
 #define AUDIO_SAMPLE_FREQ (44100)
 #define AUDIO_SAMPLES_PER_CH_PER_FRAME (128)
@@ -19,13 +26,20 @@
 
 #define I2S_PLAY_BUF_COUNT (500)
 
+
+static const k_tid_t codec_thread;
+
+const k_mutex incoming_mutex;
+const k_mutex outgoing_mutex;
+
+K_DEFINE_MUTEX( incoming_mutex );
+K_DEFINE_MUTEX( outgoing_mutex );
+
+// we should only need to receive HW and RADIO events
 struct hw_msg {
   union {
     struct hw_event hw;
-    struct ui_event ui;
-    struct modem_event modem;
     struct radio_event radio;
-    struct server_event server;
   } module;
 };
 
@@ -41,17 +55,17 @@ i16 *codec_outgoing;
 
 const struct freedv *freedv;
 
-bool flag = 0;
-bool WriteFlag = 0;
 bool InitializedFlag = 0;
-const nrfx_pdm_config_t config;
 
 // ??? lol
-#define OUTGOING_BUFFER_SIZE ( AUDIO_FRAME_BUF_BYTES * 100 )
+#define OUTGOING_BUFFER_SIZE 24000
 #define SPEAKER_BUFFER_SIZE  I2S_PLAY_BUF_COUNT
+
 i16 *outgoing_message_buffer;
+size_t outgoing_message_size;
+bool outgoing_buffer_available;
 // this is what's gonna be filled with PCM and be pushed to the speaker GPIO or whatever.
-i16 *speaker_speaker_buffer;
+i16 *speaker_buffer;
 
 // this will point directly at the stream coming off the air 
 u16 *incoming_message_buffer;
@@ -68,11 +82,21 @@ static char rx_buffer[AUDIO_FRAME_BUF_BYTES * I2S_PLAY_BUF_COUNT];
 static char tx_buffer[AUDIO_FRAME_BUF_BYTES * I2S_PLAY_BUF_COUNT];
 static int ret;
 
+// only receiving event messages ( enum / int ) 
+K_MSGQ_DEFINE(i2s_msgq, sizeof(int), 10, 4); 
+
+static struct module_data self = {
+  .name = "i2s",
+  .msg_q = NULL,
+  .supports_shutdown = false
+};
+
 int init ( void ) {
   int err;
 
   incoming_message_buffer = NULL;
   incoming_message_size = 0;
+  outgoing_buffer_available = true;
 
   rx_device = device_get_binding("i2s_rx");
   if (!rx_device) {
@@ -151,11 +175,12 @@ int start_listening( void ) {
     return err;
   }
   // this is probably the wrong check.
+  outgoing_buffer_available = false;
   while ( i2s_buf_read( rx_device, speech_incoming, AUDIO_FRAME_BUF_BYTES ) == 0 ) {
     encode_and_send();
   }
 
-  SEND_EVENT( i2s, EVENT_TX_BUFFER_READY ); 
+  SEND_EVENT( hw, HW_EVENT_I2S_TRANSMIT_READY ); 
   return err;
 }
 
@@ -180,7 +205,7 @@ int start_tx( void ) {
 }
 
 int tx_speaker ( size_t size ) {
-  SEND_EVENT( i2s, EVENT_I2S_PLAYING );
+  SEND_EVENT( hw, HW_EVENT_I2S_PLAYING );
   i2s_buf_write( tx_device, speaker_buffer, size ); 
 }
 
@@ -190,7 +215,7 @@ int stop_tx( void ) {
   if ( err !== 0 ) {
     LOG_ERROR("TX: i2s trigger drain error: %d.", err);
   }
-  SEND_EVENT( i2s, EVENT_I2S_DONE_PLAYING );
+  SEND_EVENT( hw, HW_EVENT_I2S_DONE_PLAYING );
 }
 
 int event_handler ( struct hw_msg *msg ) {
@@ -213,11 +238,11 @@ int event_handler ( struct hw_msg *msg ) {
  */
 
 
-int init_freedv( i16 *outgoing_buffer ) {
+int init_freedv( ) {
 
   u32 error = 0;
 
-  outgoing_buffer = malloc( OUTGOING_BUFFER_SIZE );
+  outgoing_message_buffer = malloc( OUTGOING_BUFFER_SIZE );
   speaker_buffer  = malloc( SPEAKER_BUFFER_SIZE  );
 
   freedv = freedv_open(FREEDV_MODE_700D);
@@ -239,7 +264,6 @@ int init_freedv( i16 *outgoing_buffer ) {
   codec_outgoing  = realloc( codec_out, sizeof(short) * num_codec_samples);
   codec_incoming  = realloc( codec_in,  sizeof(short) * num_codec_samples );
 
-  //speaker_speaker_buffer
   //outgoing_message_buffer
 
   InitializedFlag = true;
@@ -249,21 +273,23 @@ int init_freedv( i16 *outgoing_buffer ) {
 int encode_and_send( void ) {
   int offset = 0;
   size_t len = num_tx_samples;
-  while ( offset < incoming_message_size ) {
-    memcpy( incoming_message_buffer + offset, speech_outgoing, num_tx_samples );
-    offset += num_tx_samples;
-    while ( fread( speech_outgoing, sizeof(i16), num_tx_samples, mic_buffer) == num_tx_samples ) {
-      freedv_tx(freedv, codec_outgoing, speech_outgoing);
-      // last argument is where we put encoded PCM.
-      fwrite(codec_outgoing, sizeof(i16), num_codec_samples, encode_buffer_out);
-      tx( num_codec_samples );
-    }
+  // MUTEX
+  k_mutex_lock( &outgoing_mutex );
 
+  while ( fread( speech_outgoing, sizeof(i16), num_tx_samples, mic_buffer) == num_tx_samples ) {
+    freedv_tx( freedv, codec_outgoing, speech_outgoing );
+    fwrite( codec_outgoing, sizeof(i16), num_codec_samples, outgoing_message_buffer );
+    outgoing_message_size += num_codec_samples;
   }
+
+  k_mutex_unlock( &outgoing_mutex );
 }
 
 int decode_and_play( void ) {
   size_t offset = 0;
+  // MUTEX
+  k_mutex_lock( &incoming_mutex );
+  // 
   while ( offset < incoming_message_size ) {
     offset += fread( codec_incoming, sizeof(i16), num_rx_samples, incoming_message_buffer );
     num_output_samples = freedv_rx(freedv, speech_incoming, codec_incoming);
@@ -273,6 +299,20 @@ int decode_and_play( void ) {
     tx_speaker( num_output_samples );
   }
   i2s_trigger( tx_device, I2S_DIR_TX, I2S_TRIGGER_DRAIN );
+  k_mutex_unlock( &incoming_mutex );
 }
 
+static void i2s_thread_fn( void ) {
+  int err;
+  int event;
 
+  while ( true ) {
+    k_msgq_get( &i2s_msgq, &event, K_FOREVER);
+
+    event_handler( event ); 
+  }
+}
+
+K_THREAD_DEFINE( codec_thread, CODEC_THREAD_STACK_SIZE,
+                 i2s_thread_fn, NULL, NULL, NULL,
+                 CODEC_PRIORITY, K_FP_REGS, 0 );
