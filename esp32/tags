@@ -1,0 +1,948 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+-prefix	librsync/debian/rules	/^	.\/configure --prefix=\/usr --mandir=\\$${prefix}\/share\/man --infodir=\\$${prefix}\/share\/info --enable-shared$/;"	m
+A	librsync/src/mdfour.h	/^    unsigned int A, B, C, D;$/;"	m	struct:rs_mdfour
+B	librsync/src/mdfour.h	/^    unsigned int A, B, C, D;$/;"	m	struct:rs_mdfour
+BLAKE2B_BLOCKBYTES	librsync/src/blake2/blake2.h	/^    BLAKE2B_BLOCKBYTES = 128,$/;"	e	enum:blake2b_constant
+BLAKE2B_KEYBYTES	librsync/src/blake2/blake2.h	/^    BLAKE2B_KEYBYTES   = 64,$/;"	e	enum:blake2b_constant
+BLAKE2B_OUTBYTES	librsync/src/blake2/blake2.h	/^    BLAKE2B_OUTBYTES   = 64,$/;"	e	enum:blake2b_constant
+BLAKE2B_PERSONALBYTES	librsync/src/blake2/blake2.h	/^    BLAKE2B_PERSONALBYTES = 16$/;"	e	enum:blake2b_constant
+BLAKE2B_SALTBYTES	librsync/src/blake2/blake2.h	/^    BLAKE2B_SALTBYTES  = 16,$/;"	e	enum:blake2b_constant
+BLAKE2S_BLOCKBYTES	librsync/src/blake2/blake2.h	/^    BLAKE2S_BLOCKBYTES = 64,$/;"	e	enum:blake2s_constant
+BLAKE2S_KEYBYTES	librsync/src/blake2/blake2.h	/^    BLAKE2S_KEYBYTES   = 32,$/;"	e	enum:blake2s_constant
+BLAKE2S_OUTBYTES	librsync/src/blake2/blake2.h	/^    BLAKE2S_OUTBYTES   = 32,$/;"	e	enum:blake2s_constant
+BLAKE2S_PERSONALBYTES	librsync/src/blake2/blake2.h	/^    BLAKE2S_PERSONALBYTES = 8$/;"	e	enum:blake2s_constant
+BLAKE2S_SALTBYTES	librsync/src/blake2/blake2.h	/^    BLAKE2S_SALTBYTES  = 8,$/;"	e	enum:blake2s_constant
+BLAKE2_DUMMY_1	librsync/src/blake2/blake2.h	/^    BLAKE2_DUMMY_1 = 1\/(sizeof(blake2s_param) == BLAKE2S_OUTBYTES),$/;"	e	enum:__anon3
+BLAKE2_DUMMY_2	librsync/src/blake2/blake2.h	/^    BLAKE2_DUMMY_2 = 1\/(sizeof(blake2b_param) == BLAKE2B_OUTBYTES)$/;"	e	enum:__anon3
+BLAKE2_H	librsync/src/blake2/blake2.h	/^#define BLAKE2_H$/;"	d
+BLAKE2_IMPL_H	librsync/src/blake2/blake2-impl.h	/^#define BLAKE2_IMPL_H$/;"	d
+BLAKE2_INLINE	librsync/src/blake2/blake2-impl.h	/^    #define BLAKE2_INLINE /;"	d
+BLAKE2_INLINE	librsync/src/blake2/blake2-impl.h	/^    #define BLAKE2_INLINE$/;"	d
+BLAKE2_INLINE	librsync/src/blake2/blake2-impl.h	/^  #define BLAKE2_INLINE /;"	d
+BLAKE2_PACKED	librsync/src/blake2/blake2.h	/^#define BLAKE2_PACKED(/;"	d
+BUF_H	librsync/src/buf.h	/^#  define BUF_H$/;"	d
+C	librsync/src/mdfour.h	/^    unsigned int A, B, C, D;$/;"	m	struct:rs_mdfour
+CHECKSUM_H	librsync/src/checksum.h	/^#  define CHECKSUM_H$/;"	d
+COMMAND_H	librsync/src/command.h	/^#  define COMMAND_H$/;"	d
+D	librsync/src/mdfour.h	/^    unsigned int A, B, C, D;$/;"	m	struct:rs_mdfour
+DH_COMPAT	librsync/debian/rules	/^export DH_COMPAT=3$/;"	m
+DO1	librsync/src/rollsum.c	/^#define DO1(/;"	d	file:
+DO16	librsync/src/rollsum.c	/^#define DO16(/;"	d	file:
+DO2	librsync/src/rollsum.c	/^#define DO2(/;"	d	file:
+DO4	librsync/src/rollsum.c	/^#define DO4(/;"	d	file:
+DO8	librsync/src/rollsum.c	/^#define DO8(/;"	d	file:
+EMIT_H	librsync/src/emit.h	/^#  define EMIT_H$/;"	d
+ENTRY	librsync/src/hashtable.h	/^#  undef ENTRY$/;"	d
+ENTRY	librsync/src/sumset.c	/^#define ENTRY /;"	d	file:
+ENTRY	librsync/tests/hashtable_test.c	/^#define ENTRY /;"	d	file:
+ENTRY_t	librsync/src/hashtable.h	/^#  define ENTRY_t /;"	d
+ENTRY_t	librsync/src/hashtable.h	/^#  undef ENTRY_t$/;"	d
+F	librsync/src/mdfour.c	/^#define F(/;"	d	file:
+FMT_LONG	librsync/src/trace.h	/^#  define FMT_LONG /;"	d
+FMT_SIZE	librsync/src/trace.h	/^#    define FMT_SIZE /;"	d
+FMT_WEAKSUM	librsync/src/trace.h	/^#  define FMT_WEAKSUM /;"	d
+G	librsync/src/blake2/blake2b-ref.c	/^#define G(/;"	d	file:
+G	librsync/src/blake2/blake2b-ref.c	/^#undef G$/;"	d	file:
+G	librsync/src/mdfour.c	/^#define G(/;"	d	file:
+H	librsync/src/mdfour.c	/^#define H(/;"	d	file:
+HASHTABLE_H	librsync/src/hashtable.h	/^#  define HASHTABLE_H$/;"	d
+HASHTABLE_LOADFACTOR_DEN	librsync/src/hashtable.c	/^#define HASHTABLE_LOADFACTOR_DEN /;"	d	file:
+HASHTABLE_LOADFACTOR_NUM	librsync/src/hashtable.c	/^#define HASHTABLE_LOADFACTOR_NUM /;"	d	file:
+HASHTABLE_NMIX32	librsync/src/sumset.c	/^#define HASHTABLE_NMIX32$/;"	d	file:
+ISPREFIX_H	librsync/src/isprefix.h	/^#  define ISPREFIX_H$/;"	d
+JOB_H	librsync/src/job.h	/^#  define JOB_H$/;"	d
+KEY	librsync/src/hashtable.h	/^#    define KEY /;"	d
+KEY	librsync/src/hashtable.h	/^#  undef KEY$/;"	d
+KEY	librsync/tests/hashtable_test.c	/^#define KEY /;"	d	file:
+KEY_hash	librsync/src/hashtable.h	/^#  define KEY_hash /;"	d
+KEY_hash	librsync/src/hashtable.h	/^#  undef KEY_hash$/;"	d
+KEY_t	librsync/src/hashtable.h	/^#  define KEY_t /;"	d
+KEY_t	librsync/src/hashtable.h	/^#  undef KEY_t$/;"	d
+LIBRSYNC_EXPORT	librsync/src/librsync_export.h	/^#        define LIBRSYNC_EXPORT /;"	d
+LIBRSYNC_EXPORT	librsync/src/librsync_export.h	/^#      define LIBRSYNC_EXPORT /;"	d
+LIBRSYNC_EXPORT	librsync/src/librsync_export.h	/^#    define LIBRSYNC_EXPORT$/;"	d
+LIBRSYNC_EXPORT_H	librsync/src/librsync_export.h	/^#  define LIBRSYNC_EXPORT_H$/;"	d
+LIBRSYNC_H	librsync/src/librsync.h	/^#  define LIBRSYNC_H$/;"	d
+MATCH	librsync/src/hashtable.h	/^#    define MATCH /;"	d
+MATCH	librsync/src/hashtable.h	/^#  undef MATCH$/;"	d
+MATCH	librsync/src/sumset.c	/^#define MATCH /;"	d	file:
+MATCH	librsync/tests/hashtable_test.c	/^#define MATCH /;"	d	file:
+MATCH_cmp	librsync/src/hashtable.h	/^#  define MATCH_cmp /;"	d
+MATCH_cmp	librsync/src/hashtable.h	/^#  undef MATCH_cmp$/;"	d
+MATCH_t	librsync/src/hashtable.h	/^#  define MATCH_t /;"	d
+MATCH_t	librsync/src/hashtable.h	/^#  undef MATCH_t$/;"	d
+MAX_DELTA_CMD	librsync/src/job.h	/^#  define MAX_DELTA_CMD /;"	d
+MAX_MISS_LEN	librsync/src/delta.c	/^#define MAX_MISS_LEN /;"	d	file:
+MDFOUR_H	librsync/src/mdfour.h	/^#  define MDFOUR_H$/;"	d
+MOUNT_POINT	sd.c	/^#define MOUNT_POINT /;"	d	file:
+MY_NAME	librsync/src/trace.c	/^#define MY_NAME /;"	d	file:
+NAME	librsync/src/hashtable.h	/^#    define NAME /;"	d
+NAME	librsync/src/hashtable.h	/^#  undef NAME$/;"	d
+NAME	librsync/src/sumset.c	/^#define NAME /;"	d	file:
+NAME	librsync/tests/hashtable_test.c	/^#define NAME /;"	d	file:
+NAME_add	librsync/src/hashtable.h	/^#  define NAME_add /;"	d
+NAME_add	librsync/src/hashtable.h	/^#  undef NAME_add$/;"	d
+NAME_add	librsync/src/hashtable.h	/^static inline ENTRY_t *NAME_add(hashtable_t *t, ENTRY_t *e)$/;"	f
+NAME_find	librsync/src/hashtable.h	/^#  define NAME_find /;"	d
+NAME_find	librsync/src/hashtable.h	/^#  undef NAME_find$/;"	d
+NAME_find	librsync/src/hashtable.h	/^static inline ENTRY_t *NAME_find(hashtable_t *t, MATCH_t *m)$/;"	f
+NAME_free	librsync/src/hashtable.h	/^#  define NAME_free /;"	d
+NAME_free	librsync/src/hashtable.h	/^#  undef NAME_free$/;"	d
+NAME_free	librsync/src/hashtable.h	/^static inline void NAME_free(hashtable_t *t)$/;"	f
+NAME_iter	librsync/src/hashtable.h	/^#  define NAME_iter /;"	d
+NAME_iter	librsync/src/hashtable.h	/^#  undef NAME_iter$/;"	d
+NAME_iter	librsync/src/hashtable.h	/^static inline ENTRY_t *NAME_iter(hashtable_t *t, int *i)$/;"	f
+NAME_new	librsync/src/hashtable.h	/^#  define NAME_new /;"	d
+NAME_new	librsync/src/hashtable.h	/^#  undef NAME_new$/;"	d
+NAME_new	librsync/src/hashtable.h	/^static inline hashtable_t *NAME_new(int size)$/;"	f
+NAME_next	librsync/src/hashtable.h	/^#  define NAME_next /;"	d
+NAME_next	librsync/src/hashtable.h	/^#  undef NAME_next$/;"	d
+NAME_next	librsync/src/hashtable.h	/^static inline ENTRY_t *NAME_next(hashtable_t *t, int *i)$/;"	f
+NAME_stats_init	librsync/src/hashtable.h	/^#  define NAME_stats_init /;"	d
+NAME_stats_init	librsync/src/hashtable.h	/^#  undef NAME_stats_init$/;"	d
+NAME_stats_init	librsync/src/hashtable.h	/^static inline void NAME_stats_init(hashtable_t *t)$/;"	f
+NATIVE_LITTLE_ENDIAN	librsync/src/blake2/blake2-impl.h	/^#  define NATIVE_LITTLE_ENDIAN$/;"	d
+NDEBUG	librsync/tests/checksum_test.c	/^#undef NDEBUG$/;"	d	file:
+NDEBUG	librsync/tests/hashtable_test.c	/^#undef NDEBUG$/;"	d	file:
+NDEBUG	librsync/tests/isprefix_test.c	/^#undef NDEBUG$/;"	d	file:
+NDEBUG	librsync/tests/netint_test.c	/^#undef NDEBUG$/;"	d	file:
+NDEBUG	librsync/tests/rabinkarp_test.c	/^#undef NDEBUG$/;"	d	file:
+NDEBUG	librsync/tests/rollsum_test.c	/^#undef NDEBUG$/;"	d	file:
+NDEBUG	librsync/tests/sumset_test.c	/^#undef NDEBUG$/;"	d	file:
+NETINT_H	librsync/src/netint.h	/^#  define NETINT_H$/;"	d
+OPT_BZIP2	librsync/src/rdiff.c	/^    OPT_GZIP = 1069, OPT_BZIP2$/;"	e	enum:__anon5	file:
+OPT_GZIP	librsync/src/rdiff.c	/^    OPT_GZIP = 1069, OPT_BZIP2$/;"	e	enum:__anon5	file:
+P	librsync/src/blake2/blake2.h	/^    blake2b_param P[1];$/;"	m	struct:blake2xb_state__
+P	librsync/src/blake2/blake2.h	/^    blake2s_param P[1];$/;"	m	struct:blake2xs_state__
+PADDING	librsync/src/mdfour.c	/^static unsigned char PADDING[64] = {$/;"	v	file:
+PAR2X1	librsync/src/rabinkarp.c	/^#define PAR2X1(/;"	d	file:
+PAR2X2	librsync/src/rabinkarp.c	/^#define PAR2X2(/;"	d	file:
+PAR2X4	librsync/src/rabinkarp.c	/^#define PAR2X4(/;"	d	file:
+PAR2X8	librsync/src/rabinkarp.c	/^#define PAR2X8(/;"	d	file:
+PROTOTAB_H	librsync/src/prototab.h	/^#  define PROTOTAB_H$/;"	d
+R	librsync/src/blake2/blake2.h	/^    blake2b_state R[1];$/;"	m	struct:blake2bp_state__
+R	librsync/src/blake2/blake2.h	/^    blake2s_state R[1];$/;"	m	struct:blake2sp_state__
+RABINKARP_ADJ	librsync/src/rabinkarp.h	/^#  define RABINKARP_ADJ /;"	d
+RABINKARP_H	librsync/src/rabinkarp.h	/^#  define RABINKARP_H$/;"	d
+RABINKARP_INVM	librsync/src/rabinkarp.h	/^#  define RABINKARP_INVM /;"	d
+RABINKARP_MULT	librsync/src/rabinkarp.h	/^#  define RABINKARP_MULT /;"	d
+RABINKARP_MULT2	librsync/src/rabinkarp.c	/^#define RABINKARP_MULT2 /;"	d	file:
+RABINKARP_MULT_POW2	librsync/src/rabinkarp.c	/^const static uint32_t RABINKARP_MULT_POW2[32] = {$/;"	v	file:
+RABINKARP_SEED	librsync/src/rabinkarp.h	/^#  define RABINKARP_SEED /;"	d
+ROLLSUM_CHAR_OFFSET	librsync/src/rollsum.h	/^#  define ROLLSUM_CHAR_OFFSET /;"	d
+ROLLSUM_H	librsync/src/rollsum.h	/^#  define ROLLSUM_H$/;"	d
+ROTL32	include/ht.h	/^#define ROTL32(/;"	d
+ROUND	librsync/src/blake2/blake2b-ref.c	/^#define ROUND(/;"	d	file:
+ROUND	librsync/src/blake2/blake2b-ref.c	/^#undef ROUND$/;"	d	file:
+ROUND1	librsync/src/mdfour.c	/^#define ROUND1(/;"	d	file:
+ROUND2	librsync/src/mdfour.c	/^#define ROUND2(/;"	d	file:
+ROUND3	librsync/src/mdfour.c	/^#define ROUND3(/;"	d	file:
+RS_BAD_MAGIC	librsync/src/librsync.h	/^    RS_BAD_MAGIC = 104,         \/**< Bad magic number at start of stream.$/;"	e	enum:rs_result
+RS_BLAKE2	librsync/src/checksum.h	/^    RS_BLAKE2,$/;"	e	enum:__anon8
+RS_BLAKE2_SIG_MAGIC	librsync/src/librsync.h	/^    RS_BLAKE2_SIG_MAGIC = 0x72730137,$/;"	e	enum:__anon1
+RS_BLAKE2_SUM_LENGTH	librsync/src/checksum.c	/^LIBRSYNC_EXPORT const int RS_BLAKE2_SUM_LENGTH = 32;$/;"	v
+RS_BLOCKED	librsync/src/librsync.h	/^    RS_BLOCKED = 1,             \/**< Blocked waiting for more data. *\/$/;"	e	enum:rs_result
+RS_CORRUPT	librsync/src/librsync.h	/^    RS_CORRUPT = 106,           \/**< Unbelievable value in stream. *\/$/;"	e	enum:rs_result
+RS_DEFAULT_BLOCK_LEN	librsync/src/librsync.h	/^#  define RS_DEFAULT_BLOCK_LEN /;"	d
+RS_DEFAULT_MIN_STRONG_LEN	librsync/src/librsync.h	/^#  define RS_DEFAULT_MIN_STRONG_LEN /;"	d
+RS_DELTA_MAGIC	librsync/src/librsync.h	/^    RS_DELTA_MAGIC = 0x72730236,$/;"	e	enum:__anon1
+RS_DONE	librsync/src/librsync.h	/^    RS_DONE = 0,                \/**< Completed successfully. *\/$/;"	e	enum:rs_result
+RS_INPUT_ENDED	librsync/src/librsync.h	/^    RS_INPUT_ENDED = 103,       \/**< Unexpected end of input file, perhaps due$/;"	e	enum:rs_result
+RS_INTERNAL_ERROR	librsync/src/librsync.h	/^    RS_INTERNAL_ERROR = 107,    \/**< Probably a library bug. *\/$/;"	e	enum:rs_result
+RS_IO_ERROR	librsync/src/librsync.h	/^    RS_IO_ERROR = 100,          \/**< Error in file or network IO. *\/$/;"	e	enum:rs_result
+RS_JOB_TAG	librsync/src/job.h	/^#  define RS_JOB_TAG /;"	d
+RS_KIND_CHECKSUM	librsync/src/command.h	/^    RS_KIND_CHECKSUM,$/;"	e	enum:rs_op_kind
+RS_KIND_COPY	librsync/src/command.h	/^    RS_KIND_COPY,$/;"	e	enum:rs_op_kind
+RS_KIND_END	librsync/src/command.h	/^    RS_KIND_END = 1000,$/;"	e	enum:rs_op_kind
+RS_KIND_INVALID	librsync/src/command.h	/^    RS_KIND_INVALID$/;"	e	enum:rs_op_kind
+RS_KIND_LITERAL	librsync/src/command.h	/^    RS_KIND_LITERAL,$/;"	e	enum:rs_op_kind
+RS_KIND_RESERVED	librsync/src/command.h	/^    RS_KIND_RESERVED,           \/* for future expansion *\/$/;"	e	enum:rs_op_kind
+RS_KIND_SIGNATURE	librsync/src/command.h	/^    RS_KIND_SIGNATURE,$/;"	e	enum:rs_op_kind
+RS_LOG_ALERT	librsync/src/librsync.h	/^    RS_LOG_ALERT = 1,           \/**< Action must be taken immediately *\/$/;"	e	enum:__anon2
+RS_LOG_CRIT	librsync/src/librsync.h	/^    RS_LOG_CRIT = 2,            \/**< Critical conditions *\/$/;"	e	enum:__anon2
+RS_LOG_DEBUG	librsync/src/librsync.h	/^    RS_LOG_DEBUG = 7            \/**< Debug-level messages *\/$/;"	e	enum:__anon2
+RS_LOG_EMERG	librsync/src/librsync.h	/^    RS_LOG_EMERG = 0,           \/**< System is unusable *\/$/;"	e	enum:__anon2
+RS_LOG_ERR	librsync/src/librsync.h	/^    RS_LOG_ERR = 3,             \/**< Error conditions *\/$/;"	e	enum:__anon2
+RS_LOG_INFO	librsync/src/librsync.h	/^    RS_LOG_INFO = 6,            \/**< Informational *\/$/;"	e	enum:__anon2
+RS_LOG_NONAME	librsync/src/trace.h	/^    RS_LOG_NONAME = 8           \/**< \\b Don't show function name in message. *\/$/;"	e	enum:__anon6
+RS_LOG_NOTICE	librsync/src/librsync.h	/^    RS_LOG_NOTICE = 5,          \/**< Normal but significant condition *\/$/;"	e	enum:__anon2
+RS_LOG_PRIMASK	librsync/src/trace.h	/^    RS_LOG_PRIMASK = 7,         \/**< Mask to extract priority part. \\internal *\/$/;"	e	enum:__anon6
+RS_LOG_WARNING	librsync/src/librsync.h	/^    RS_LOG_WARNING = 4,         \/**< Warning conditions *\/$/;"	e	enum:__anon2
+RS_MAX_INT_BYTES	librsync/src/netint.c	/^#define RS_MAX_INT_BYTES /;"	d	file:
+RS_MAX_STRONG_SUM_LENGTH	librsync/src/librsync.h	/^#  define RS_MAX_STRONG_SUM_LENGTH /;"	d
+RS_MD4	librsync/src/checksum.h	/^    RS_MD4,$/;"	e	enum:__anon8
+RS_MD4_SIG_MAGIC	librsync/src/librsync.h	/^    RS_MD4_SIG_MAGIC = 0x72730136,$/;"	e	enum:__anon1
+RS_MD4_SUM_LENGTH	librsync/src/checksum.c	/^LIBRSYNC_EXPORT const int RS_MD4_SUM_LENGTH = 16;$/;"	v
+RS_MEM_ERROR	librsync/src/librsync.h	/^    RS_MEM_ERROR = 102,         \/**< Out of memory. *\/$/;"	e	enum:rs_result
+RS_OP_COPY_N1_N1	librsync/src/prototab.h	/^    RS_OP_COPY_N1_N1 = 0x45,$/;"	e	enum:__anon4
+RS_OP_COPY_N1_N2	librsync/src/prototab.h	/^    RS_OP_COPY_N1_N2 = 0x46,$/;"	e	enum:__anon4
+RS_OP_COPY_N1_N4	librsync/src/prototab.h	/^    RS_OP_COPY_N1_N4 = 0x47,$/;"	e	enum:__anon4
+RS_OP_COPY_N1_N8	librsync/src/prototab.h	/^    RS_OP_COPY_N1_N8 = 0x48,$/;"	e	enum:__anon4
+RS_OP_COPY_N2_N1	librsync/src/prototab.h	/^    RS_OP_COPY_N2_N1 = 0x49,$/;"	e	enum:__anon4
+RS_OP_COPY_N2_N2	librsync/src/prototab.h	/^    RS_OP_COPY_N2_N2 = 0x4a,$/;"	e	enum:__anon4
+RS_OP_COPY_N2_N4	librsync/src/prototab.h	/^    RS_OP_COPY_N2_N4 = 0x4b,$/;"	e	enum:__anon4
+RS_OP_COPY_N2_N8	librsync/src/prototab.h	/^    RS_OP_COPY_N2_N8 = 0x4c,$/;"	e	enum:__anon4
+RS_OP_COPY_N4_N1	librsync/src/prototab.h	/^    RS_OP_COPY_N4_N1 = 0x4d,$/;"	e	enum:__anon4
+RS_OP_COPY_N4_N2	librsync/src/prototab.h	/^    RS_OP_COPY_N4_N2 = 0x4e,$/;"	e	enum:__anon4
+RS_OP_COPY_N4_N4	librsync/src/prototab.h	/^    RS_OP_COPY_N4_N4 = 0x4f,$/;"	e	enum:__anon4
+RS_OP_COPY_N4_N8	librsync/src/prototab.h	/^    RS_OP_COPY_N4_N8 = 0x50,$/;"	e	enum:__anon4
+RS_OP_COPY_N8_N1	librsync/src/prototab.h	/^    RS_OP_COPY_N8_N1 = 0x51,$/;"	e	enum:__anon4
+RS_OP_COPY_N8_N2	librsync/src/prototab.h	/^    RS_OP_COPY_N8_N2 = 0x52,$/;"	e	enum:__anon4
+RS_OP_COPY_N8_N4	librsync/src/prototab.h	/^    RS_OP_COPY_N8_N4 = 0x53,$/;"	e	enum:__anon4
+RS_OP_COPY_N8_N8	librsync/src/prototab.h	/^    RS_OP_COPY_N8_N8 = 0x54,$/;"	e	enum:__anon4
+RS_OP_END	librsync/src/prototab.h	/^    RS_OP_END = 0,$/;"	e	enum:__anon4
+RS_OP_LITERAL_1	librsync/src/prototab.h	/^    RS_OP_LITERAL_1 = 0x1,$/;"	e	enum:__anon4
+RS_OP_LITERAL_10	librsync/src/prototab.h	/^    RS_OP_LITERAL_10 = 0xa,$/;"	e	enum:__anon4
+RS_OP_LITERAL_11	librsync/src/prototab.h	/^    RS_OP_LITERAL_11 = 0xb,$/;"	e	enum:__anon4
+RS_OP_LITERAL_12	librsync/src/prototab.h	/^    RS_OP_LITERAL_12 = 0xc,$/;"	e	enum:__anon4
+RS_OP_LITERAL_13	librsync/src/prototab.h	/^    RS_OP_LITERAL_13 = 0xd,$/;"	e	enum:__anon4
+RS_OP_LITERAL_14	librsync/src/prototab.h	/^    RS_OP_LITERAL_14 = 0xe,$/;"	e	enum:__anon4
+RS_OP_LITERAL_15	librsync/src/prototab.h	/^    RS_OP_LITERAL_15 = 0xf,$/;"	e	enum:__anon4
+RS_OP_LITERAL_16	librsync/src/prototab.h	/^    RS_OP_LITERAL_16 = 0x10,$/;"	e	enum:__anon4
+RS_OP_LITERAL_17	librsync/src/prototab.h	/^    RS_OP_LITERAL_17 = 0x11,$/;"	e	enum:__anon4
+RS_OP_LITERAL_18	librsync/src/prototab.h	/^    RS_OP_LITERAL_18 = 0x12,$/;"	e	enum:__anon4
+RS_OP_LITERAL_19	librsync/src/prototab.h	/^    RS_OP_LITERAL_19 = 0x13,$/;"	e	enum:__anon4
+RS_OP_LITERAL_2	librsync/src/prototab.h	/^    RS_OP_LITERAL_2 = 0x2,$/;"	e	enum:__anon4
+RS_OP_LITERAL_20	librsync/src/prototab.h	/^    RS_OP_LITERAL_20 = 0x14,$/;"	e	enum:__anon4
+RS_OP_LITERAL_21	librsync/src/prototab.h	/^    RS_OP_LITERAL_21 = 0x15,$/;"	e	enum:__anon4
+RS_OP_LITERAL_22	librsync/src/prototab.h	/^    RS_OP_LITERAL_22 = 0x16,$/;"	e	enum:__anon4
+RS_OP_LITERAL_23	librsync/src/prototab.h	/^    RS_OP_LITERAL_23 = 0x17,$/;"	e	enum:__anon4
+RS_OP_LITERAL_24	librsync/src/prototab.h	/^    RS_OP_LITERAL_24 = 0x18,$/;"	e	enum:__anon4
+RS_OP_LITERAL_25	librsync/src/prototab.h	/^    RS_OP_LITERAL_25 = 0x19,$/;"	e	enum:__anon4
+RS_OP_LITERAL_26	librsync/src/prototab.h	/^    RS_OP_LITERAL_26 = 0x1a,$/;"	e	enum:__anon4
+RS_OP_LITERAL_27	librsync/src/prototab.h	/^    RS_OP_LITERAL_27 = 0x1b,$/;"	e	enum:__anon4
+RS_OP_LITERAL_28	librsync/src/prototab.h	/^    RS_OP_LITERAL_28 = 0x1c,$/;"	e	enum:__anon4
+RS_OP_LITERAL_29	librsync/src/prototab.h	/^    RS_OP_LITERAL_29 = 0x1d,$/;"	e	enum:__anon4
+RS_OP_LITERAL_3	librsync/src/prototab.h	/^    RS_OP_LITERAL_3 = 0x3,$/;"	e	enum:__anon4
+RS_OP_LITERAL_30	librsync/src/prototab.h	/^    RS_OP_LITERAL_30 = 0x1e,$/;"	e	enum:__anon4
+RS_OP_LITERAL_31	librsync/src/prototab.h	/^    RS_OP_LITERAL_31 = 0x1f,$/;"	e	enum:__anon4
+RS_OP_LITERAL_32	librsync/src/prototab.h	/^    RS_OP_LITERAL_32 = 0x20,$/;"	e	enum:__anon4
+RS_OP_LITERAL_33	librsync/src/prototab.h	/^    RS_OP_LITERAL_33 = 0x21,$/;"	e	enum:__anon4
+RS_OP_LITERAL_34	librsync/src/prototab.h	/^    RS_OP_LITERAL_34 = 0x22,$/;"	e	enum:__anon4
+RS_OP_LITERAL_35	librsync/src/prototab.h	/^    RS_OP_LITERAL_35 = 0x23,$/;"	e	enum:__anon4
+RS_OP_LITERAL_36	librsync/src/prototab.h	/^    RS_OP_LITERAL_36 = 0x24,$/;"	e	enum:__anon4
+RS_OP_LITERAL_37	librsync/src/prototab.h	/^    RS_OP_LITERAL_37 = 0x25,$/;"	e	enum:__anon4
+RS_OP_LITERAL_38	librsync/src/prototab.h	/^    RS_OP_LITERAL_38 = 0x26,$/;"	e	enum:__anon4
+RS_OP_LITERAL_39	librsync/src/prototab.h	/^    RS_OP_LITERAL_39 = 0x27,$/;"	e	enum:__anon4
+RS_OP_LITERAL_4	librsync/src/prototab.h	/^    RS_OP_LITERAL_4 = 0x4,$/;"	e	enum:__anon4
+RS_OP_LITERAL_40	librsync/src/prototab.h	/^    RS_OP_LITERAL_40 = 0x28,$/;"	e	enum:__anon4
+RS_OP_LITERAL_41	librsync/src/prototab.h	/^    RS_OP_LITERAL_41 = 0x29,$/;"	e	enum:__anon4
+RS_OP_LITERAL_42	librsync/src/prototab.h	/^    RS_OP_LITERAL_42 = 0x2a,$/;"	e	enum:__anon4
+RS_OP_LITERAL_43	librsync/src/prototab.h	/^    RS_OP_LITERAL_43 = 0x2b,$/;"	e	enum:__anon4
+RS_OP_LITERAL_44	librsync/src/prototab.h	/^    RS_OP_LITERAL_44 = 0x2c,$/;"	e	enum:__anon4
+RS_OP_LITERAL_45	librsync/src/prototab.h	/^    RS_OP_LITERAL_45 = 0x2d,$/;"	e	enum:__anon4
+RS_OP_LITERAL_46	librsync/src/prototab.h	/^    RS_OP_LITERAL_46 = 0x2e,$/;"	e	enum:__anon4
+RS_OP_LITERAL_47	librsync/src/prototab.h	/^    RS_OP_LITERAL_47 = 0x2f,$/;"	e	enum:__anon4
+RS_OP_LITERAL_48	librsync/src/prototab.h	/^    RS_OP_LITERAL_48 = 0x30,$/;"	e	enum:__anon4
+RS_OP_LITERAL_49	librsync/src/prototab.h	/^    RS_OP_LITERAL_49 = 0x31,$/;"	e	enum:__anon4
+RS_OP_LITERAL_5	librsync/src/prototab.h	/^    RS_OP_LITERAL_5 = 0x5,$/;"	e	enum:__anon4
+RS_OP_LITERAL_50	librsync/src/prototab.h	/^    RS_OP_LITERAL_50 = 0x32,$/;"	e	enum:__anon4
+RS_OP_LITERAL_51	librsync/src/prototab.h	/^    RS_OP_LITERAL_51 = 0x33,$/;"	e	enum:__anon4
+RS_OP_LITERAL_52	librsync/src/prototab.h	/^    RS_OP_LITERAL_52 = 0x34,$/;"	e	enum:__anon4
+RS_OP_LITERAL_53	librsync/src/prototab.h	/^    RS_OP_LITERAL_53 = 0x35,$/;"	e	enum:__anon4
+RS_OP_LITERAL_54	librsync/src/prototab.h	/^    RS_OP_LITERAL_54 = 0x36,$/;"	e	enum:__anon4
+RS_OP_LITERAL_55	librsync/src/prototab.h	/^    RS_OP_LITERAL_55 = 0x37,$/;"	e	enum:__anon4
+RS_OP_LITERAL_56	librsync/src/prototab.h	/^    RS_OP_LITERAL_56 = 0x38,$/;"	e	enum:__anon4
+RS_OP_LITERAL_57	librsync/src/prototab.h	/^    RS_OP_LITERAL_57 = 0x39,$/;"	e	enum:__anon4
+RS_OP_LITERAL_58	librsync/src/prototab.h	/^    RS_OP_LITERAL_58 = 0x3a,$/;"	e	enum:__anon4
+RS_OP_LITERAL_59	librsync/src/prototab.h	/^    RS_OP_LITERAL_59 = 0x3b,$/;"	e	enum:__anon4
+RS_OP_LITERAL_6	librsync/src/prototab.h	/^    RS_OP_LITERAL_6 = 0x6,$/;"	e	enum:__anon4
+RS_OP_LITERAL_60	librsync/src/prototab.h	/^    RS_OP_LITERAL_60 = 0x3c,$/;"	e	enum:__anon4
+RS_OP_LITERAL_61	librsync/src/prototab.h	/^    RS_OP_LITERAL_61 = 0x3d,$/;"	e	enum:__anon4
+RS_OP_LITERAL_62	librsync/src/prototab.h	/^    RS_OP_LITERAL_62 = 0x3e,$/;"	e	enum:__anon4
+RS_OP_LITERAL_63	librsync/src/prototab.h	/^    RS_OP_LITERAL_63 = 0x3f,$/;"	e	enum:__anon4
+RS_OP_LITERAL_64	librsync/src/prototab.h	/^    RS_OP_LITERAL_64 = 0x40,$/;"	e	enum:__anon4
+RS_OP_LITERAL_7	librsync/src/prototab.h	/^    RS_OP_LITERAL_7 = 0x7,$/;"	e	enum:__anon4
+RS_OP_LITERAL_8	librsync/src/prototab.h	/^    RS_OP_LITERAL_8 = 0x8,$/;"	e	enum:__anon4
+RS_OP_LITERAL_9	librsync/src/prototab.h	/^    RS_OP_LITERAL_9 = 0x9,$/;"	e	enum:__anon4
+RS_OP_LITERAL_N1	librsync/src/prototab.h	/^    RS_OP_LITERAL_N1 = 0x41,$/;"	e	enum:__anon4
+RS_OP_LITERAL_N2	librsync/src/prototab.h	/^    RS_OP_LITERAL_N2 = 0x42,$/;"	e	enum:__anon4
+RS_OP_LITERAL_N4	librsync/src/prototab.h	/^    RS_OP_LITERAL_N4 = 0x43,$/;"	e	enum:__anon4
+RS_OP_LITERAL_N8	librsync/src/prototab.h	/^    RS_OP_LITERAL_N8 = 0x44,$/;"	e	enum:__anon4
+RS_OP_RESERVED_100	librsync/src/prototab.h	/^    RS_OP_RESERVED_100 = 0x64,$/;"	e	enum:__anon4
+RS_OP_RESERVED_101	librsync/src/prototab.h	/^    RS_OP_RESERVED_101 = 0x65,$/;"	e	enum:__anon4
+RS_OP_RESERVED_102	librsync/src/prototab.h	/^    RS_OP_RESERVED_102 = 0x66,$/;"	e	enum:__anon4
+RS_OP_RESERVED_103	librsync/src/prototab.h	/^    RS_OP_RESERVED_103 = 0x67,$/;"	e	enum:__anon4
+RS_OP_RESERVED_104	librsync/src/prototab.h	/^    RS_OP_RESERVED_104 = 0x68,$/;"	e	enum:__anon4
+RS_OP_RESERVED_105	librsync/src/prototab.h	/^    RS_OP_RESERVED_105 = 0x69,$/;"	e	enum:__anon4
+RS_OP_RESERVED_106	librsync/src/prototab.h	/^    RS_OP_RESERVED_106 = 0x6a,$/;"	e	enum:__anon4
+RS_OP_RESERVED_107	librsync/src/prototab.h	/^    RS_OP_RESERVED_107 = 0x6b,$/;"	e	enum:__anon4
+RS_OP_RESERVED_108	librsync/src/prototab.h	/^    RS_OP_RESERVED_108 = 0x6c,$/;"	e	enum:__anon4
+RS_OP_RESERVED_109	librsync/src/prototab.h	/^    RS_OP_RESERVED_109 = 0x6d,$/;"	e	enum:__anon4
+RS_OP_RESERVED_110	librsync/src/prototab.h	/^    RS_OP_RESERVED_110 = 0x6e,$/;"	e	enum:__anon4
+RS_OP_RESERVED_111	librsync/src/prototab.h	/^    RS_OP_RESERVED_111 = 0x6f,$/;"	e	enum:__anon4
+RS_OP_RESERVED_112	librsync/src/prototab.h	/^    RS_OP_RESERVED_112 = 0x70,$/;"	e	enum:__anon4
+RS_OP_RESERVED_113	librsync/src/prototab.h	/^    RS_OP_RESERVED_113 = 0x71,$/;"	e	enum:__anon4
+RS_OP_RESERVED_114	librsync/src/prototab.h	/^    RS_OP_RESERVED_114 = 0x72,$/;"	e	enum:__anon4
+RS_OP_RESERVED_115	librsync/src/prototab.h	/^    RS_OP_RESERVED_115 = 0x73,$/;"	e	enum:__anon4
+RS_OP_RESERVED_116	librsync/src/prototab.h	/^    RS_OP_RESERVED_116 = 0x74,$/;"	e	enum:__anon4
+RS_OP_RESERVED_117	librsync/src/prototab.h	/^    RS_OP_RESERVED_117 = 0x75,$/;"	e	enum:__anon4
+RS_OP_RESERVED_118	librsync/src/prototab.h	/^    RS_OP_RESERVED_118 = 0x76,$/;"	e	enum:__anon4
+RS_OP_RESERVED_119	librsync/src/prototab.h	/^    RS_OP_RESERVED_119 = 0x77,$/;"	e	enum:__anon4
+RS_OP_RESERVED_120	librsync/src/prototab.h	/^    RS_OP_RESERVED_120 = 0x78,$/;"	e	enum:__anon4
+RS_OP_RESERVED_121	librsync/src/prototab.h	/^    RS_OP_RESERVED_121 = 0x79,$/;"	e	enum:__anon4
+RS_OP_RESERVED_122	librsync/src/prototab.h	/^    RS_OP_RESERVED_122 = 0x7a,$/;"	e	enum:__anon4
+RS_OP_RESERVED_123	librsync/src/prototab.h	/^    RS_OP_RESERVED_123 = 0x7b,$/;"	e	enum:__anon4
+RS_OP_RESERVED_124	librsync/src/prototab.h	/^    RS_OP_RESERVED_124 = 0x7c,$/;"	e	enum:__anon4
+RS_OP_RESERVED_125	librsync/src/prototab.h	/^    RS_OP_RESERVED_125 = 0x7d,$/;"	e	enum:__anon4
+RS_OP_RESERVED_126	librsync/src/prototab.h	/^    RS_OP_RESERVED_126 = 0x7e,$/;"	e	enum:__anon4
+RS_OP_RESERVED_127	librsync/src/prototab.h	/^    RS_OP_RESERVED_127 = 0x7f,$/;"	e	enum:__anon4
+RS_OP_RESERVED_128	librsync/src/prototab.h	/^    RS_OP_RESERVED_128 = 0x80,$/;"	e	enum:__anon4
+RS_OP_RESERVED_129	librsync/src/prototab.h	/^    RS_OP_RESERVED_129 = 0x81,$/;"	e	enum:__anon4
+RS_OP_RESERVED_130	librsync/src/prototab.h	/^    RS_OP_RESERVED_130 = 0x82,$/;"	e	enum:__anon4
+RS_OP_RESERVED_131	librsync/src/prototab.h	/^    RS_OP_RESERVED_131 = 0x83,$/;"	e	enum:__anon4
+RS_OP_RESERVED_132	librsync/src/prototab.h	/^    RS_OP_RESERVED_132 = 0x84,$/;"	e	enum:__anon4
+RS_OP_RESERVED_133	librsync/src/prototab.h	/^    RS_OP_RESERVED_133 = 0x85,$/;"	e	enum:__anon4
+RS_OP_RESERVED_134	librsync/src/prototab.h	/^    RS_OP_RESERVED_134 = 0x86,$/;"	e	enum:__anon4
+RS_OP_RESERVED_135	librsync/src/prototab.h	/^    RS_OP_RESERVED_135 = 0x87,$/;"	e	enum:__anon4
+RS_OP_RESERVED_136	librsync/src/prototab.h	/^    RS_OP_RESERVED_136 = 0x88,$/;"	e	enum:__anon4
+RS_OP_RESERVED_137	librsync/src/prototab.h	/^    RS_OP_RESERVED_137 = 0x89,$/;"	e	enum:__anon4
+RS_OP_RESERVED_138	librsync/src/prototab.h	/^    RS_OP_RESERVED_138 = 0x8a,$/;"	e	enum:__anon4
+RS_OP_RESERVED_139	librsync/src/prototab.h	/^    RS_OP_RESERVED_139 = 0x8b,$/;"	e	enum:__anon4
+RS_OP_RESERVED_140	librsync/src/prototab.h	/^    RS_OP_RESERVED_140 = 0x8c,$/;"	e	enum:__anon4
+RS_OP_RESERVED_141	librsync/src/prototab.h	/^    RS_OP_RESERVED_141 = 0x8d,$/;"	e	enum:__anon4
+RS_OP_RESERVED_142	librsync/src/prototab.h	/^    RS_OP_RESERVED_142 = 0x8e,$/;"	e	enum:__anon4
+RS_OP_RESERVED_143	librsync/src/prototab.h	/^    RS_OP_RESERVED_143 = 0x8f,$/;"	e	enum:__anon4
+RS_OP_RESERVED_144	librsync/src/prototab.h	/^    RS_OP_RESERVED_144 = 0x90,$/;"	e	enum:__anon4
+RS_OP_RESERVED_145	librsync/src/prototab.h	/^    RS_OP_RESERVED_145 = 0x91,$/;"	e	enum:__anon4
+RS_OP_RESERVED_146	librsync/src/prototab.h	/^    RS_OP_RESERVED_146 = 0x92,$/;"	e	enum:__anon4
+RS_OP_RESERVED_147	librsync/src/prototab.h	/^    RS_OP_RESERVED_147 = 0x93,$/;"	e	enum:__anon4
+RS_OP_RESERVED_148	librsync/src/prototab.h	/^    RS_OP_RESERVED_148 = 0x94,$/;"	e	enum:__anon4
+RS_OP_RESERVED_149	librsync/src/prototab.h	/^    RS_OP_RESERVED_149 = 0x95,$/;"	e	enum:__anon4
+RS_OP_RESERVED_150	librsync/src/prototab.h	/^    RS_OP_RESERVED_150 = 0x96,$/;"	e	enum:__anon4
+RS_OP_RESERVED_151	librsync/src/prototab.h	/^    RS_OP_RESERVED_151 = 0x97,$/;"	e	enum:__anon4
+RS_OP_RESERVED_152	librsync/src/prototab.h	/^    RS_OP_RESERVED_152 = 0x98,$/;"	e	enum:__anon4
+RS_OP_RESERVED_153	librsync/src/prototab.h	/^    RS_OP_RESERVED_153 = 0x99,$/;"	e	enum:__anon4
+RS_OP_RESERVED_154	librsync/src/prototab.h	/^    RS_OP_RESERVED_154 = 0x9a,$/;"	e	enum:__anon4
+RS_OP_RESERVED_155	librsync/src/prototab.h	/^    RS_OP_RESERVED_155 = 0x9b,$/;"	e	enum:__anon4
+RS_OP_RESERVED_156	librsync/src/prototab.h	/^    RS_OP_RESERVED_156 = 0x9c,$/;"	e	enum:__anon4
+RS_OP_RESERVED_157	librsync/src/prototab.h	/^    RS_OP_RESERVED_157 = 0x9d,$/;"	e	enum:__anon4
+RS_OP_RESERVED_158	librsync/src/prototab.h	/^    RS_OP_RESERVED_158 = 0x9e,$/;"	e	enum:__anon4
+RS_OP_RESERVED_159	librsync/src/prototab.h	/^    RS_OP_RESERVED_159 = 0x9f,$/;"	e	enum:__anon4
+RS_OP_RESERVED_160	librsync/src/prototab.h	/^    RS_OP_RESERVED_160 = 0xa0,$/;"	e	enum:__anon4
+RS_OP_RESERVED_161	librsync/src/prototab.h	/^    RS_OP_RESERVED_161 = 0xa1,$/;"	e	enum:__anon4
+RS_OP_RESERVED_162	librsync/src/prototab.h	/^    RS_OP_RESERVED_162 = 0xa2,$/;"	e	enum:__anon4
+RS_OP_RESERVED_163	librsync/src/prototab.h	/^    RS_OP_RESERVED_163 = 0xa3,$/;"	e	enum:__anon4
+RS_OP_RESERVED_164	librsync/src/prototab.h	/^    RS_OP_RESERVED_164 = 0xa4,$/;"	e	enum:__anon4
+RS_OP_RESERVED_165	librsync/src/prototab.h	/^    RS_OP_RESERVED_165 = 0xa5,$/;"	e	enum:__anon4
+RS_OP_RESERVED_166	librsync/src/prototab.h	/^    RS_OP_RESERVED_166 = 0xa6,$/;"	e	enum:__anon4
+RS_OP_RESERVED_167	librsync/src/prototab.h	/^    RS_OP_RESERVED_167 = 0xa7,$/;"	e	enum:__anon4
+RS_OP_RESERVED_168	librsync/src/prototab.h	/^    RS_OP_RESERVED_168 = 0xa8,$/;"	e	enum:__anon4
+RS_OP_RESERVED_169	librsync/src/prototab.h	/^    RS_OP_RESERVED_169 = 0xa9,$/;"	e	enum:__anon4
+RS_OP_RESERVED_170	librsync/src/prototab.h	/^    RS_OP_RESERVED_170 = 0xaa,$/;"	e	enum:__anon4
+RS_OP_RESERVED_171	librsync/src/prototab.h	/^    RS_OP_RESERVED_171 = 0xab,$/;"	e	enum:__anon4
+RS_OP_RESERVED_172	librsync/src/prototab.h	/^    RS_OP_RESERVED_172 = 0xac,$/;"	e	enum:__anon4
+RS_OP_RESERVED_173	librsync/src/prototab.h	/^    RS_OP_RESERVED_173 = 0xad,$/;"	e	enum:__anon4
+RS_OP_RESERVED_174	librsync/src/prototab.h	/^    RS_OP_RESERVED_174 = 0xae,$/;"	e	enum:__anon4
+RS_OP_RESERVED_175	librsync/src/prototab.h	/^    RS_OP_RESERVED_175 = 0xaf,$/;"	e	enum:__anon4
+RS_OP_RESERVED_176	librsync/src/prototab.h	/^    RS_OP_RESERVED_176 = 0xb0,$/;"	e	enum:__anon4
+RS_OP_RESERVED_177	librsync/src/prototab.h	/^    RS_OP_RESERVED_177 = 0xb1,$/;"	e	enum:__anon4
+RS_OP_RESERVED_178	librsync/src/prototab.h	/^    RS_OP_RESERVED_178 = 0xb2,$/;"	e	enum:__anon4
+RS_OP_RESERVED_179	librsync/src/prototab.h	/^    RS_OP_RESERVED_179 = 0xb3,$/;"	e	enum:__anon4
+RS_OP_RESERVED_180	librsync/src/prototab.h	/^    RS_OP_RESERVED_180 = 0xb4,$/;"	e	enum:__anon4
+RS_OP_RESERVED_181	librsync/src/prototab.h	/^    RS_OP_RESERVED_181 = 0xb5,$/;"	e	enum:__anon4
+RS_OP_RESERVED_182	librsync/src/prototab.h	/^    RS_OP_RESERVED_182 = 0xb6,$/;"	e	enum:__anon4
+RS_OP_RESERVED_183	librsync/src/prototab.h	/^    RS_OP_RESERVED_183 = 0xb7,$/;"	e	enum:__anon4
+RS_OP_RESERVED_184	librsync/src/prototab.h	/^    RS_OP_RESERVED_184 = 0xb8,$/;"	e	enum:__anon4
+RS_OP_RESERVED_185	librsync/src/prototab.h	/^    RS_OP_RESERVED_185 = 0xb9,$/;"	e	enum:__anon4
+RS_OP_RESERVED_186	librsync/src/prototab.h	/^    RS_OP_RESERVED_186 = 0xba,$/;"	e	enum:__anon4
+RS_OP_RESERVED_187	librsync/src/prototab.h	/^    RS_OP_RESERVED_187 = 0xbb,$/;"	e	enum:__anon4
+RS_OP_RESERVED_188	librsync/src/prototab.h	/^    RS_OP_RESERVED_188 = 0xbc,$/;"	e	enum:__anon4
+RS_OP_RESERVED_189	librsync/src/prototab.h	/^    RS_OP_RESERVED_189 = 0xbd,$/;"	e	enum:__anon4
+RS_OP_RESERVED_190	librsync/src/prototab.h	/^    RS_OP_RESERVED_190 = 0xbe,$/;"	e	enum:__anon4
+RS_OP_RESERVED_191	librsync/src/prototab.h	/^    RS_OP_RESERVED_191 = 0xbf,$/;"	e	enum:__anon4
+RS_OP_RESERVED_192	librsync/src/prototab.h	/^    RS_OP_RESERVED_192 = 0xc0,$/;"	e	enum:__anon4
+RS_OP_RESERVED_193	librsync/src/prototab.h	/^    RS_OP_RESERVED_193 = 0xc1,$/;"	e	enum:__anon4
+RS_OP_RESERVED_194	librsync/src/prototab.h	/^    RS_OP_RESERVED_194 = 0xc2,$/;"	e	enum:__anon4
+RS_OP_RESERVED_195	librsync/src/prototab.h	/^    RS_OP_RESERVED_195 = 0xc3,$/;"	e	enum:__anon4
+RS_OP_RESERVED_196	librsync/src/prototab.h	/^    RS_OP_RESERVED_196 = 0xc4,$/;"	e	enum:__anon4
+RS_OP_RESERVED_197	librsync/src/prototab.h	/^    RS_OP_RESERVED_197 = 0xc5,$/;"	e	enum:__anon4
+RS_OP_RESERVED_198	librsync/src/prototab.h	/^    RS_OP_RESERVED_198 = 0xc6,$/;"	e	enum:__anon4
+RS_OP_RESERVED_199	librsync/src/prototab.h	/^    RS_OP_RESERVED_199 = 0xc7,$/;"	e	enum:__anon4
+RS_OP_RESERVED_200	librsync/src/prototab.h	/^    RS_OP_RESERVED_200 = 0xc8,$/;"	e	enum:__anon4
+RS_OP_RESERVED_201	librsync/src/prototab.h	/^    RS_OP_RESERVED_201 = 0xc9,$/;"	e	enum:__anon4
+RS_OP_RESERVED_202	librsync/src/prototab.h	/^    RS_OP_RESERVED_202 = 0xca,$/;"	e	enum:__anon4
+RS_OP_RESERVED_203	librsync/src/prototab.h	/^    RS_OP_RESERVED_203 = 0xcb,$/;"	e	enum:__anon4
+RS_OP_RESERVED_204	librsync/src/prototab.h	/^    RS_OP_RESERVED_204 = 0xcc,$/;"	e	enum:__anon4
+RS_OP_RESERVED_205	librsync/src/prototab.h	/^    RS_OP_RESERVED_205 = 0xcd,$/;"	e	enum:__anon4
+RS_OP_RESERVED_206	librsync/src/prototab.h	/^    RS_OP_RESERVED_206 = 0xce,$/;"	e	enum:__anon4
+RS_OP_RESERVED_207	librsync/src/prototab.h	/^    RS_OP_RESERVED_207 = 0xcf,$/;"	e	enum:__anon4
+RS_OP_RESERVED_208	librsync/src/prototab.h	/^    RS_OP_RESERVED_208 = 0xd0,$/;"	e	enum:__anon4
+RS_OP_RESERVED_209	librsync/src/prototab.h	/^    RS_OP_RESERVED_209 = 0xd1,$/;"	e	enum:__anon4
+RS_OP_RESERVED_210	librsync/src/prototab.h	/^    RS_OP_RESERVED_210 = 0xd2,$/;"	e	enum:__anon4
+RS_OP_RESERVED_211	librsync/src/prototab.h	/^    RS_OP_RESERVED_211 = 0xd3,$/;"	e	enum:__anon4
+RS_OP_RESERVED_212	librsync/src/prototab.h	/^    RS_OP_RESERVED_212 = 0xd4,$/;"	e	enum:__anon4
+RS_OP_RESERVED_213	librsync/src/prototab.h	/^    RS_OP_RESERVED_213 = 0xd5,$/;"	e	enum:__anon4
+RS_OP_RESERVED_214	librsync/src/prototab.h	/^    RS_OP_RESERVED_214 = 0xd6,$/;"	e	enum:__anon4
+RS_OP_RESERVED_215	librsync/src/prototab.h	/^    RS_OP_RESERVED_215 = 0xd7,$/;"	e	enum:__anon4
+RS_OP_RESERVED_216	librsync/src/prototab.h	/^    RS_OP_RESERVED_216 = 0xd8,$/;"	e	enum:__anon4
+RS_OP_RESERVED_217	librsync/src/prototab.h	/^    RS_OP_RESERVED_217 = 0xd9,$/;"	e	enum:__anon4
+RS_OP_RESERVED_218	librsync/src/prototab.h	/^    RS_OP_RESERVED_218 = 0xda,$/;"	e	enum:__anon4
+RS_OP_RESERVED_219	librsync/src/prototab.h	/^    RS_OP_RESERVED_219 = 0xdb,$/;"	e	enum:__anon4
+RS_OP_RESERVED_220	librsync/src/prototab.h	/^    RS_OP_RESERVED_220 = 0xdc,$/;"	e	enum:__anon4
+RS_OP_RESERVED_221	librsync/src/prototab.h	/^    RS_OP_RESERVED_221 = 0xdd,$/;"	e	enum:__anon4
+RS_OP_RESERVED_222	librsync/src/prototab.h	/^    RS_OP_RESERVED_222 = 0xde,$/;"	e	enum:__anon4
+RS_OP_RESERVED_223	librsync/src/prototab.h	/^    RS_OP_RESERVED_223 = 0xdf,$/;"	e	enum:__anon4
+RS_OP_RESERVED_224	librsync/src/prototab.h	/^    RS_OP_RESERVED_224 = 0xe0,$/;"	e	enum:__anon4
+RS_OP_RESERVED_225	librsync/src/prototab.h	/^    RS_OP_RESERVED_225 = 0xe1,$/;"	e	enum:__anon4
+RS_OP_RESERVED_226	librsync/src/prototab.h	/^    RS_OP_RESERVED_226 = 0xe2,$/;"	e	enum:__anon4
+RS_OP_RESERVED_227	librsync/src/prototab.h	/^    RS_OP_RESERVED_227 = 0xe3,$/;"	e	enum:__anon4
+RS_OP_RESERVED_228	librsync/src/prototab.h	/^    RS_OP_RESERVED_228 = 0xe4,$/;"	e	enum:__anon4
+RS_OP_RESERVED_229	librsync/src/prototab.h	/^    RS_OP_RESERVED_229 = 0xe5,$/;"	e	enum:__anon4
+RS_OP_RESERVED_230	librsync/src/prototab.h	/^    RS_OP_RESERVED_230 = 0xe6,$/;"	e	enum:__anon4
+RS_OP_RESERVED_231	librsync/src/prototab.h	/^    RS_OP_RESERVED_231 = 0xe7,$/;"	e	enum:__anon4
+RS_OP_RESERVED_232	librsync/src/prototab.h	/^    RS_OP_RESERVED_232 = 0xe8,$/;"	e	enum:__anon4
+RS_OP_RESERVED_233	librsync/src/prototab.h	/^    RS_OP_RESERVED_233 = 0xe9,$/;"	e	enum:__anon4
+RS_OP_RESERVED_234	librsync/src/prototab.h	/^    RS_OP_RESERVED_234 = 0xea,$/;"	e	enum:__anon4
+RS_OP_RESERVED_235	librsync/src/prototab.h	/^    RS_OP_RESERVED_235 = 0xeb,$/;"	e	enum:__anon4
+RS_OP_RESERVED_236	librsync/src/prototab.h	/^    RS_OP_RESERVED_236 = 0xec,$/;"	e	enum:__anon4
+RS_OP_RESERVED_237	librsync/src/prototab.h	/^    RS_OP_RESERVED_237 = 0xed,$/;"	e	enum:__anon4
+RS_OP_RESERVED_238	librsync/src/prototab.h	/^    RS_OP_RESERVED_238 = 0xee,$/;"	e	enum:__anon4
+RS_OP_RESERVED_239	librsync/src/prototab.h	/^    RS_OP_RESERVED_239 = 0xef,$/;"	e	enum:__anon4
+RS_OP_RESERVED_240	librsync/src/prototab.h	/^    RS_OP_RESERVED_240 = 0xf0,$/;"	e	enum:__anon4
+RS_OP_RESERVED_241	librsync/src/prototab.h	/^    RS_OP_RESERVED_241 = 0xf1,$/;"	e	enum:__anon4
+RS_OP_RESERVED_242	librsync/src/prototab.h	/^    RS_OP_RESERVED_242 = 0xf2,$/;"	e	enum:__anon4
+RS_OP_RESERVED_243	librsync/src/prototab.h	/^    RS_OP_RESERVED_243 = 0xf3,$/;"	e	enum:__anon4
+RS_OP_RESERVED_244	librsync/src/prototab.h	/^    RS_OP_RESERVED_244 = 0xf4,$/;"	e	enum:__anon4
+RS_OP_RESERVED_245	librsync/src/prototab.h	/^    RS_OP_RESERVED_245 = 0xf5,$/;"	e	enum:__anon4
+RS_OP_RESERVED_246	librsync/src/prototab.h	/^    RS_OP_RESERVED_246 = 0xf6,$/;"	e	enum:__anon4
+RS_OP_RESERVED_247	librsync/src/prototab.h	/^    RS_OP_RESERVED_247 = 0xf7,$/;"	e	enum:__anon4
+RS_OP_RESERVED_248	librsync/src/prototab.h	/^    RS_OP_RESERVED_248 = 0xf8,$/;"	e	enum:__anon4
+RS_OP_RESERVED_249	librsync/src/prototab.h	/^    RS_OP_RESERVED_249 = 0xf9,$/;"	e	enum:__anon4
+RS_OP_RESERVED_250	librsync/src/prototab.h	/^    RS_OP_RESERVED_250 = 0xfa,$/;"	e	enum:__anon4
+RS_OP_RESERVED_251	librsync/src/prototab.h	/^    RS_OP_RESERVED_251 = 0xfb,$/;"	e	enum:__anon4
+RS_OP_RESERVED_252	librsync/src/prototab.h	/^    RS_OP_RESERVED_252 = 0xfc,$/;"	e	enum:__anon4
+RS_OP_RESERVED_253	librsync/src/prototab.h	/^    RS_OP_RESERVED_253 = 0xfd,$/;"	e	enum:__anon4
+RS_OP_RESERVED_254	librsync/src/prototab.h	/^    RS_OP_RESERVED_254 = 0xfe,$/;"	e	enum:__anon4
+RS_OP_RESERVED_255	librsync/src/prototab.h	/^    RS_OP_RESERVED_255 = 0xff$/;"	e	enum:__anon4
+RS_OP_RESERVED_85	librsync/src/prototab.h	/^    RS_OP_RESERVED_85 = 0x55,$/;"	e	enum:__anon4
+RS_OP_RESERVED_86	librsync/src/prototab.h	/^    RS_OP_RESERVED_86 = 0x56,$/;"	e	enum:__anon4
+RS_OP_RESERVED_87	librsync/src/prototab.h	/^    RS_OP_RESERVED_87 = 0x57,$/;"	e	enum:__anon4
+RS_OP_RESERVED_88	librsync/src/prototab.h	/^    RS_OP_RESERVED_88 = 0x58,$/;"	e	enum:__anon4
+RS_OP_RESERVED_89	librsync/src/prototab.h	/^    RS_OP_RESERVED_89 = 0x59,$/;"	e	enum:__anon4
+RS_OP_RESERVED_90	librsync/src/prototab.h	/^    RS_OP_RESERVED_90 = 0x5a,$/;"	e	enum:__anon4
+RS_OP_RESERVED_91	librsync/src/prototab.h	/^    RS_OP_RESERVED_91 = 0x5b,$/;"	e	enum:__anon4
+RS_OP_RESERVED_92	librsync/src/prototab.h	/^    RS_OP_RESERVED_92 = 0x5c,$/;"	e	enum:__anon4
+RS_OP_RESERVED_93	librsync/src/prototab.h	/^    RS_OP_RESERVED_93 = 0x5d,$/;"	e	enum:__anon4
+RS_OP_RESERVED_94	librsync/src/prototab.h	/^    RS_OP_RESERVED_94 = 0x5e,$/;"	e	enum:__anon4
+RS_OP_RESERVED_95	librsync/src/prototab.h	/^    RS_OP_RESERVED_95 = 0x5f,$/;"	e	enum:__anon4
+RS_OP_RESERVED_96	librsync/src/prototab.h	/^    RS_OP_RESERVED_96 = 0x60,$/;"	e	enum:__anon4
+RS_OP_RESERVED_97	librsync/src/prototab.h	/^    RS_OP_RESERVED_97 = 0x61,$/;"	e	enum:__anon4
+RS_OP_RESERVED_98	librsync/src/prototab.h	/^    RS_OP_RESERVED_98 = 0x62,$/;"	e	enum:__anon4
+RS_OP_RESERVED_99	librsync/src/prototab.h	/^    RS_OP_RESERVED_99 = 0x63,$/;"	e	enum:__anon4
+RS_PARAM_ERROR	librsync/src/librsync.h	/^    RS_PARAM_ERROR = 108        \/**< Bad value passed in to library, probably$/;"	e	enum:rs_result
+RS_RABINKARP	librsync/src/checksum.h	/^    RS_RABINKARP,$/;"	e	enum:__anon7
+RS_RK_BLAKE2_SIG_MAGIC	librsync/src/librsync.h	/^    RS_RK_BLAKE2_SIG_MAGIC = 0x72730147,$/;"	e	enum:__anon1
+RS_RK_MD4_SIG_MAGIC	librsync/src/librsync.h	/^    RS_RK_MD4_SIG_MAGIC = 0x72730146,$/;"	e	enum:__anon1
+RS_ROLLSUM	librsync/src/checksum.h	/^    RS_ROLLSUM,$/;"	e	enum:__anon7
+RS_RUNNING	librsync/src/librsync.h	/^    RS_RUNNING = 2,             \/**< The job is still running, and not yet$/;"	e	enum:rs_result
+RS_SYNTAX_ERROR	librsync/src/librsync.h	/^    RS_SYNTAX_ERROR = 101,      \/**< Command line syntax error. *\/$/;"	e	enum:rs_result
+RS_TEST_SKIPPED	librsync/src/librsync.h	/^    RS_TEST_SKIPPED = 77,       \/**< Test neither passed or failed. *\/$/;"	e	enum:rs_result
+RS_UNIMPLEMENTED	librsync/src/librsync.h	/^    RS_UNIMPLEMENTED = 105,     \/**< Author is lazy. *\/$/;"	e	enum:rs_result
+Rollsum	librsync/src/rollsum.h	/^typedef struct Rollsum {$/;"	s
+Rollsum	librsync/src/rollsum.h	/^} Rollsum;$/;"	t	typeref:struct:Rollsum
+RollsumDigest	librsync/src/rollsum.h	/^static inline uint32_t RollsumDigest(Rollsum *sum)$/;"	f
+RollsumInit	librsync/src/rollsum.h	/^static inline void RollsumInit(Rollsum *sum)$/;"	f
+RollsumRollin	librsync/src/rollsum.h	/^static inline void RollsumRollin(Rollsum *sum, unsigned char in)$/;"	f
+RollsumRollout	librsync/src/rollsum.h	/^static inline void RollsumRollout(Rollsum *sum, unsigned char out)$/;"	f
+RollsumRotate	librsync/src/rollsum.h	/^static inline void RollsumRotate(Rollsum *sum, unsigned char out,$/;"	f
+RollsumUpdate	librsync/src/rollsum.c	/^void RollsumUpdate(Rollsum *sum, const unsigned char *buf, size_t len)$/;"	f
+S	librsync/src/blake2/blake2.h	/^    blake2b_state S[1];$/;"	m	struct:blake2xb_state__
+S	librsync/src/blake2/blake2.h	/^    blake2b_state S[4][1];$/;"	m	struct:blake2bp_state__
+S	librsync/src/blake2/blake2.h	/^    blake2s_state S[1];$/;"	m	struct:blake2xs_state__
+S	librsync/src/blake2/blake2.h	/^    blake2s_state S[8][1];$/;"	m	struct:blake2sp_state__
+SCOOP_H	librsync/src/scoop.h	/^#  define SCOOP_H$/;"	d
+SUMSET_H	librsync/src/sumset.h	/^#  define SUMSET_H$/;"	d
+S_ISREG	librsync/src/fileutil.c	/^#  define S_ISREG(/;"	d	file:
+TAG	include/wifi.h	/^#define TAG /;"	d
+TAG	sd.c	/^static const char *TAG = "SD_CARD";$/;"	v	file:
+TRACE_H	librsync/src/trace.h	/^#  define TRACE_H$/;"	d
+UNUSED	librsync/src/util.h	/^#    define UNUSED(/;"	d
+UTIL_H	librsync/src/util.h	/^#  define UTIL_H$/;"	d
+WHOLE_H	librsync/src/whole.h	/^#  define WHOLE_H$/;"	d
+_JOIN	librsync/src/hashtable.h	/^#  define _JOIN(/;"	d
+_JOIN2	librsync/src/hashtable.h	/^#  define _JOIN2(/;"	d
+_KEY_HASH	librsync/src/hashtable.h	/^#    define _KEY_HASH(/;"	d
+_KEY_HASH	librsync/src/hashtable.h	/^#  undef _KEY_HASH$/;"	d
+__attribute__	librsync/src/trace.h	/^#    define __attribute__(/;"	d
+__func__	librsync/src/trace.h	/^#      define __func__ /;"	d
+_for_probe	librsync/src/hashtable.h	/^#  define _for_probe(/;"	d
+_hashtable_free	librsync/src/hashtable.c	/^void _hashtable_free(hashtable_t *t)$/;"	f
+_hashtable_new	librsync/src/hashtable.c	/^hashtable_t *_hashtable_new(int size)$/;"	f
+_stats_inc	librsync/src/hashtable.h	/^#    define _stats_inc(/;"	d
+active_ap	wifi.c	/^uint16_t active_ap;$/;"	v
+ap_config	wifi.c	/^struct wifi_ap_config_t ap_config;$/;"	v	typeref:struct:wifi_ap_config_t
+ap_count	wifi.c	/^static uint16_t ap_count;$/;"	v	file:
+ap_records	wifi.c	/^static struct wifi_ap_record_t ap_records[24];$/;"	v	typeref:struct:wifi_ap_record_t	file:
+avail_in	librsync/src/librsync.h	/^    size_t avail_in;$/;"	m	struct:rs_buffers_s
+avail_out	librsync/src/librsync.h	/^    size_t avail_out;$/;"	m	struct:rs_buffers_s
+bad_option	librsync/src/rdiff.c	/^static void bad_option(poptContext opcon, int error)$/;"	f	file:
+basis_len	librsync/src/job.h	/^    rs_long_t basis_pos, basis_len;$/;"	m	struct:rs_job
+basis_pos	librsync/src/job.h	/^    rs_long_t basis_pos, basis_len;$/;"	m	struct:rs_job
+blake2	librsync/src/blake2/blake2b-ref.c	/^int blake2( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen ) {$/;"	f
+blake2b	librsync/src/blake2/blake2b-ref.c	/^int blake2b( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen )$/;"	f
+blake2b_IV	librsync/src/blake2/blake2b-ref.c	/^static const uint64_t blake2b_IV[8] =$/;"	v	file:
+blake2b_compress	librsync/src/blake2/blake2b-ref.c	/^static void blake2b_compress( blake2b_state *S, const uint8_t block[BLAKE2B_BLOCKBYTES] )$/;"	f	file:
+blake2b_constant	librsync/src/blake2/blake2.h	/^  enum blake2b_constant$/;"	g
+blake2b_final	librsync/src/blake2/blake2b-ref.c	/^int blake2b_final( blake2b_state *S, void *out, size_t outlen )$/;"	f
+blake2b_increment_counter	librsync/src/blake2/blake2b-ref.c	/^static void blake2b_increment_counter( blake2b_state *S, const uint64_t inc )$/;"	f	file:
+blake2b_init	librsync/src/blake2/blake2b-ref.c	/^int blake2b_init( blake2b_state *S, size_t outlen )$/;"	f
+blake2b_init0	librsync/src/blake2/blake2b-ref.c	/^static void blake2b_init0( blake2b_state *S )$/;"	f	file:
+blake2b_init_key	librsync/src/blake2/blake2b-ref.c	/^int blake2b_init_key( blake2b_state *S, size_t outlen, const void *key, size_t keylen )$/;"	f
+blake2b_init_param	librsync/src/blake2/blake2b-ref.c	/^int blake2b_init_param( blake2b_state *S, const blake2b_param *P )$/;"	f
+blake2b_is_lastblock	librsync/src/blake2/blake2b-ref.c	/^static int blake2b_is_lastblock( const blake2b_state *S )$/;"	f	file:
+blake2b_param	librsync/src/blake2/blake2.h	/^  typedef struct blake2b_param__ blake2b_param;$/;"	t	typeref:struct:blake2b_param__
+blake2b_set_lastblock	librsync/src/blake2/blake2b-ref.c	/^static void blake2b_set_lastblock( blake2b_state *S )$/;"	f	file:
+blake2b_set_lastnode	librsync/src/blake2/blake2b-ref.c	/^static void blake2b_set_lastnode( blake2b_state *S )$/;"	f	file:
+blake2b_sigma	librsync/src/blake2/blake2b-ref.c	/^static const uint8_t blake2b_sigma[12][16] =$/;"	v	file:
+blake2b_state	librsync/src/blake2/blake2.h	/^  } blake2b_state;$/;"	t	typeref:struct:blake2b_state__
+blake2b_state__	librsync/src/blake2/blake2.h	/^  typedef struct blake2b_state__$/;"	s
+blake2b_update	librsync/src/blake2/blake2b-ref.c	/^int blake2b_update( blake2b_state *S, const void *pin, size_t inlen )$/;"	f
+blake2bp_state	librsync/src/blake2/blake2.h	/^  } blake2bp_state;$/;"	t	typeref:struct:blake2bp_state__
+blake2bp_state__	librsync/src/blake2/blake2.h	/^  typedef struct blake2bp_state__$/;"	s
+blake2s_constant	librsync/src/blake2/blake2.h	/^  enum blake2s_constant$/;"	g
+blake2s_param	librsync/src/blake2/blake2.h	/^  typedef struct blake2s_param__ blake2s_param;$/;"	t	typeref:struct:blake2s_param__
+blake2s_state	librsync/src/blake2/blake2.h	/^  } blake2s_state;$/;"	t	typeref:struct:blake2s_state__
+blake2s_state__	librsync/src/blake2/blake2.h	/^  typedef struct blake2s_state__$/;"	s
+blake2sp_state	librsync/src/blake2/blake2.h	/^  } blake2sp_state;$/;"	t	typeref:struct:blake2sp_state__
+blake2sp_state__	librsync/src/blake2/blake2.h	/^  typedef struct blake2sp_state__$/;"	s
+blake2xb_state	librsync/src/blake2/blake2.h	/^  } blake2xb_state;$/;"	t	typeref:struct:blake2xb_state__
+blake2xb_state__	librsync/src/blake2/blake2.h	/^  typedef struct blake2xb_state__$/;"	s
+blake2xs_state	librsync/src/blake2/blake2.h	/^  } blake2xs_state;$/;"	t	typeref:struct:blake2xs_state__
+blake2xs_state__	librsync/src/blake2/blake2.h	/^  typedef struct blake2xs_state__$/;"	s
+block_len	librsync/src/librsync.h	/^    size_t block_len;$/;"	m	struct:rs_stats
+block_len	librsync/src/rdiff.c	/^static int block_len = 0;$/;"	v	file:
+block_len	librsync/src/sumset.h	/^    int block_len;              \/**< The block length. *\/$/;"	m	struct:rs_signature
+block_sig	librsync/src/sumset.c	/^    rs_block_sig_t block_sig;$/;"	m	struct:rs_block_match	file:
+block_sigs	librsync/src/sumset.h	/^    void *block_sigs;           \/**< The packed block_sigs for all blocks. *\/$/;"	m	struct:rs_signature
+bshift	librsync/src/hashtable.h	/^    unsigned bshift;            \/**< Shift to get the bloomfilter index. *\/$/;"	m	struct:hashtable
+buf	librsync/src/blake2/blake2.h	/^    uint8_t       buf[4 * BLAKE2B_BLOCKBYTES];$/;"	m	struct:blake2bp_state__
+buf	librsync/src/blake2/blake2.h	/^    uint8_t       buf[8 * BLAKE2S_BLOCKBYTES];$/;"	m	struct:blake2sp_state__
+buf	librsync/src/blake2/blake2.h	/^    uint8_t  buf[BLAKE2B_BLOCKBYTES];$/;"	m	struct:blake2b_state__
+buf	librsync/src/blake2/blake2.h	/^    uint8_t  buf[BLAKE2S_BLOCKBYTES];$/;"	m	struct:blake2s_state__
+buf	librsync/src/buf.c	/^    char *buf;$/;"	m	struct:rs_filebuf	file:
+buf	librsync/src/sumset.c	/^    const void *buf;$/;"	m	struct:rs_block_match	file:
+buf_len	librsync/src/buf.c	/^    size_t buf_len;$/;"	m	struct:rs_filebuf	file:
+buflen	librsync/src/blake2/blake2.h	/^    size_t        buflen;$/;"	m	struct:blake2bp_state__
+buflen	librsync/src/blake2/blake2.h	/^    size_t        buflen;$/;"	m	struct:blake2sp_state__
+buflen	librsync/src/blake2/blake2.h	/^    size_t   buflen;$/;"	m	struct:blake2b_state__
+buflen	librsync/src/blake2/blake2.h	/^    size_t   buflen;$/;"	m	struct:blake2s_state__
+bzip2_level	librsync/src/rdiff.c	/^static int bzip2_level = 0;$/;"	v	file:
+calc_strong_count	librsync/src/sumset.h	/^    long calc_strong_count;     \/**< The count of strongsum calcs done. *\/$/;"	m	struct:rs_signature
+cfg	wifi.c	/^static struct wifi_init_config_t cfg;$/;"	v	typeref:struct:wifi_init_config_t	file:
+check_aps	wifi.c	/^int check_aps( void ) {$/;"	f
+check_compare	librsync/tests/testcommon.sh	/^check_compare() {$/;"	f
+cmd	librsync/src/job.h	/^    struct rs_prototab_ent const *cmd;$/;"	m	struct:rs_job
+copy4	librsync/src/mdfour.c	/^inline static void copy4( \/* @out@ *\/ unsigned char *out, uint32_t const x)$/;"	f	file:
+copy64	librsync/src/mdfour.c	/^inline static void copy64( \/* @out@ *\/ uint32_t *M, unsigned char const *in)$/;"	f	file:
+copy8	librsync/src/mdfour.c	/^inline static void copy8( \/* @out@ *\/ unsigned char *out, uint64_t const x)$/;"	f	file:
+copy_arg	librsync/src/job.h	/^    void *copy_arg;$/;"	m	struct:rs_job
+copy_bytes	librsync/src/librsync.h	/^    rs_long_t copy_cmds, copy_bytes, copy_cmdbytes;$/;"	m	struct:rs_stats
+copy_cb	librsync/src/job.h	/^    rs_copy_cb *copy_cb;$/;"	m	struct:rs_job
+copy_cmdbytes	librsync/src/librsync.h	/^    rs_long_t copy_cmds, copy_bytes, copy_cmdbytes;$/;"	m	struct:rs_stats
+copy_cmds	librsync/src/librsync.h	/^    rs_long_t copy_cmds, copy_bytes, copy_cmdbytes;$/;"	m	struct:rs_stats
+copy_len	librsync/src/job.h	/^    size_t copy_len;$/;"	m	struct:rs_job
+count	include/ht.h	/^  int count;$/;"	m	struct:__anon11
+count	librsync/src/hashtable.h	/^    int count;                  \/**< Number of entries in hashtable. *\/$/;"	m	struct:hashtable
+count	librsync/src/rabinkarp.h	/^    size_t count;               \/**< Count of bytes included in sum. *\/$/;"	m	struct:rabinkarp
+count	librsync/src/rollsum.h	/^    size_t count;               \/**< count of bytes included in sum *\/$/;"	m	struct:Rollsum
+count	librsync/src/sumset.h	/^    int count;                  \/**< Total number of blocks. *\/$/;"	m	struct:rs_signature
+crypto_hash	librsync/src/blake2/blake2b-ref.c	/^int crypto_hash( unsigned char *out, unsigned char *in, unsigned long long inlen )$/;"	f
+delete_ht	include/ht.h	/^void delete_ht( ht_table *ht ) {$/;"	f
+dogtag	librsync/src/job.h	/^    int dogtag;$/;"	m	struct:rs_job
+end	librsync/src/librsync.h	/^    time_t start, end;$/;"	m	struct:rs_stats
+entrycmp_count	librsync/src/hashtable.h	/^    long entrycmp_count;        \/**< The count of entry compares done. *\/$/;"	m	struct:hashtable
+eof_in	librsync/src/librsync.h	/^    int eof_in;$/;"	m	struct:rs_buffers_s
+etable	librsync/src/hashtable.h	/^    void **etable;              \/**< Table of pointers to entries. *\/$/;"	m	struct:hashtable
+f	librsync/src/blake2/blake2.h	/^    uint32_t f[2];$/;"	m	struct:blake2s_state__
+f	librsync/src/blake2/blake2.h	/^    uint64_t f[2];$/;"	m	struct:blake2b_state__
+f	librsync/src/buf.c	/^    FILE *f;$/;"	m	struct:rs_filebuf	file:
+fail_test	librsync/tests/testcommon.sh	/^fail_test () {$/;"	f
+false_matches	librsync/src/librsync.h	/^    int false_matches;$/;"	m	struct:rs_stats
+file_force	librsync/src/rdiff.c	/^static int file_force = 0;$/;"	v	file:
+fileno	librsync/src/fileutil.c	/^#  define fileno(/;"	d	file:
+final_result	librsync/src/job.h	/^    rs_result final_result;$/;"	m	struct:rs_job
+find_count	librsync/src/hashtable.h	/^    long find_count;            \/**< The count of finds tried. *\/$/;"	m	struct:hashtable
+fmix32	include/ht.h	/^static inline u32 fmix32 (u32 h) {$/;"	f
+fopen	librsync/src/fileutil.c	/^#  define fopen(/;"	d	file:
+fseek	librsync/src/fileutil.c	/^#  define fseek(/;"	d	file:
+fstat	librsync/src/fileutil.c	/^#  define fstat(/;"	d	file:
+getblock	include/ht.h	/^#define getblock(/;"	d
+gzip_level	librsync/src/rdiff.c	/^static int gzip_level = 0;$/;"	v	file:
+h	librsync/src/blake2/blake2.h	/^    uint32_t h[8];$/;"	m	struct:blake2s_state__
+h	librsync/src/blake2/blake2.h	/^    uint64_t h[8];$/;"	m	struct:blake2b_state__
+handle_ap_found	wifi.c	/^void handle_ap_found( int index ) {$/;"	f
+hash	librsync/src/rabinkarp.h	/^    uint32_t hash;              \/**< The accumulated hash value. *\/$/;"	m	struct:rabinkarp
+hashcmp_count	librsync/src/hashtable.h	/^    long hashcmp_count;         \/**< The count of hash compares done. *\/$/;"	m	struct:hashtable
+hashtable	librsync/src/hashtable.h	/^typedef struct hashtable {$/;"	s
+hashtable	librsync/src/sumset.h	/^    hashtable_t *hashtable;     \/**< The hashtable for finding matches. *\/$/;"	m	struct:rs_signature
+hashtable_getbloom	librsync/src/hashtable.h	/^static inline bool hashtable_getbloom(hashtable_t *t, unsigned const h)$/;"	f
+hashtable_setbloom	librsync/src/hashtable.h	/^static inline void hashtable_setbloom(hashtable_t *t, unsigned const h)$/;"	f
+hashtable_t	librsync/src/hashtable.h	/^} hashtable_t;$/;"	t	typeref:struct:hashtable
+help	librsync/src/rdiff.c	/^static void help(void)$/;"	f	file:
+ht_delete	include/ht.h	/^void ht_delete( ht_table *ht, const char *key ) {$/;"	f
+ht_delete_item	include/ht.h	/^static void ht_delete_item( ht_item *i ) {$/;"	f
+ht_get_hash	include/ht.h	/^static int ht_get_hash( const char *s, const int num_buckets, const int attempt ) {$/;"	f
+ht_insert	include/ht.h	/^void ht_insert( ht_table *ht, const char *key, const char *value ) {$/;"	f
+ht_item	include/ht.h	/^} ht_item;$/;"	t	typeref:struct:__anon10
+ht_new_item	include/ht.h	/^static ht_item *ht_new_item( const char *k, const char *v ) { $/;"	f
+ht_search	include/ht.h	/^char *ht_search( ht_table *ht, const char *key ) {$/;"	f
+ht_table	include/ht.h	/^} ht_table;$/;"	t	typeref:struct:__anon11
+immediate	librsync/src/prototab.h	/^    int immediate;$/;"	m	struct:rs_prototab_ent
+in_bytes	librsync/src/librsync.h	/^    rs_long_t in_bytes;         \/**< Total bytes read from input. *\/$/;"	m	struct:rs_stats
+init_vfs	fs.c	/^int init_vfs ( void ) {$/;"	f
+init_wifi	wifi.c	/^int init_wifi ( EventGroupHandle_t wifi_event_group ) {$/;"	f
+isprefix	librsync/src/isprefix.c	/^int isprefix(char const *tip, char const *iceberg)$/;"	f
+items	include/ht.h	/^  ht_item **items;$/;"	m	struct:__anon11
+job_name	librsync/src/job.h	/^    const char *job_name;$/;"	m	struct:rs_job
+job_owns_sig	librsync/src/job.h	/^    int job_owns_sig;$/;"	m	struct:rs_job
+kbloom	librsync/src/hashtable.h	/^    unsigned char *kbloom;      \/**< Bloom filter of hash keys with k=1. *\/$/;"	m	struct:hashtable
+key	include/ht.h	/^  char *key;$/;"	m	struct:__anon10
+key	librsync/tests/hashtable_test.c	/^    mykey_t key;                \/* Inherit from mykey_t. *\/$/;"	m	struct:myentry	file:
+key	librsync/tests/hashtable_test.c	/^    mykey_t key;                \/* Inherit from mykey_t. *\/$/;"	m	struct:mymatch	file:
+kind	librsync/src/checksum.h	/^    weaksum_kind_t kind;$/;"	m	struct:weaksum
+kind	librsync/src/command.h	/^    enum rs_op_kind const kind;$/;"	m	struct:rs_op_kind_name
+kind	librsync/src/prototab.h	/^    enum rs_op_kind kind;$/;"	m	struct:rs_prototab_ent	typeref:enum:rs_prototab_ent::rs_op_kind
+ktable	librsync/src/hashtable.h	/^    unsigned ktable[];          \/**< Table of hash keys. *\/$/;"	m	struct:hashtable
+last_node	librsync/src/blake2/blake2.h	/^    uint8_t  last_node;$/;"	m	struct:blake2b_state__
+last_node	librsync/src/blake2/blake2.h	/^    uint8_t  last_node;$/;"	m	struct:blake2s_state__
+len	librsync/src/sumset.c	/^    size_t len;$/;"	m	struct:rs_block_match	file:
+len_1	librsync/src/prototab.h	/^    int len_1, len_2;$/;"	m	struct:rs_prototab_ent
+len_2	librsync/src/prototab.h	/^    int len_1, len_2;$/;"	m	struct:rs_prototab_ent
+lit_bytes	librsync/src/librsync.h	/^    rs_long_t lit_bytes;        \/**< Number of literal bytes. *\/$/;"	m	struct:rs_stats
+lit_cmdbytes	librsync/src/librsync.h	/^    rs_long_t lit_cmdbytes;     \/**< Number of bytes used in literal command$/;"	m	struct:rs_stats
+lit_cmds	librsync/src/librsync.h	/^    int lit_cmds;               \/**< Number of literal commands. *\/$/;"	m	struct:rs_stats
+load16	librsync/src/blake2/blake2-impl.h	/^static BLAKE2_INLINE uint16_t load16( const void *src )$/;"	f
+load32	librsync/src/blake2/blake2-impl.h	/^static BLAKE2_INLINE uint32_t load32( const void *src )$/;"	f
+load48	librsync/src/blake2/blake2-impl.h	/^static BLAKE2_INLINE uint64_t load48( const void *src )$/;"	f
+load64	librsync/src/blake2/blake2-impl.h	/^static BLAKE2_INLINE uint64_t load64( const void *src )$/;"	f
+lshift	librsync/src/mdfour.c	/^#define lshift(/;"	d	file:
+magic	librsync/src/sumset.h	/^    int magic;                  \/**< The signature magic value. *\/$/;"	m	struct:rs_signature
+main	librsync/src/blake2/blake2b-ref.c	/^int main( void )$/;"	f
+main	librsync/src/rdiff.c	/^int main(const int argc, const char *argv[])$/;"	f
+main	librsync/tests/checksum_test.c	/^int main(int argc, char **argv)$/;"	f
+main	librsync/tests/hashtable_test.c	/^int main(int argc, char **argv)$/;"	f
+main	librsync/tests/isprefix_test.c	/^int main(int argc, char **argv)$/;"	f
+main	librsync/tests/netint_test.c	/^int main(int argc, char **argv)$/;"	f
+main	librsync/tests/rabinkarp_perf.c	/^int main(int argc, char **argv)$/;"	f
+main	librsync/tests/rabinkarp_test.c	/^int main(int argc, char **argv)$/;"	f
+main	librsync/tests/rollsum_test.c	/^int main(int argc, char **argv)$/;"	f
+main	librsync/tests/sumset_test.c	/^int main(int argc, char **argv)$/;"	f
+main	sd.c	/^void main ( void ) {$/;"	f
+major	librsync/debian/rules	/^major=2$/;"	m
+make_input	librsync/tests/testcommon.sh	/^make_input () {$/;"	f
+match_count	librsync/src/hashtable.h	/^    long match_count;           \/**< The count of matches found. *\/$/;"	m	struct:hashtable
+mix32	librsync/src/hashtable.h	/^static inline unsigned mix32(unsigned h)$/;"	f
+mult	librsync/src/rabinkarp.h	/^    uint32_t mult;              \/**< The value of RABINKARP_MULT^count. *\/$/;"	m	struct:rabinkarp
+murmur3_32	include/ht.h	/^void murmur3_32 (const void* key, int len, u32 seed, void* out) {$/;"	f
+myentry	librsync/tests/hashtable_test.c	/^typedef struct myentry {$/;"	s	file:
+myentry_init	librsync/tests/hashtable_test.c	/^void myentry_init(myentry_t *e, int i)$/;"	f
+myentry_t	librsync/tests/hashtable_test.c	/^} myentry_t;$/;"	t	typeref:struct:myentry	file:
+mykey_cmp	librsync/tests/hashtable_test.c	/^int mykey_cmp(mykey_t *k, const mykey_t *o)$/;"	f
+mykey_hash	librsync/tests/hashtable_test.c	/^int mykey_hash(const mykey_t *k)$/;"	f
+mykey_init	librsync/tests/hashtable_test.c	/^void mykey_init(mykey_t *k, int i)$/;"	f
+mykey_t	librsync/tests/hashtable_test.c	/^typedef int mykey_t;$/;"	t	file:
+mymatch	librsync/tests/hashtable_test.c	/^typedef struct mymatch {$/;"	s	file:
+mymatch_cmp	librsync/tests/hashtable_test.c	/^int mymatch_cmp(mymatch_t *m, const myentry_t *e)$/;"	f
+mymatch_init	librsync/tests/hashtable_test.c	/^void mymatch_init(mymatch_t *m, int i)$/;"	f
+mymatch_t	librsync/tests/hashtable_test.c	/^} mymatch_t;$/;"	t	typeref:struct:mymatch	file:
+name	librsync/src/command.h	/^    char const *name;$/;"	m	struct:rs_op_kind_name
+new_ht	include/ht.h	/^ht_table *new_ht( void ) {$/;"	f
+next_in	librsync/src/librsync.h	/^    char *next_in;$/;"	m	struct:rs_buffers_s
+next_out	librsync/src/librsync.h	/^    char *next_out;$/;"	m	struct:rs_buffers_s
+nozero	librsync/src/hashtable.h	/^static inline unsigned nozero(unsigned h)$/;"	f
+op	librsync/src/job.h	/^    unsigned char op;$/;"	m	struct:rs_job
+op	librsync/src/librsync.h	/^    char const *op;             \/**< Human-readable name of current operation.$/;"	m	struct:rs_stats
+out_bytes	librsync/src/librsync.h	/^    rs_long_t out_bytes;        \/**< Total bytes written to output. *\/$/;"	m	struct:rs_stats
+outlen	librsync/src/blake2/blake2.h	/^    size_t        outlen;$/;"	m	struct:blake2bp_state__
+outlen	librsync/src/blake2/blake2.h	/^    size_t        outlen;$/;"	m	struct:blake2sp_state__
+outlen	librsync/src/blake2/blake2.h	/^    size_t   outlen;$/;"	m	struct:blake2b_state__
+outlen	librsync/src/blake2/blake2.h	/^    size_t   outlen;$/;"	m	struct:blake2s_state__
+output_md4	librsync/src/job.h	/^    rs_mdfour_t output_md4;$/;"	m	struct:rs_job
+param1	librsync/src/job.h	/^    rs_long_t param1, param2;$/;"	m	struct:rs_job
+param2	librsync/src/job.h	/^    rs_long_t param1, param2;$/;"	m	struct:rs_job
+rabinkarp	librsync/src/rabinkarp.h	/^typedef struct rabinkarp {$/;"	s
+rabinkarp_digest	librsync/src/rabinkarp.h	/^static inline uint32_t rabinkarp_digest(rabinkarp_t *sum)$/;"	f
+rabinkarp_init	librsync/src/rabinkarp.h	/^static inline void rabinkarp_init(rabinkarp_t *sum)$/;"	f
+rabinkarp_pow	librsync/src/rabinkarp.c	/^static inline uint32_t rabinkarp_pow(uint32_t n)$/;"	f	file:
+rabinkarp_rollin	librsync/src/rabinkarp.h	/^static inline void rabinkarp_rollin(rabinkarp_t *sum, unsigned char in)$/;"	f
+rabinkarp_rollout	librsync/src/rabinkarp.h	/^static inline void rabinkarp_rollout(rabinkarp_t *sum, unsigned char out)$/;"	f
+rabinkarp_rotate	librsync/src/rabinkarp.h	/^static inline void rabinkarp_rotate(rabinkarp_t *sum, unsigned char out,$/;"	f
+rabinkarp_t	librsync/src/rabinkarp.h	/^} rabinkarp_t;$/;"	t	typeref:struct:rabinkarp
+rabinkarp_update	librsync/src/rabinkarp.c	/^void rabinkarp_update(rabinkarp_t *sum, const unsigned char *buf, size_t len)$/;"	f
+rdiff_action	librsync/src/rdiff.c	/^static rs_result rdiff_action(poptContext opcon)$/;"	f	file:
+rdiff_delta	librsync/src/rdiff.c	/^static rs_result rdiff_delta(poptContext opcon)$/;"	f	file:
+rdiff_no_more_args	librsync/src/rdiff.c	/^static void rdiff_no_more_args(poptContext opcon)$/;"	f	file:
+rdiff_options	librsync/src/rdiff.c	/^static void rdiff_options(poptContext opcon)$/;"	f	file:
+rdiff_patch	librsync/src/rdiff.c	/^static rs_result rdiff_patch(poptContext opcon)$/;"	f	file:
+rdiff_show_version	librsync/src/rdiff.c	/^static void rdiff_show_version(void)$/;"	f	file:
+rdiff_sig	librsync/src/rdiff.c	/^static rs_result rdiff_sig(poptContext opcon)$/;"	f	file:
+rdiff_usage	librsync/src/rdiff.c	/^static void rdiff_usage(const char *error, ...)$/;"	f	file:
+rk	librsync/src/checksum.h	/^        rabinkarp_t rk;$/;"	m	union:weaksum::__anon9
+rotl32	include/ht.h	/^static inline u32 rotl32 ( u32 x, s8 r ) {$/;"	f
+rotr32	librsync/src/blake2/blake2-impl.h	/^static BLAKE2_INLINE uint32_t rotr32( const uint32_t w, const unsigned c )$/;"	f
+rotr64	librsync/src/blake2/blake2-impl.h	/^static BLAKE2_INLINE uint64_t rotr64( const uint64_t w, const unsigned c )$/;"	f
+rs	librsync/src/checksum.h	/^        Rollsum rs;$/;"	m	union:weaksum::__anon9
+rs_alloc	librsync/src/util.c	/^void *rs_alloc(size_t size, char const *name)$/;"	f
+rs_alloc_struct	librsync/src/util.h	/^#  define rs_alloc_struct(/;"	d
+rs_alloc_struct0	librsync/src/util.c	/^void *rs_alloc_struct0(size_t size, char const *name)$/;"	f
+rs_appendflush	librsync/src/delta.c	/^static inline rs_result rs_appendflush(rs_job_t *job)$/;"	f	file:
+rs_appendmatch	librsync/src/delta.c	/^static inline rs_result rs_appendmatch(rs_job_t *job, rs_long_t match_pos,$/;"	f	file:
+rs_appendmiss	librsync/src/delta.c	/^static inline rs_result rs_appendmiss(rs_job_t *job, size_t miss_len)$/;"	f	file:
+rs_base64	librsync/src/base64.c	/^void rs_base64(unsigned char const *buf, int n, char *out)$/;"	f
+rs_block_match	librsync/src/sumset.c	/^typedef struct rs_block_match {$/;"	s	file:
+rs_block_match_cmp	librsync/src/sumset.c	/^static inline int rs_block_match_cmp(rs_block_match_t *match,$/;"	f	file:
+rs_block_match_init	librsync/src/sumset.c	/^static void rs_block_match_init(rs_block_match_t *match, rs_signature_t *sig,$/;"	f	file:
+rs_block_match_t	librsync/src/sumset.c	/^} rs_block_match_t;$/;"	t	typeref:struct:rs_block_match	file:
+rs_block_sig	librsync/src/sumset.h	/^typedef struct rs_block_sig {$/;"	s
+rs_block_sig_hash	librsync/src/sumset.c	/^static inline unsigned rs_block_sig_hash(const rs_block_sig_t *sig)$/;"	f	file:
+rs_block_sig_idx	librsync/src/sumset.c	/^static inline int rs_block_sig_idx(const rs_signature_t *sig,$/;"	f	file:
+rs_block_sig_init	librsync/src/sumset.c	/^static void rs_block_sig_init(rs_block_sig_t *sig, rs_weak_sum_t weak_sum,$/;"	f	file:
+rs_block_sig_ptr	librsync/src/sumset.c	/^static inline rs_block_sig_t *rs_block_sig_ptr(const rs_signature_t *sig,$/;"	f	file:
+rs_block_sig_size	librsync/src/sumset.c	/^static inline size_t rs_block_sig_size(const rs_signature_t *sig)$/;"	f	file:
+rs_block_sig_t	librsync/src/sumset.h	/^} rs_block_sig_t;$/;"	t	typeref:struct:rs_block_sig
+rs_buffers_s	librsync/src/librsync.h	/^struct rs_buffers_s {$/;"	s
+rs_buffers_t	librsync/src/librsync.h	/^typedef struct rs_buffers_s rs_buffers_t;$/;"	t	typeref:struct:rs_buffers_s
+rs_build_hash_table	librsync/src/sumset.c	/^rs_result rs_build_hash_table(rs_signature_t *sig)$/;"	f
+rs_byte_t	librsync/src/librsync.h	/^typedef uint8_t rs_byte_t;$/;"	t
+rs_bzero	librsync/src/util.c	/^void rs_bzero(void *buf, size_t size)$/;"	f
+rs_calc_strong_sum	librsync/src/checksum.c	/^void rs_calc_strong_sum(strongsum_kind_t kind, void const *buf, size_t len,$/;"	f
+rs_calc_weak_sum	librsync/src/checksum.c	/^rs_weak_sum_t rs_calc_weak_sum(weaksum_kind_t kind, void const *buf, size_t len)$/;"	f
+rs_copy_cb	librsync/src/librsync.h	/^typedef rs_result rs_copy_cb(void *opaque, rs_long_t pos, size_t *len,$/;"	t
+rs_delta_begin	librsync/src/delta.c	/^rs_job_t *rs_delta_begin(rs_signature_t *sig)$/;"	f
+rs_delta_file	librsync/src/whole.c	/^rs_result rs_delta_file(rs_signature_t *sig, FILE *new_file, FILE *delta_file,$/;"	f
+rs_delta_s_end	librsync/src/delta.c	/^static rs_result rs_delta_s_end(rs_job_t *job)$/;"	f	file:
+rs_delta_s_flush	librsync/src/delta.c	/^static rs_result rs_delta_s_flush(rs_job_t *job)$/;"	f	file:
+rs_delta_s_header	librsync/src/delta.c	/^static rs_result rs_delta_s_header(rs_job_t *job)$/;"	f	file:
+rs_delta_s_scan	librsync/src/delta.c	/^static rs_result rs_delta_s_scan(rs_job_t *job)$/;"	f	file:
+rs_delta_s_slack	librsync/src/delta.c	/^static rs_result rs_delta_s_slack(rs_job_t *job)$/;"	f	file:
+rs_driven_cb	librsync/src/librsync.h	/^typedef rs_result rs_driven_cb(rs_job_t *job, rs_buffers_t *buf,$/;"	t
+rs_emit_copy_cmd	librsync/src/emit.c	/^void rs_emit_copy_cmd(rs_job_t *job, rs_long_t where, rs_long_t len)$/;"	f
+rs_emit_delta_header	librsync/src/emit.c	/^void rs_emit_delta_header(rs_job_t *job)$/;"	f
+rs_emit_end_cmd	librsync/src/emit.c	/^void rs_emit_end_cmd(rs_job_t *job)$/;"	f
+rs_emit_literal_cmd	librsync/src/emit.c	/^void rs_emit_literal_cmd(rs_job_t *job, int len)$/;"	f
+rs_error	librsync/src/trace.h	/^#  define rs_error(/;"	d
+rs_fatal	librsync/src/trace.h	/^#  define rs_fatal(/;"	d
+rs_file_close	librsync/src/fileutil.c	/^int rs_file_close(FILE *f)$/;"	f
+rs_file_copy_cb	librsync/src/fileutil.c	/^rs_result rs_file_copy_cb(void *arg, rs_long_t pos, size_t *len, void **buf)$/;"	f
+rs_file_open	librsync/src/fileutil.c	/^FILE *rs_file_open(char const *filename, char const *mode, int force)$/;"	f
+rs_file_size	librsync/src/fileutil.c	/^rs_long_t rs_file_size(FILE *f)$/;"	f
+rs_filebuf	librsync/src/buf.c	/^struct rs_filebuf {$/;"	s	file:
+rs_filebuf_free	librsync/src/buf.c	/^void rs_filebuf_free(rs_filebuf_t *fb)$/;"	f
+rs_filebuf_new	librsync/src/buf.c	/^rs_filebuf_t *rs_filebuf_new(FILE *f, size_t buf_len)$/;"	f
+rs_filebuf_t	librsync/src/buf.h	/^typedef struct rs_filebuf rs_filebuf_t;$/;"	t	typeref:struct:rs_filebuf
+rs_findmatch	librsync/src/delta.c	/^static inline int rs_findmatch(rs_job_t *job, rs_long_t *match_pos,$/;"	f	file:
+rs_format_stats	librsync/src/stats.c	/^char *rs_format_stats(rs_stats_t const *stats, char *buf, size_t size)$/;"	f
+rs_free_sumset	librsync/src/sumset.c	/^void rs_free_sumset(rs_signature_t *psums)$/;"	f
+rs_getinput	librsync/src/delta.c	/^static inline rs_result rs_getinput(rs_job_t *job, size_t block_len)$/;"	f	file:
+rs_hash_name	librsync/src/rdiff.c	/^char *rs_hash_name;$/;"	v
+rs_hexify	librsync/src/hex.c	/^void rs_hexify(char *to_buf, void const *from, int from_len)$/;"	f
+rs_inbuflen	librsync/src/whole.c	/^LIBRSYNC_EXPORT int rs_inbuflen = 0, rs_outbuflen = 0;$/;"	v
+rs_infilebuf_fill	librsync/src/buf.c	/^rs_result rs_infilebuf_fill(rs_job_t *job, rs_buffers_t *buf, void *opaque)$/;"	f
+rs_int_len	librsync/src/netint.c	/^int rs_int_len(rs_long_t val)$/;"	f
+rs_job	librsync/src/job.h	/^struct rs_job {$/;"	s
+rs_job_check	librsync/src/job.h	/^#  define rs_job_check(/;"	d
+rs_job_complete	librsync/src/job.c	/^static rs_result rs_job_complete(rs_job_t *job, rs_result result)$/;"	f	file:
+rs_job_drive	librsync/src/job.c	/^rs_result rs_job_drive(rs_job_t *job, rs_buffers_t *buf, rs_driven_cb in_cb,$/;"	f
+rs_job_free	librsync/src/job.c	/^rs_result rs_job_free(rs_job_t *job)$/;"	f
+rs_job_iter	librsync/src/job.c	/^rs_result rs_job_iter(rs_job_t *job, rs_buffers_t *buffers)$/;"	f
+rs_job_new	librsync/src/job.c	/^rs_job_t *rs_job_new(char const *job_name, rs_result (*statefn)(rs_job_t *))$/;"	f
+rs_job_statistics	librsync/src/job.c	/^const rs_stats_t *rs_job_statistics(rs_job_t *job)$/;"	f
+rs_job_t	librsync/src/librsync.h	/^typedef struct rs_job rs_job_t;$/;"	t	typeref:struct:rs_job
+rs_job_work	librsync/src/job.c	/^static rs_result rs_job_work(rs_job_t *job, rs_buffers_t *buffers)$/;"	f	file:
+rs_librsync_version	librsync/src/version.c	/^LIBRSYNC_EXPORT char const rs_librsync_version[] = PACKAGE " " VERSION;$/;"	v
+rs_loadsig_add_sum	librsync/src/readsums.c	/^static rs_result rs_loadsig_add_sum(rs_job_t *job, rs_strong_sum_t *strong)$/;"	f	file:
+rs_loadsig_begin	librsync/src/readsums.c	/^rs_job_t *rs_loadsig_begin(rs_signature_t **signature)$/;"	f
+rs_loadsig_file	librsync/src/whole.c	/^rs_result rs_loadsig_file(FILE *sig_file, rs_signature_t **sumset,$/;"	f
+rs_loadsig_s_blocklen	librsync/src/readsums.c	/^static rs_result rs_loadsig_s_blocklen(rs_job_t *job)$/;"	f	file:
+rs_loadsig_s_magic	librsync/src/readsums.c	/^static rs_result rs_loadsig_s_magic(rs_job_t *job)$/;"	f	file:
+rs_loadsig_s_strong	librsync/src/readsums.c	/^static rs_result rs_loadsig_s_strong(rs_job_t *job)$/;"	f	file:
+rs_loadsig_s_stronglen	librsync/src/readsums.c	/^static rs_result rs_loadsig_s_stronglen(rs_job_t *job)$/;"	f	file:
+rs_loadsig_s_weak	librsync/src/readsums.c	/^static rs_result rs_loadsig_s_weak(rs_job_t *job)$/;"	f	file:
+rs_log	librsync/src/trace.h	/^#  define rs_log(/;"	d
+rs_log0	librsync/src/trace.c	/^void rs_log0(int level, char const *fn, char const *fmt, ...)$/;"	f
+rs_log_stats	librsync/src/stats.c	/^int rs_log_stats(rs_stats_t const *stats)$/;"	f
+rs_log_va	librsync/src/trace.c	/^static void rs_log_va(int flags, char const *fn, char const *fmt, va_list va)$/;"	f	file:
+rs_loglevel	librsync/src/librsync.h	/^} rs_loglevel;$/;"	t	typeref:enum:__anon2
+rs_long_ln2	librsync/src/util.c	/^int rs_long_ln2(rs_long_t v)$/;"	f
+rs_long_sqrt	librsync/src/util.c	/^int rs_long_sqrt(rs_long_t v)$/;"	f
+rs_long_t	librsync/src/librsync.h	/^typedef intmax_t rs_long_t;$/;"	t
+rs_magic_number	librsync/src/librsync.h	/^} rs_magic_number;$/;"	t	typeref:enum:__anon1
+rs_mdfour	librsync/src/mdfour.c	/^void rs_mdfour(unsigned char *out, void const *in, size_t n)$/;"	f
+rs_mdfour	librsync/src/mdfour.h	/^struct rs_mdfour {$/;"	s
+rs_mdfour64	librsync/src/mdfour.c	/^static void rs_mdfour64(rs_mdfour_t *m, const void *p)$/;"	f	file:
+rs_mdfour_begin	librsync/src/mdfour.c	/^void rs_mdfour_begin(rs_mdfour_t *md)$/;"	f
+rs_mdfour_block	librsync/src/mdfour.c	/^inline static void rs_mdfour_block(rs_mdfour_t *md, void const *p)$/;"	f	file:
+rs_mdfour_result	librsync/src/mdfour.c	/^void rs_mdfour_result(rs_mdfour_t *md, unsigned char *out)$/;"	f
+rs_mdfour_t	librsync/src/librsync.h	/^typedef struct rs_mdfour rs_mdfour_t;$/;"	t	typeref:struct:rs_mdfour
+rs_mdfour_tail	librsync/src/mdfour.c	/^static void rs_mdfour_tail(rs_mdfour_t *m)$/;"	f	file:
+rs_mdfour_update	librsync/src/mdfour.c	/^void rs_mdfour_update(rs_mdfour_t *md, void const *in_void, size_t n)$/;"	f
+rs_op_kind	librsync/src/command.h	/^enum rs_op_kind {$/;"	g
+rs_op_kind_name	librsync/src/command.c	/^char const *rs_op_kind_name(enum rs_op_kind kind)$/;"	f
+rs_op_kind_name	librsync/src/command.h	/^typedef struct rs_op_kind_name {$/;"	s
+rs_op_kind_name_t	librsync/src/command.h	/^} rs_op_kind_name_t;$/;"	t	typeref:struct:rs_op_kind_name
+rs_op_kind_names	librsync/src/command.c	/^struct rs_op_kind_name const rs_op_kind_names[] = {$/;"	v
+rs_outbuflen	librsync/src/whole.c	/^LIBRSYNC_EXPORT int rs_inbuflen = 0, rs_outbuflen = 0;$/;"	v
+rs_outfilebuf_drain	librsync/src/buf.c	/^rs_result rs_outfilebuf_drain(rs_job_t *job, rs_buffers_t *buf, void *opaque)$/;"	f
+rs_patch_begin	librsync/src/patch.c	/^rs_job_t *rs_patch_begin(rs_copy_cb * copy_cb, void *copy_arg)$/;"	f
+rs_patch_file	librsync/src/whole.c	/^rs_result rs_patch_file(FILE *basis_file, FILE *delta_file, FILE *new_file,$/;"	f
+rs_patch_s_cmdbyte	librsync/src/patch.c	/^static rs_result rs_patch_s_cmdbyte(rs_job_t *job)$/;"	f	file:
+rs_patch_s_copy	librsync/src/patch.c	/^static rs_result rs_patch_s_copy(rs_job_t *job)$/;"	f	file:
+rs_patch_s_copying	librsync/src/patch.c	/^static rs_result rs_patch_s_copying(rs_job_t *job)$/;"	f	file:
+rs_patch_s_header	librsync/src/patch.c	/^static rs_result rs_patch_s_header(rs_job_t *job)$/;"	f	file:
+rs_patch_s_literal	librsync/src/patch.c	/^static rs_result rs_patch_s_literal(rs_job_t *job)$/;"	f	file:
+rs_patch_s_params	librsync/src/patch.c	/^static rs_result rs_patch_s_params(rs_job_t *job)$/;"	f	file:
+rs_patch_s_run	librsync/src/patch.c	/^static rs_result rs_patch_s_run(rs_job_t *job)$/;"	f	file:
+rs_processmatch	librsync/src/delta.c	/^static inline rs_result rs_processmatch(rs_job_t *job)$/;"	f	file:
+rs_processmiss	librsync/src/delta.c	/^static inline rs_result rs_processmiss(rs_job_t *job)$/;"	f	file:
+rs_prototab	librsync/src/prototab.c	/^const struct rs_prototab_ent rs_prototab[] = {$/;"	v	typeref:struct:rs_prototab_ent
+rs_prototab_ent	librsync/src/prototab.h	/^typedef struct rs_prototab_ent {$/;"	s
+rs_prototab_ent_t	librsync/src/prototab.h	/^} rs_prototab_ent_t;$/;"	t	typeref:struct:rs_prototab_ent
+rs_realloc	librsync/src/util.c	/^void *rs_realloc(void *ptr, size_t size, char const *name)$/;"	f
+rs_result	librsync/src/librsync.h	/^typedef enum rs_result {$/;"	g
+rs_result	librsync/src/librsync.h	/^} rs_result;$/;"	t	typeref:enum:rs_result
+rs_rollsum_name	librsync/src/rdiff.c	/^char *rs_rollsum_name;$/;"	v
+rs_scoop_advance	librsync/src/scoop.c	/^void rs_scoop_advance(rs_job_t *job, size_t len)$/;"	f
+rs_scoop_avail	librsync/src/scoop.h	/^static inline size_t rs_scoop_avail(rs_job_t *job)$/;"	f
+rs_scoop_buf	librsync/src/scoop.h	/^static inline void *rs_scoop_buf(rs_job_t *job)$/;"	f
+rs_scoop_eof	librsync/src/scoop.h	/^static inline bool rs_scoop_eof(rs_job_t *job)$/;"	f
+rs_scoop_getbuf	librsync/src/scoop.h	/^static inline void *rs_scoop_getbuf(rs_job_t *job, size_t *len)$/;"	f
+rs_scoop_input	librsync/src/scoop.c	/^static inline void rs_scoop_input(rs_job_t *job, size_t len)$/;"	f	file:
+rs_scoop_iterbuf	librsync/src/scoop.h	/^static inline void *rs_scoop_iterbuf(rs_job_t *job, size_t *len, size_t *ilen)$/;"	f
+rs_scoop_len	librsync/src/scoop.h	/^static inline size_t rs_scoop_len(rs_job_t *job)$/;"	f
+rs_scoop_nextbuf	librsync/src/scoop.h	/^static inline void *rs_scoop_nextbuf(rs_job_t *job, size_t *len, size_t *ilen)$/;"	f
+rs_scoop_read	librsync/src/scoop.c	/^rs_result rs_scoop_read(rs_job_t *job, size_t len, void **ptr)$/;"	f
+rs_scoop_read_rest	librsync/src/scoop.c	/^rs_result rs_scoop_read_rest(rs_job_t *job, size_t *len, void **ptr)$/;"	f
+rs_scoop_readahead	librsync/src/scoop.c	/^rs_result rs_scoop_readahead(rs_job_t *job, size_t len, void **ptr)$/;"	f
+rs_severities	librsync/src/trace.c	/^static const char *rs_severities[] = {$/;"	v	file:
+rs_sig_args	librsync/src/sumset.c	/^rs_result rs_sig_args(rs_long_t old_fsize, rs_magic_number * magic,$/;"	f
+rs_sig_args_check	librsync/src/sumset.h	/^#  define rs_sig_args_check(/;"	d
+rs_sig_begin	librsync/src/mksum.c	/^rs_job_t *rs_sig_begin(size_t block_len, size_t strong_len,$/;"	f
+rs_sig_do_block	librsync/src/mksum.c	/^static rs_result rs_sig_do_block(rs_job_t *job, const void *block, size_t len)$/;"	f	file:
+rs_sig_file	librsync/src/whole.c	/^rs_result rs_sig_file(FILE *old_file, FILE *sig_file, size_t block_len,$/;"	f
+rs_sig_s_generate	librsync/src/mksum.c	/^static rs_result rs_sig_s_generate(rs_job_t *job)$/;"	f	file:
+rs_sig_s_header	librsync/src/mksum.c	/^static rs_result rs_sig_s_header(rs_job_t *job)$/;"	f	file:
+rs_signature	librsync/src/sumset.h	/^struct rs_signature {$/;"	s
+rs_signature_add_block	librsync/src/sumset.c	/^rs_block_sig_t *rs_signature_add_block(rs_signature_t *sig,$/;"	f
+rs_signature_calc_strong_sum	librsync/src/sumset.h	/^static inline void rs_signature_calc_strong_sum(rs_signature_t const *sig,$/;"	f
+rs_signature_calc_weak_sum	librsync/src/sumset.h	/^static inline rs_weak_sum_t rs_signature_calc_weak_sum(rs_signature_t const$/;"	f
+rs_signature_check	librsync/src/sumset.h	/^#  define rs_signature_check(/;"	d
+rs_signature_done	librsync/src/sumset.c	/^void rs_signature_done(rs_signature_t *sig)$/;"	f
+rs_signature_find_match	librsync/src/sumset.c	/^rs_long_t rs_signature_find_match(rs_signature_t *sig, rs_weak_sum_t weak_sum,$/;"	f
+rs_signature_init	librsync/src/sumset.c	/^rs_result rs_signature_init(rs_signature_t *sig, rs_magic_number magic,$/;"	f
+rs_signature_log_stats	librsync/src/sumset.c	/^void rs_signature_log_stats(rs_signature_t const *sig)$/;"	f
+rs_signature_strongsum_kind	librsync/src/sumset.h	/^static inline strongsum_kind_t rs_signature_strongsum_kind(rs_signature_t const$/;"	f
+rs_signature_t	librsync/src/librsync.h	/^typedef struct rs_signature rs_signature_t;$/;"	t	typeref:struct:rs_signature
+rs_signature_weaksum_kind	librsync/src/sumset.h	/^static inline weaksum_kind_t rs_signature_weaksum_kind(rs_signature_t const$/;"	f
+rs_squirt_byte	librsync/src/netint.c	/^rs_result rs_squirt_byte(rs_job_t *job, rs_byte_t val)$/;"	f
+rs_squirt_n4	librsync/src/netint.c	/^rs_result rs_squirt_n4(rs_job_t *job, int val)$/;"	f
+rs_squirt_netint	librsync/src/netint.c	/^rs_result rs_squirt_netint(rs_job_t *job, rs_long_t val, int len)$/;"	f
+rs_stats	librsync/src/librsync.h	/^typedef struct rs_stats {$/;"	s
+rs_stats_t	librsync/src/librsync.h	/^} rs_stats_t;$/;"	t	typeref:struct:rs_stats
+rs_strerror	librsync/src/msg.c	/^char const *rs_strerror(rs_result r)$/;"	f
+rs_strong_sum_t	librsync/src/librsync.h	/^typedef unsigned char rs_strong_sum_t[RS_MAX_STRONG_SUM_LENGTH];$/;"	t
+rs_suck_byte	librsync/src/netint.c	/^rs_result rs_suck_byte(rs_job_t *job, rs_byte_t *val)$/;"	f
+rs_suck_n4	librsync/src/netint.c	/^rs_result rs_suck_n4(rs_job_t *job, int *val)$/;"	f
+rs_suck_netint	librsync/src/netint.c	/^rs_result rs_suck_netint(rs_job_t *job, rs_long_t *val, int len)$/;"	f
+rs_sumset_dump	librsync/src/sumset.c	/^void rs_sumset_dump(rs_signature_t const *sums)$/;"	f
+rs_supports_trace	librsync/src/trace.c	/^int rs_supports_trace(void)$/;"	f
+rs_trace	librsync/src/trace.h	/^#    define rs_trace(/;"	d
+rs_trace_enabled	librsync/src/trace.h	/^#    define rs_trace_enabled(/;"	d
+rs_trace_fn_t	librsync/src/librsync.h	/^typedef void rs_trace_fn_t(rs_loglevel level, char const *msg);$/;"	t
+rs_trace_impl	librsync/src/trace.c	/^rs_trace_fn_t *rs_trace_impl = rs_trace_stderr;$/;"	v
+rs_trace_level	librsync/src/trace.c	/^int rs_trace_level = RS_LOG_INFO;$/;"	v
+rs_trace_set_level	librsync/src/trace.c	/^void rs_trace_set_level(rs_loglevel level)$/;"	f
+rs_trace_to	librsync/src/trace.c	/^void rs_trace_to(rs_trace_fn_t *new_impl)$/;"	f
+rs_tube_catchup	librsync/src/tube.c	/^rs_result rs_tube_catchup(rs_job_t *job)$/;"	f
+rs_tube_catchup_copy	librsync/src/tube.c	/^static void rs_tube_catchup_copy(rs_job_t *job)$/;"	f	file:
+rs_tube_catchup_write	librsync/src/tube.c	/^static void rs_tube_catchup_write(rs_job_t *job)$/;"	f	file:
+rs_tube_copy	librsync/src/tube.c	/^void rs_tube_copy(rs_job_t *job, size_t len)$/;"	f
+rs_tube_is_idle	librsync/src/tube.c	/^int rs_tube_is_idle(rs_job_t const *job)$/;"	f
+rs_tube_write	librsync/src/tube.c	/^void rs_tube_write(rs_job_t *job, const void *buf, size_t len)$/;"	f
+rs_unbase64	librsync/src/base64.c	/^size_t rs_unbase64(char *s)$/;"	f
+rs_warn	librsync/src/trace.h	/^#  define rs_warn(/;"	d
+rs_weak_sum_t	librsync/src/librsync.h	/^typedef uint32_t rs_weak_sum_t;$/;"	t
+rs_whole_run	librsync/src/whole.c	/^rs_result rs_whole_run(rs_job_t *job, FILE *in_file, FILE *out_file,$/;"	f
+run_test	librsync/tests/performance.test	/^run_test () {$/;"	f
+run_test	librsync/tests/testcommon.sh	/^run_test () {$/;"	f
+s1	librsync/src/rollsum.h	/^    uint_fast16_t s1;           \/**< s1 part of sum *\/$/;"	m	struct:Rollsum
+s2	librsync/src/rollsum.h	/^    uint_fast16_t s2;           \/**< s2 part of sum *\/$/;"	m	struct:Rollsum
+scan	wifi.c	/^void scan( void ) {$/;"	f
+scan_buf	librsync/src/job.h	/^    rs_byte_t *scan_buf;        \/**< The delta scan buffer pointer. *\/$/;"	m	struct:rs_job
+scan_len	librsync/src/job.h	/^    size_t scan_len;            \/**< The delta scan buffer length. *\/$/;"	m	struct:rs_job
+scan_pos	librsync/src/job.h	/^    size_t scan_pos;            \/**< The delta scan position. *\/$/;"	m	struct:rs_job
+scoop_alloc	librsync/src/job.h	/^    size_t scoop_alloc;         \/**< The buffer allocation size. *\/$/;"	m	struct:rs_job
+scoop_avail	librsync/src/job.h	/^    size_t scoop_avail;         \/**< The amount of data available. *\/$/;"	m	struct:rs_job
+scoop_buf	librsync/src/job.h	/^    rs_byte_t *scoop_buf;       \/**< The buffer allocation pointer. *\/$/;"	m	struct:rs_job
+scoop_next	librsync/src/job.h	/^    rs_byte_t *scoop_next;      \/**< The next data pointer. *\/$/;"	m	struct:rs_job
+secure_zero_memory	librsync/src/blake2/blake2-impl.h	/^static BLAKE2_INLINE void secure_zero_memory(void *v, size_t n)$/;"	f
+seedA	include/ht.h	/^static const u32 seedA = 0xCAFEBABE;$/;"	v
+seedB	include/ht.h	/^static const u32 seedB = 0xDEADF00D;$/;"	v
+show_stats	librsync/src/rdiff.c	/^static int show_stats = 0;$/;"	v	file:
+sig_block_len	librsync/src/job.h	/^    int sig_block_len;$/;"	m	struct:rs_job
+sig_blocks	librsync/src/librsync.h	/^    rs_long_t sig_blocks;       \/**< Number of blocks described by the$/;"	m	struct:rs_stats
+sig_bytes	librsync/src/librsync.h	/^    rs_long_t sig_cmds, sig_bytes;$/;"	m	struct:rs_stats
+sig_cmds	librsync/src/librsync.h	/^    rs_long_t sig_cmds, sig_bytes;$/;"	m	struct:rs_stats
+sig_fsize	librsync/src/job.h	/^    rs_long_t sig_fsize;$/;"	m	struct:rs_job
+sig_magic	librsync/src/job.h	/^    int sig_magic;$/;"	m	struct:rs_job
+sig_strong_len	librsync/src/job.h	/^    int sig_strong_len;$/;"	m	struct:rs_job
+signature	librsync/src/job.h	/^    rs_signature_t *signature;$/;"	m	struct:rs_job
+signature	librsync/src/sumset.c	/^    rs_signature_t *signature;$/;"	m	struct:rs_block_match	file:
+size	include/ht.h	/^  int size;$/;"	m	struct:__anon11
+size	librsync/src/hashtable.h	/^    int size;                   \/**< Size of allocated hashtable. *\/$/;"	m	struct:hashtable
+size	librsync/src/sumset.h	/^    int size;                   \/**< Total number of blocks allocated. *\/$/;"	m	struct:rs_signature
+source	librsync/tests/hashtable_test.c	/^    int source;$/;"	m	struct:mymatch	file:
+ssids	wifi.c	/^char ssids[48][48];$/;"	v
+sta_config	wifi.c	/^struct wifi_sta_config_t sta_config;$/;"	v	typeref:struct:wifi_sta_config_t
+start	librsync/src/librsync.h	/^    time_t start, end;$/;"	m	struct:rs_stats
+start_wifi	wifi.c	/^void start_wifi( void ) {$/;"	f
+stat	librsync/src/fileutil.c	/^#  define stat /;"	d	file:
+statefn	librsync/src/job.h	/^    rs_result (*statefn)(rs_job_t *);$/;"	m	struct:rs_job
+stats	librsync/src/job.h	/^    rs_stats_t stats;$/;"	m	struct:rs_job
+store16	librsync/src/blake2/blake2-impl.h	/^static BLAKE2_INLINE void store16( void *dst, uint16_t w )$/;"	f
+store32	librsync/src/blake2/blake2-impl.h	/^static BLAKE2_INLINE void store32( void *dst, uint32_t w )$/;"	f
+store48	librsync/src/blake2/blake2-impl.h	/^static BLAKE2_INLINE void store48( void *dst, uint64_t w )$/;"	f
+store64	librsync/src/blake2/blake2-impl.h	/^static BLAKE2_INLINE void store64( void *dst, uint64_t w )$/;"	f
+stream	librsync/src/job.h	/^    rs_buffers_t *stream;$/;"	m	struct:rs_job
+strong_len	librsync/src/rdiff.c	/^static int strong_len = 0;$/;"	v	file:
+strong_sum	librsync/src/sumset.h	/^    rs_strong_sum_t strong_sum; \/**< Block's strong checksum. *\/$/;"	m	struct:rs_block_sig
+strong_sum_len	librsync/src/sumset.h	/^    int strong_sum_len;         \/**< The block strong sum length. *\/$/;"	m	struct:rs_signature
+strongsum_kind_t	librsync/src/checksum.h	/^} strongsum_kind_t;$/;"	t	typeref:enum:__anon8
+sum	librsync/src/checksum.h	/^    } sum;$/;"	m	struct:weaksum	typeref:union:weaksum::__anon9
+t	librsync/src/blake2/blake2.h	/^    uint32_t t[2];$/;"	m	struct:blake2s_state__
+t	librsync/src/blake2/blake2.h	/^    uint64_t t[2];$/;"	m	struct:blake2b_state__
+tail	librsync/src/mdfour.h	/^    unsigned char tail[64];$/;"	m	struct:rs_mdfour
+tail_len	librsync/src/mdfour.h	/^    int tail_len;$/;"	m	struct:rs_mdfour
+test_skipped	librsync/tests/testcommon.sh	/^test_skipped () {$/;"	f
+tmask	librsync/src/hashtable.h	/^    unsigned tmask;             \/**< Mask to get the hashtable index. *\/$/;"	m	struct:hashtable
+totalN	librsync/src/mdfour.h	/^    uint64_t totalN;$/;"	m	struct:rs_mdfour
+totalN_hi	librsync/src/mdfour.h	/^    uint32_t totalN_hi, totalN_lo;$/;"	m	struct:rs_mdfour
+totalN_lo	librsync/src/mdfour.h	/^    uint32_t totalN_hi, totalN_lo;$/;"	m	struct:rs_mdfour
+triple_test	librsync/tests/testcommon.sh	/^triple_test () {$/;"	f
+value	include/ht.h	/^  char *value;$/;"	m	struct:__anon10
+value	librsync/tests/hashtable_test.c	/^    int value;$/;"	m	struct:myentry	file:
+value	librsync/tests/hashtable_test.c	/^    int value;$/;"	m	struct:mymatch	file:
+version	librsync/debian/rules	/^version=2.0.5$/;"	m
+vfs	fs.c	/^const esp_vfs_t vfs;$/;"	v
+weak_sig	librsync/src/job.h	/^    rs_weak_sum_t weak_sig;$/;"	m	struct:rs_job
+weak_sum	librsync/src/job.h	/^    weaksum_t weak_sum;$/;"	m	struct:rs_job
+weak_sum	librsync/src/sumset.h	/^    rs_weak_sum_t weak_sum;     \/**< Block's weak checksum. *\/$/;"	m	struct:rs_block_sig
+weaksum	librsync/src/checksum.h	/^typedef struct weaksum {$/;"	s
+weaksum_count	librsync/src/checksum.h	/^static inline size_t weaksum_count(weaksum_t *sum)$/;"	f
+weaksum_digest	librsync/src/checksum.h	/^static inline rs_weak_sum_t weaksum_digest(weaksum_t *sum)$/;"	f
+weaksum_init	librsync/src/checksum.h	/^static inline void weaksum_init(weaksum_t *sum, weaksum_kind_t kind)$/;"	f
+weaksum_kind_t	librsync/src/checksum.h	/^} weaksum_kind_t;$/;"	t	typeref:enum:__anon7
+weaksum_reset	librsync/src/checksum.h	/^static inline void weaksum_reset(weaksum_t *sum)$/;"	f
+weaksum_rollin	librsync/src/checksum.h	/^static inline void weaksum_rollin(weaksum_t *sum, unsigned char in)$/;"	f
+weaksum_rollout	librsync/src/checksum.h	/^static inline void weaksum_rollout(weaksum_t *sum, unsigned char out)$/;"	f
+weaksum_rotate	librsync/src/checksum.h	/^static inline void weaksum_rotate(weaksum_t *sum, unsigned char out,$/;"	f
+weaksum_t	librsync/src/checksum.h	/^} weaksum_t;$/;"	t	typeref:struct:weaksum
+weaksum_update	librsync/src/checksum.h	/^static inline void weaksum_update(weaksum_t *sum, const unsigned char *buf,$/;"	f
+wifi_event_handler	wifi.c	/^void wifi_event_handler( void *ctx, wifi_event_t *event ) {$/;"	f
+write_buf	librsync/src/job.h	/^    rs_byte_t write_buf[36];$/;"	m	struct:rs_job
+write_len	librsync/src/job.h	/^    size_t write_len;$/;"	m	struct:rs_job
