@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 // it's in newlib
 #include <ftw.h>
+#include "freertos/queue.h"
 
 /* INTEGRATING RDIFF FOR FILE DIFFING AND UPDATING
  *
@@ -33,6 +34,22 @@
  * generate deltas
  * send deltas
 */
+
+enum sync_state_t {
+  SYNC_STATE_DISCONNECTED,
+  SYNC_STATE_CONNECTED,
+  SYNC_STATE_TRANSFER_START,
+  SYNC_STATE_TRANSFER_END,
+  SYNC_STATE_GENERATING_DELTAS,
+  SYNC_STATE_PATCHING,
+  SYNC_STATE_ERROR
+}
+
+QueueHandle_t sync_state_queue;
+
+int init ( void ) {
+  sync_state_queue = xQueueCreate(5, sizeof(sync_state_t));
+}
 
 // we can assume directory structure will match starting at $BASEPATH for syncing.
 
@@ -123,4 +140,4 @@ rs_result generate_delta( char *sig_path, char *other_path ) {
   return result;
 }
 
-rs_result patch( 
+//rs_result patch( 
