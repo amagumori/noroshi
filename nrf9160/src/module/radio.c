@@ -138,7 +138,7 @@ static int init_broker( void ) {
 
 }
 
-static int init_client( struct mqtt_client *client ) {
+static int init_client( void ) {
   int err;
 
   // roll all the local init into its own helper function
