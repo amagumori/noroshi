@@ -1,5 +1,12 @@
 # ansible
 
+[Wideband Antenna - 8dBi](https://www.amazon.com/Wide-Band-Internal-LoRa-Antenna/dp/B08WJQ7ZS3)
+700-2700Mhz but gotta see performance on the datasheet
+
+[Battery Management IC shootout](https://hackaday.io/project/169422-iot-ups/log/177680-battery-management)
+
+[1.3" 128x64 OLED module - $6.50](https://www.adafruit.com/product/5228)
+
 ### a low-power, secure push-to-talk device 
 
 #### in the future, a portable silent sneakernet terminal, and a medium of secure data sync over other radio methods 

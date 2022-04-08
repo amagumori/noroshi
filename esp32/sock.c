@@ -17,6 +17,21 @@
 static const char *TAG = "socket_client";
 static const char *test_payload = "bepp bepp";
 
+int send_file( const char *path ) {
+  char buffer[FILE_BUFFER_SIZE];
+  FILE *f = fopen(path, "wb");
+  fseek(f, 0L, SEEK_END);
+  int len = ftell(f);
+  int to_write = size;
+  rewind(f);
+
+  while ( to_write > 0 ) {
+    int read = fread(buffer, sizeof(char), 1024, f);
+    int wrote = send(sock, buffer, read, 0);
+    to_write -= wrote;
+  }
+}
+
 static void task( void *pvParams ) {
   char rx_buffer[128];
   char host_ip[] = HOST_IP_ADDR;

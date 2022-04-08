@@ -4,7 +4,12 @@
 #include <sys/stat.h>
 // it's in newlib
 #include <ftw.h>
+//
 #include "freertos/queue.h"
+#include "lwip/err.h"
+#include "lwip/sockets.h"
+#include "lwip/sys.h"
+#include "lwip/netdb.h"
 
 /* INTEGRATING RDIFF FOR FILE DIFFING AND UPDATING
  *
@@ -35,20 +40,114 @@
  * send deltas
 */
 
+enum msg_type_t {
+  MSG_REQ_FILE_INFO,
+  MSG_FILE_INFO_ACK,
+  MSG_REQ_
+} msg_type;
+
+// simple "tagged union" packet format.
+typedef struct packet_t {
+  enum msg_type_t type;
+  union {
+    struct modified_t file_modified;
+  } data;
+} packet;
+
+// internal state
+enum process_state_t {
+  SYNC_IDLE,
+  SYNC_RECEIVING_INFO,
+  SYNC_RECEIVING_SIGS,
+  SYNC_RECEIVING_DELTAS,
+  SYNC_COMPLETE,
+  SYNC_ERROR
+} internal_state;
+
+// external state sent to NRF9160 for UI
 enum sync_state_t {
   SYNC_STATE_DISCONNECTED,
   SYNC_STATE_CONNECTED,
-  SYNC_STATE_TRANSFER_START,
-  SYNC_STATE_TRANSFER_END,
+  SYNC_STATE_FILE_INFO_START,
+  SYNC_STATE_FILE_INFO_END,
+  SYNC_STATE_SIG_TRANSFER_START,
+  SYNC_STATE_SIG_TRANSFER_END,
   SYNC_STATE_GENERATING_DELTAS,
   SYNC_STATE_PATCHING,
   SYNC_STATE_ERROR
-}
+} external_state;
 
 QueueHandle_t sync_state_queue;
+TaskHandle_t Sync_Task;
+FILE *socket;
 
-int init ( void ) {
+void task ( void *pvParam ) {
+  int len;
+  char rx_buffer[128];
+
+  do {
+    len = recv(socket, rx_buffer, sizeof(rx_buffer) - 1, 0);
+    if ( len < 0 ) {
+      ESP_LOGE(TAG, "error in socket receiving: errno %d", errno);
+    } else if ( len == 0 ) {
+      ESP_LOGW(TAG, "connection closed.");
+    } else {
+      rx_buffer[len] = 0;
+      ESP_LOGI(TAG, "received %d bytes: %s", len, rx_buffer);
+
+      struct packet_t packet = rx_buffer;
+
+      switch ( packet.type ) {
+
+      }
+
+      switch ( internal_state ) {
+        case SYNC_IDLE:
+          break;
+        case SYNC_SEND_INFO: 
+          walk_file_info("/");
+
+          break;
+        case SYNC_RECV_INFO:
+          break;
+        case SYNC_SEND_SIGS:
+          break;
+        case SYNC_RECV_SIGS:
+          break;
+        case SYNC_SEND_DELTAS:
+          break;
+        case SYNC_RECV_DELTAS:
+          break;
+        case SYNC_ERROR:
+          break;
+        default: 
+          break;
+      }
+    }
+  } while ( len > 0 );
+
+}
+
+// pass in socket fd here.
+int init ( int fd ) {
+  socket = fopen(fd);
   sync_state_queue = xQueueCreate(5, sizeof(sync_state_t));
+  // taskfunc, name, stacksize, param, priority, taskhandle
+  xTaskCreate(task, "sync_task", 2048, pvParam, 10, NULL);
+}
+
+void shutdown( void ) {
+  fclose(socket);
+}
+
+int send( void *payload, size_t len ) {
+  if ( sockopt(socket, SOL_SOCKET, SO_ERROR, &err, &len) != 0 ) {
+    ESP_LOGE(TAG, "socket error in signature generation.");
+    return -1;
+  }
+
+  fwrite(payload, len, 1, socket);
+  return 1;
 }
 
 // we can assume directory structure will match starting at $BASEPATH for syncing.
@@ -56,57 +155,78 @@ int init ( void ) {
 // just hardcoding in BLAKE2 hashing
 const rs_magic_number sig_magic = RS_BLAKE2_SIG_MAGIC;
 
-int compare_versions( const char *path, const struct stat *stat, int flag ) {
-  //struct time_t 
-}
-
-int check_versions ( const char *root, void *fn ) {
-  int depth = 50;
-  int ret = ftw( root, fn, depth );
-}
-
-int for_each_file( char *base_path, void *function ) {
-  char path[1000];
-  struct dirent *de;
-  rs_result res;
-  DIR *d = opendir(base_path);
-
-  if ( !dir ) return;
-
-  while ( (de = readdir(d)) != NULL ) {
-    if (strcmp(de->d_name, ".") != 0 && strcmp(de->d_name, "..") != 0 ) {
-
-      // tell if current d_name is a directory or not with stat?
-      strcpy(path, basePath);
-      strcat(path, "/");
-      strcat(path, dp->d_name);
-
-      res = function(path);
-
-      for_each_file(path, function);
-    }
+// dumbest time comparison function ever to start with.
+// a newer: positive
+// b newer: negative
+// same seconds: 0
+int time_newer( struct timespec *a, struct timespec *b ) {
+  if ( a->tv_sec > b->tv_sec ) {
+    return 1;
+  } else if ( b->tv_sec > a->tv_sec ) {
+    return -1;
+  } else {
+    return 0;
   }
-
-  closedir(dir);
 }
 
-rs_result generate_signature( char *filepath ) {
-  FILE *basis, *sig;
+typedef struct modified {
+  const char path[PATH_MAX];
+  const struct timespec modified;
+} modified_t;
+
+int send_info( const char *path, const struct stat *stat, int flag ) {
+  struct modified_t mod = {0};
+  // @TODO BOUNDS CHECK
+  sprintf(mod.path, "%s", path);
+  mod.modified = stat.st_mtime;
+  send( mod );
+  return 1;
+}
+
+int walk_file_info( char *path ) {
+  ftw( path, send_info, 50 );
+}
+
+int check_info( struct modified_t *mod ) {
+  struct stat s;
+  if ( stat(mod.path, &s) == -1 ) {
+    return 0;
+    // actually do nothing because it'll be put in the peer's to-send queue anyway
+  }
+  int compare = time_newer( s.st_mtime, mod.modified );
+  if ( compare > 0 ) {
+    send_sig( mod.path );
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+// passing in socket pointer with fdopen(), to send signature directly ota
+rs_result generate_signature( const char *path, FILE *sock ) {
+  FILE *basis;
+  //  FILE *sig;
   rs_stats_t stats;
   rs_result result;
   // way more to it than this, handle 
-  const char *sig_path = strcat( filepath, ".sig" );
+  //const char *sig_path = strcat( filepath, ".sig" );
 
-  basis = rs_file_open(filepath, "rb");
-  sig = rs_file_open(sig_path, "wb");
+  basis = rs_file_open(path, "rb");
+  //sig = rs_file_open(sig_path, "wb");
 
   const int block_size = 0; 
   const int strength = 0; 
   const int strong_len = 0;
 
-  result = rs_sig_file(basis, sig, block_size, strong_len, sig_magic, &stats); 
+  int err = 0;
+  socklen_t len = sizeof(err);
+  if ( sockopt(sock, SOL_SOCKET, SO_ERROR, &err, &len) != 0 ) {
+    ESP_LOGE(TAG, "socket error in signature generation.");
+  }
 
-  rs_file_close(sig);
+  result = rs_sig_file(basis, sock, block_size, strong_len, sig_magic, &stats); 
+
+  //  rs_file_close(sig);
   rs_file_close(basis);
 
   return result;
