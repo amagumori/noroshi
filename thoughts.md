@@ -1,5 +1,7 @@
 # ansible
 
+[Scalable Protocols for Authenticated Group Key Exchange](https://www.cs.umd.edu/~jkatz/papers/multi-auth.pdf)
+
 [Wideband Antenna - 8dBi](https://www.amazon.com/Wide-Band-Internal-LoRa-Antenna/dp/B08WJQ7ZS3)
 700-2700Mhz but gotta see performance on the datasheet
 

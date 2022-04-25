@@ -42,8 +42,12 @@
 
 enum msg_type_t {
   MSG_REQ_FILE_INFO,
-  MSG_FILE_INFO_ACK,
-  MSG_REQ_
+  MSG_DONE_SENDING_FILE_INFO,
+  MSG_REQ_SIGS,
+  MSG_READY_RECV_SIGS,
+  MSG_READY_SEND_SIGS,
+  MSG_READY_RECV_DELTAS,
+  MSG_READY_SEND_DELTAS
 } msg_type;
 
 // simple "tagged union" packet format.
@@ -224,7 +228,18 @@ rs_result generate_signature( const char *path, FILE *sock ) {
     ESP_LOGE(TAG, "socket error in signature generation.");
   }
 
+  struct packet_t packet = {
+    .type = MSG_SIG_INFO,
+    .sig_info = {
+      .path = path
+    }
+  };
+
+  send_packet( &packet );
+
   result = rs_sig_file(basis, sock, block_size, strong_len, sig_magic, &stats); 
+
+  send_state( MSG_SIG_SEND_COMPLETE );
 
   //  rs_file_close(sig);
   rs_file_close(basis);
@@ -232,12 +247,14 @@ rs_result generate_signature( const char *path, FILE *sock ) {
   return result;
 }
 
-rs_result generate_delta( char *sig_path, char *other_path ) {
+rs_result generate_delta( char *sig_path, char *local_path, char *delta_path ) {
+
   // @FIXME this is not the way to generate delta filename
-  const char delta_path = strcat(sig_path, ".delta");
+  // we'll do this outside: const char delta_path = strcat(sig_path, ".delta");
   //
+
   FILE *sig_file = rs_file_open(sig_path, "rb");
-  FILE *other_file = rs_file_open(other_file, "rb");
+  FILE *local_file = rs_file_open(local_path, "rb");
   FILE *delta_file = rs_file_open(delta_path, "wb");
 
   rs_result result;
@@ -249,10 +266,10 @@ rs_result generate_delta( char *sig_path, char *other_path ) {
   }
 
   // CHECK ARG ORDER
-  result = rs_delta_file( sumset, other_file, delta_file, &stats );
+  result = rs_delta_file( sumset, local_file, delta_file, &stats );
   
   rs_file_close(delta_file);
-  rs_file_close(other_file);
+  rs_file_close(local_file);
   rs_file_close(sig_file);
 
   rs_free_sumset(sumset);

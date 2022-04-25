@@ -1,3 +1,10 @@
+# hardware
+
+## audio stage
+
+MAX9880 audio codec - I2S - both voiceband and high-quality stereo input / dac / amp covered
+audio out also covered 
+
 # firmware structure
 
 microphone interface: 
