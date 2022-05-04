@@ -5,6 +5,7 @@
 #include <device.h>
 #include <drivers/display.h>
 
+#include "lcd/oled_ssd1351.h"
 #include "users.h"
 
 #define LVGL_DISPLAY_DEV_NAME display
@@ -30,6 +31,7 @@ static enum screen_id {
   CONNECTING_SERVER,
   AUTHENTICATING,
   AUTH_FAILED,
+  CONNECTED_IDLE,
   LISTENING,
   TRANSMITTING,
   SHUTDOWN,
@@ -90,31 +92,30 @@ static void set_state( enum state_type new_state ) {
 void message_handler( ui_msg *msg ) {
   if ( IS_EVENT( msg, modem, MODEM_EVT_LTE_CONNECTING) ) {
     set_state( STATE_CONNECTING_LTE );
-    view_connecting_lte();
+    lv_scr_load( screens[CONNECTING_LTE] );
   }
   if ( IS_EVENT( msg, modem, MODEM_EVT_LTE_CONNECTED ) ) {
     set_state( STATE_CONNECTED );
-    view_connection_success();
   }
   if ( IS_EVENT( msg, server, SERVER_EVENT_BEGIN_AUTH) ) {
     set_state( STATE_CONNECTING_SERVER );
-    view_authenticating();
+    lv_scr_load( screens[CONNECTING_SERVER] );
   }
   if ( IS_EVENT( msg, server, SERVER_EVENT_AUTH_DENIED) ) {
     set_state( STATE_DISCONNECTED );
-    view_auth_failed();
+    lv_scr_load( screens[AUTH_FAILED] );
   }
   if ( IS_EVENT( msg, server, SERVER_EVENT_CONNECTED) ) {
-    set_state( STATE_CONNECTING_LTE );
-    view_server_connected();
+    set_state( STATE_CONNECTED );
+    lv_scr_load( screens[CONNECTED_IDLE] );
   }
   if ( IS_EVENT( msg, server, SERVER_EVENT_BEGIN_AUTH) ) {
     set_state( STATE_CONNECTING_LTE );
-    view_authenticating();
+    lv_scr_load( screens[AUTHENTICATING] );
   }
   if ( IS_EVENT( msg, radio, RADIO_EVENT_INCOMING_MSG_START ) ) {
     set_state( STATE_LISTENING_ACTIVE );
-    view_listening_active();
+    lv_scr_load( screens[LISTENING] );
   }
 
   if ( IS_EVENT( msg, hw, HW_EVENT_PTT_DOWN ) ) {
@@ -164,10 +165,15 @@ void init_ui( void ) {
   display_dev = device_get_binding( LVGL_DISPLAY_DEV_NAME );
   theme = lv_theme_get_act();
 
+  ssd1351_128x128_spi_init(16, 5, 17);
+  ssd1351_setMode( LCD_MODE_NORMAL );
+
   for ( int i=0; i < SCREEN_COUNT; i++ ) {
     screens[i] = lv_obj_create(NULL, NULL);
   }
   lv_scr_load( screens[0] );
+
+  create_listening_screen();
 
   container = lv_obj_create( screens[0] );
 
@@ -187,7 +193,7 @@ void cleanup_ui ( void ) {
   
 }
 
-lv_obj_t *create_listening( void ) {
+void create_listening_screen( void ) {
   lv_screen_t *screen_listen = screens[ LISTENING ];
   lv_obj_t *listen_container = lv_obj_create(screen_listen);
   lv_obj_remove_style_all(listen_container);
@@ -203,17 +209,22 @@ lv_obj_t *create_listening( void ) {
   currently_talking_label = lv_obj_create(listen_container);
   lv_obj_remove_style_all(currently_talking_label);
   lv_label_set_text(label, "nobody is talking right now.");
-
-  return listen_container;
+  
 }
 
-///////////////////////////////////
-
-void view_listening_active( radio_event *event ) {
+void create_connecting_lte( void ) {
 
 }
 
-void view_listening_idle( void ) {
+void create_connecting_server( void ) {
+
+}
+
+void create_connected_idle( void ) {
+
+}
+
+void create_transmitting( void ) {
 
 }
 

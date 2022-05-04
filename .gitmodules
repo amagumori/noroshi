@@ -1,3 +1,6 @@
 [submodule "firmware/external/codec2"]
 	path = firmware/external/codec2
 	url = https://github.com/drowe67/codec2.git
+[submodule "esp32/external/librsync"]
+	path = esp32/external/librsync
+	url = https://github.com/librsync/librsync.git

@@ -1,16 +1,41 @@
 #include "wifi.h"
-#include "ht.h"
+#include "types.h"
 
 // dummy list of SSIDs to compare against / simplest possible "friends list"
 // really this is a hash table of "friends" and keys
-char ssids[48][48];
+
+typedef struct ssid {
+  u8 name[33];
+} key_t;
+
+struct friend {
+  key_t key;
+  u8 friend_name[36];
+  u8 wpa_key[64];
+} friend_t;
+
+#define ENTRY friend_t
+#define KEY key_t
+#include "hashtable.h"
+
+key_t k;
+friend_t *f;
+
+hashtable_t *friends_table;
+struct friend_t friends[256];
+
+static struct friend_t me;
+
+static struct wifi_ap_record_t ap_records[36];
+
+u8 active_ssid[33];
+u8 active_key[33];
 
 struct wifi_ap_config_t ap_config;
 struct wifi_sta_config_t sta_config;
 
 uint16_t active_ap;
 static uint16_t ap_count;
-static struct wifi_ap_record_t ap_records[24];
 
 static struct wifi_init_config_t cfg;
 
@@ -34,21 +59,46 @@ void wifi_event_handler( void *ctx, wifi_event_t *event ) {
 
 int init_wifi ( EventGroupHandle_t wifi_event_group ) {
 
-  uint8_t *pass = hash_lookup( ssids[0] );
+  me = {
+    .key = {
+      .name = "my ssid"
+    },
+    .friend_name = "nea999",
+    .wpa_key = "neasPassword"
+  };
+
+  friends_table = friend_hashtable_new(36);
+
+  friends[0] = { 
+    .key = {
+      .ssid = "TEST_NETWORK"
+    },
+    .friend_name = "test friend",
+    .wpa_key = "testPassword"
+  };
+  friend_hashtable_add( friends_table, &friends[0] );
+
+  k = { .ssid = "TEST_NETWORK" };
+
+  f = friends_table_find( friends_table, k );
+
+  strcpy(active_ssid, f.key.name);
+  strcpy(active_key,  f.wpa_key);
+
   uint8_t *my_pass = hash_lookup( my_ssid );
 
   // placeholder, actually init these
   sta_config = { 
-    .ssid = ssids[0],
-    .password = pass,
+    .ssid = active_ssid,
+    .password = active_key,
     .scan_method = WIFI_FAST_SCAN,
     .bssid_set = 0,
     .channel   = 0
   };
 
   ap_config = { 
-    .ssid = my_ssid,
-    .password = my_pass,
+    .ssid = me.key.name,
+    .password = me.wpa_key,
     .ssid_len = strlen( my_ssid ),
     .channel  = 1,
     .authmode = WIFI_AUTH_WPA2_PSK,
@@ -77,14 +127,25 @@ void scan( void ) {
   ESP_ERROR_CHECK( esp_wifi_scan_start(&cfg, false));
 }
 
-// returns the index of found AP
 int check_aps( void ) {
+  struct key_t k;
+  struct friend_t friend;
   for ( int i=0; i < ap_count; i++ ) {
     wifi_ap_record_t ap = ap_records[i];
 
     for ( int j=0; j < 48; j++ ) {
-      if ( strcmp( ap.ssid, ssids[j] ) == 0 ) {
-        handle_ap_found( i );
+      strncpy(k.name, ap.ssid, 32);
+      friend = friends_table_find( friends_table, &k );
+
+      if ( strncmp( friend.key.name, ap.ssid, 32 ) == 0 ) {
+        strncpy(sta_config.ssid, ap.ssid, 32);
+        strncpy(sta_config.bssid, ap.bssid, 6);
+        sta_config.channel = ap.primary;
+        ap_config.authmode = ap.authmode;
+
+        ESP_ERROR_CHECK( esp_wifi_set_config( WIFI_IF_STA, &sta_config );
+        ESP_ERROR_CHECK( esp_wifi_connect() );
+        // do stuff..
       } 
     }
   }
@@ -92,19 +153,3 @@ int check_aps( void ) {
   return -1;
 }
 
-void handle_ap_found( int index ) {
-  // lol
-  wifi_ap_record_t ap = ap_records[index];
-
-  strncpy(sta_config.ssid, ap.ssid, 32);
-  strncpy(sta_config.bssid, ap.bssid, 6);
-  // lookup shared secret pw
-  sta_config.channel = ap.primary;
-  ap_config.authmode = ap.authmode;
-  // etc
-
-  ESP_ERROR_CHECK( esp_wifi_set_config( WIFI_IF_STA, &sta_config );
-
-  ESP_ERROR_CHECK( esp_wifi_connect() );
-
-}

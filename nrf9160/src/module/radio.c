@@ -31,7 +31,6 @@ LOG_MODULE_REGISTER(MODULE, 1);   // log level 1 = ???
 
 const k_tid_t radio_thread;
 
-
 // I2S.h 
 extern i16 *outgoing_message_buffer;
 extern size_t outgoing_message_size;
