@@ -31,6 +31,8 @@ k_tid_t audio_tx_tid;
 
 audio_stats_counter_t audio_stats_counter;
 
+static u8   data_in_backbuffer[INPUT_DATA_SIZE];
+
 static u8_t data_in[INPUT_DATA_SIZE];
 static u8_t data_out[OUTPUT_DATA_SIZE];
 
@@ -40,8 +42,12 @@ static m_audio_frame_t frame_OPUS_decode = {.data_size = 0};
 
 K_MSGQ_DEFINE(msgq_OPUS_OUT , sizeof(m_audio_frame_t), 1, 4);
 struct k_msgq *p_msgq_OPUS_OUT = &msgq_OPUS_OUT ;
-K_MSGQ_DEFINE(msgq_OPUS_IN , sizeof(m_audio_frame_t), 3, 4);
-struct k_msgq *p_msgq_OPUS_IN = &msgq_OPUS_IN ;
+
+K_MSGQ_DEFINE(msgq_OPUS_IN_ADC , sizeof(m_audio_frame_t), 3, 4);
+struct k_msgq *p_msgq_OPUS_IN_ADC = &msgq_OPUS_IN_ADC ;
+
+K_MSGQ_DEFINE(msgq_OPUS_IN_RADIO, sizeof(m_audio_frame_t), 3, 4);
+struct k_msgq *p_msgq_OPUS_IN_RADIO = &msgq_OPUS_IN_RADIO;
 
 
 K_MSGQ_DEFINE(msgq_rx_IN, INPUT_DATA_SIZE/I2S_BUFFER_RATIO, I2S_BUFFER_RATIO, 4);
@@ -70,7 +76,7 @@ void audio_rx_process()
 		k_msgq_get(p_msgq_rx_IN, &data_in[i], K_FOREVER);
 	}
 #else
-	k_sem_take(&Rx_lock, K_FOREVER);
+	k_sem_take(&rx_lock, K_FOREVER);
 #endif
 
 	//
@@ -84,7 +90,7 @@ void audio_tx_process()
 {
 	m_audio_frame_t *p_frame = &frame_OPUS_decode;
 
-	if(k_msgq_get(p_msgq_OPUS_IN, p_frame, K_NO_WAIT) == 0) {
+	if(k_msgq_get(p_msgq_OPUS_IN_ADC, p_frame, K_NO_WAIT) == 0) {
 		/*decode opus to pcm*/
 		drv_audio_codec_decode(p_frame, (int16_t *)data_out);
     	audio_stats_counter.Opus_dec++;
@@ -105,8 +111,8 @@ static void audio_rx_task(){
 
 	LOG_INF("start Audio_Rx_Task" );
 #ifndef CONFIG_AUDIO_CODEC_SGTL5000
-	k_sem_init(&Rx_lock, 0, UINT_MAX);
-	k_timer_start(&Rx_timer, CONFIG_AUDIO_FRAME_SIZE_MS, CONFIG_AUDIO_FRAME_SIZE_MS);
+	k_sem_init(&rx_lock, 0, UINT_MAX);
+	k_timer_start(&rx_timer, CONFIG_AUDIO_FRAME_SIZE_MS, CONFIG_AUDIO_FRAME_SIZE_MS);
 #endif
 	while(1){
 		audio_rx_process();

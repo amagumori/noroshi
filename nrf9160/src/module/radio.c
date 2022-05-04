@@ -31,13 +31,15 @@ LOG_MODULE_REGISTER(MODULE, 1);   // log level 1 = ???
 
 const k_tid_t radio_thread;
 
-// I2S.h 
+// replace this with the opus frame buffers
 extern i16 *outgoing_message_buffer;
 extern size_t outgoing_message_size;
 extern u16 *incoming_message_buffer;
 extern size_t incoming_message_size;
 extern struct k_mutex incoming_mutex;
 extern struct k_mutex outgoing_mutex;
+
+extern struct k_msgq *codec_tx_q;
 
 /* 
  *
@@ -397,6 +399,19 @@ int push_audio_payload ( struct mqtt_client *client, struct mqtt_publish_message
 
   return 1;
 }
+
+void mqtt_tx_process() {
+  while ( 1 ) {
+    m_audio_frame_t *frame = &frame_OPUS_encode;
+    if ( k_msgq_get( &codec_tx_q, 
+  }
+}
+
+void mqtt_rx_process() {
+  while ( 1 ) {
+  }
+}
+
 
 void i2s_event_handler ( struct radio_msg *msg ) {
   if ( IS_EVENT ( msg, i2s, I2S_EVENT_TRANSMIT_READY ) ) {
