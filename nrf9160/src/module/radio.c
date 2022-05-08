@@ -31,34 +31,9 @@ LOG_MODULE_REGISTER(MODULE, 1);   // log level 1 = ???
 
 const k_tid_t radio_thread;
 
-// replace this with the opus frame buffers
-extern i16 *outgoing_message_buffer;
-extern size_t outgoing_message_size;
-extern u16 *incoming_message_buffer;
-extern size_t incoming_message_size;
-extern struct k_mutex incoming_mutex;
-extern struct k_mutex outgoing_mutex;
-
-extern struct k_msgq *codec_tx_q;
-
-/* 
- *
- * DATA LAYER - PACKET-LEVEL EVENTS
- *
- */
-
-u16 mqtt_rx_buffer[CONFIG_MQTT_RX_BUFFER_SIZE];
-u16 mqtt_tx_buffer[CONFIG_MQTT_TX_BUFFER_SIZE];
-
-u16 tx_buffer[MAX_MESSAGE_SIZE];
-
-u16 rx_buffer_front[MAX_MESSAGE_SIZE];
-u16 rx_buffer_back[MAX_MESSAGE_SIZE];
-bool front;
-
-
-size_t audio_buffer_offset;
-u16 *audio_ptr;
+extern struct k_msgq *p_opus_outgoing;
+extern struct k_msgq *p_opus_incoming;
+const int DroppedPackets;
 
 // MQTT_QOS_0_AT_MOST_ONCE
 static mqtt_qos QOS = 0x00;
@@ -71,6 +46,7 @@ static struct mqtt_client client;
 static struct sockaddr_storage broker;
 static struct pollfd fds;
 
+m_audio_frame_t *tx_frame;
 // literally do you even need any of this shit.
 
 struct radio_msg {
@@ -86,8 +62,32 @@ struct radio_msg {
 #define DATA_QUEUE_ALIGNMENT 4
 K_MSGQ_DEFINE(radio_msg_queue, sizeof(struct radio_msg), DATA_QUEUE_ENTRY_COUNT, DATA_QUEUE_ALIGNMENT);
 
+
 /*
- * MQTT STUFF 
+ * The idea as it stands right now:
+ * 
+ * TRANSMIT
+ *
+ * When you depress the push-to-talk button, you issue a "key-up request" to the broker.
+ * The broker either:
+ *   accepts your key-up, giving an ACK back; now every other publish message other than from you will be thrown away broker-side until you release it.
+ *     (and new key-up requests will have an ACK DENY sent back.)
+ *   denies your key-up.  this fires an event reflected in UI update, showing that the airwaves are keyed up by someone else right now.
+ *
+ * Once you're keyed up, the flow is:
+ * I2S LINE IN / MIC -> OPUS ENCODER -> the p_opus_outgoing message queue.
+ * each message in the queue is an encoder frame.
+ * as long as there are remaining frames, the main thread sends MQTT PUBLISHes with the frames as payload.
+ * as it stands now this is a high volume of MQTT publishes, although i think it'll be fine.
+ *
+ * --
+ *
+ * RECEIVE 
+ *
+ * when new PUBLISH events are received, it's handled in the MQTT event handler.
+ * as of now - we issue mqtt_read_publish_payload directly into the rx_buffer ( which should match m_audio_frame_t as it is a frame.. )
+ * we then push into p_opus_incoming message queue from rx_buffer.
+ *
  *
  */
 
@@ -146,6 +146,9 @@ static int init_client( void ) {
   audio_buffer_offset = 0;
   front = true;
 
+  DroppedPackets = 0;
+  tx_frame = &frame_OPUS_encode;
+
   mqtt_client_init(client);
 
   err = broker_init();
@@ -167,12 +170,6 @@ static int init_client( void ) {
   client->password = NULL;
   client->user_name = NULL;
   client->protocol_version = MQTT_VERSION_3_1_1;
-
- 	/* MQTT buffers configuration */
-	client->rx_buf = mqtt_rx_buffer
-	client->rx_buf_size = sizeof(mqtt_rx_buffer);
-	client->tx_buf = mqtt_tx_buffer;
-	client->tx_buf_size = sizeof(mqtt_tx_buffer);
 
 	/* MQTT transport configuration */
 #if defined(CONFIG_MQTT_LIB_TLS)
@@ -312,6 +309,99 @@ void publish_info( struct mqtt_client *client, u16 *data, size_t len ) {
 	return mqtt_publish(client, &param);
 }
 
+void radio_loop() {
+  int err;
+  u32 connect_attempt = 0;
+  LOG_INF("MQTT thread started.");
+
+  // TLS stuff.
+
+  do {
+    err = modem_configure();
+    if ( err ) {
+      LOG_INF("retrying modem config in %d seconds.", CONFIG_LTE_CONNECT_RETRY_DELAY_S);
+      k_sleep(K_SECONDS(CONFIG_LTE_CONNECT_RETRY_DELAY_S));
+    } 
+  } while ( err );
+
+  err = init_client( &client );
+  if ( err != 0 ) {
+    LOG_ERR("init mqtt client: error %d", err);
+    return;
+  }
+
+do_connect:
+  if ( connect_attempt++ > 0 ) {
+    LOG_INF("reconnecting in %d sec...", CONFIG_MQTT_RECONNECT_DELAY_S);
+    k_sleep( K_SECONDS( CONFIG_MQTT_RECONNECT_DELAY_S ) );
+  }
+  err = mqtt_connect( &client );
+  if ( err != 0 ) {
+    LOG_ERR("mqtt connect: %d", err);
+    goto do_connect;
+  }
+
+  err = fds_init( &client );
+  if ( err != 0 ) {
+    LOG_ERR("fds_init: %d", err);
+    return;
+  }
+
+  while ( 1 ) {
+    // keepalive ping
+    err = poll(&fds, 1, mqtt_keepalive_time_left(&client));
+
+    // poll codec message queue to see if TX frames are ready.
+    if ( k_msgq_num_used_get( codec_tx_q) ) {
+      k_msgq_get( &codec_tx_q, tx_frame, K_NO_WAIT );
+      transmit( tx_frame );
+    }
+
+    if ( err != 0 ) {
+      LOG_ERR("poll: %d", err);
+      break;
+    }
+    err = mqtt_live( &client );
+    if ( err != 0 && ( err != -EAGAIN ) ) {
+      LOG_ERR("mqtt_live: %d", err);
+      break;
+    }
+
+    if ( ( fds.revents & POLLIN ) == POLLIN ) {
+      err = mqtt_input(&client);
+      if ( err != 0 ) {
+        LOG_ERR("mqtt_input: %d", err);
+        break;
+      }
+    }
+    if ( ( fds.revents & POLLERR ) == POLLERR ) {
+      LOG_ERR("mqtt_input: %d", err);
+      break;
+    }
+    if ( ( fds.revents & POLLNVAL ) == POLLNVAL ) {
+      LOG_ERR("mqtt_input: %d", err);
+      break;
+    }
+  }
+
+  LOG_INF("disconnecting mqtt client...");
+  err = mqtt_disconnect(&client);
+  if ( err ) {
+    LOG_ERR("couldn't disconnect?! %d", err);
+  }
+  goto do_connect;
+}
+
+void mqtt_tx_process() {
+  while ( 1 ) {
+    m_audio_frame_t *frame = &frame_OPUS_encode;
+
+    if ( k_msgq_num_used_get( codec_tx_q) ) {
+      k_msgq_get( &codec_tx_q, frame, K_NO_WAIT );
+      transmit( frame );
+    }
+}
+
 int transmit( void ) {
   // MUTEX
   k_mutex_lock( &outgoing_mutex );
@@ -329,95 +419,12 @@ int transmit( void ) {
   return 1;
 }
 
-/* 
- * having sequenced transmissions is a whole other can of worms
- * that can be attempted later.  not minimum viable thing.
-int read_payload ( struct mqtt_client *client, struct mqtt_publish_message *msg ) {
-  u16 seq = msg->payload.seq;
-  u16 offset = number * CONFIG_MQTT_PAYLOAD_BUFFER_SIZE;
-  // uh oh
-  memcpy(&output_buffer + offset, msg->payload.data, msg->payload.len); 
-  message_chunks_remaining--;
-  // this is absolutely not the way
-}
-*/
-
-void switch_buffers( void ) {
-  if ( audio_ptr >= rx_buffer_front &&
-       audio_ptr <= rx_buffer_front + audio_buffer_offset ) {
-    memset( rx_buffer_back, 0, MAX_MESSAGE_SIZE );
-    audio_ptr = rx_buffer_back;
-    audio_buffer_offset = 0;
-    front = false;
-  }
-  if ( audio_ptr >= rx_buffer_back &&
-       audio_ptr <= rx_buffer_back + audio_buffer_offset ) {
-    memset( rx_buffer_front, 0, MAX_MESSAGE_SIZE );
-    audio_ptr = rx_buffer_front;
-    audio_buffer_offset = 0;
-    front = true;
-  }
-  else {
-    LOG_ERR("audio_ptr out of bounds. %x", audio_ptr);
-    LOG_ERR("front buffer: %x to %x", rx_buffer_front, rx_buffer_front + audio_buffer_offset);
-    LOG_ERR("back buffer: %x to %x", rx_buffer_back, rx_buffer_back + audio_buffer_offset);
-  }
-}
-
-// so this is just throwing our things into a circular buffer
-// which i think is the way
-int push_audio_payload ( struct mqtt_client *client, struct mqtt_publish_message *msg ) {
-  
-  k_mutex_lock( &incoming_mutex );
-
-  if ( audio_buffer_offset + msg->payload.len >= MAX_MESSAGE_SIZE ) {
-    struct radio_event *evt = new_radio_event();
-    evt->type = RADIO_EVENT_INCOMING_MSG_DONE;
-    incoming_message_buffer = audio_ptr;
-    incoming_message_size   = audio_buffer_offset;
-
-    //evt->buffer_data.ptr = audio_ptr;
-    //evt->buffer_data.len = audio_buffer_offset;
-
-    switch_buffers();
-    EVENT_SUBMIT( evt );
-  }
-
-  memcpy( &audio_ptr + audio_buffer_offset, msg->payload.data, msg->payload.len );
-  audio_buffer_offset += msg->payload.len;
-
-  if ( msg->payload.end == true ) {
-    struct radio_event *evt = new_radio_event();
-    evt->type = RADIO_EVENT_INCOMING_MSG_DONE;
-    incoming_message_buffer = audio_ptr;
-    incoming_message_size   = audio_buffer_offset;
-    switch_buffers();
-    EVENT_SUBMIT( evt );
-  }
-
-  k_mutex_unlock( &incoming_mutex );
-
-  return 1;
-}
-
-void mqtt_tx_process() {
-  while ( 1 ) {
-    m_audio_frame_t *frame = &frame_OPUS_encode;
-    if ( k_msgq_get( &codec_tx_q, 
-  }
-}
-
 void mqtt_rx_process() {
   while ( 1 ) {
+    
   }
 }
 
-
-void i2s_event_handler ( struct radio_msg *msg ) {
-  if ( IS_EVENT ( msg, i2s, I2S_EVENT_TRANSMIT_READY ) ) {
-    transmit();
-  }
-}
 
 void mqtt_event_handler( struct mqtt_client *client, struct mqtt_evt *evt ) {
   int err;
@@ -437,35 +444,24 @@ void mqtt_event_handler( struct mqtt_client *client, struct mqtt_evt *evt ) {
 		LOG_INF("MQTT client disconnected: %d", evt->result);
 		break;
 
-	case MQTT_EVT_PUBLISH: {
+	case MQTT_EVT_PUBLISH:
 		const struct mqtt_publish_param *p = &evt->param.publish;
 
-		LOG_INF("MQTT PUBLISH result=%d len=%d",
-			evt->result, p->message.payload.len);
-		err = publish_get_payload(c, p->message.payload.len);
+		LOG_INF("MQTT PUBLISH received.");
 
-    if ( p.user_hash != me ) {
-      push_audio_payload( client, p.message );
+		err = mqtt_read_publish_payload( &client, rx_buffer, RADIO_MQTT_RX_SIZE );
+    if ( k_msgq_put( &p_opus_incoming, rx_buffer, K_NO_WAIT ) != 0 ) {
+      LOG_INF("dropped a payload. oopsie.");
+      DroppedPackets++;
     }
+    // double buffer later if needed.
+    // switch_rx_buffer();
 
-    /*
-		if (err >= 0) {
-			data_print("Received: ", payload_buf,
-				p->message.payload.len);
-			* Echo back received data 
-			data_publish(&client, MQTT_QOS_1_AT_LEAST_ONCE,
-				payload_buf, p->message.payload.len);
-		} else {
-      */ 
-			LOG_ERR("publish_get_payload failed: %d", err);
-			LOG_INF("Disconnecting MQTT client...");
-
-			err = mqtt_disconnect(c);
-			if (err) {
-				LOG_ERR("Could not disconnect: %d", err);
-			}
-		
-	} break;
+    if ( err != 0 ) {
+      LOG_ERR("error reading published payload: %d", err);
+    }
+  
+    break;
 
 	case MQTT_EVT_PUBACK:
 		if (evt->result != 0) {

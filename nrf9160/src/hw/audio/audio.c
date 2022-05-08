@@ -31,29 +31,25 @@ k_tid_t audio_tx_tid;
 
 audio_stats_counter_t audio_stats_counter;
 
-static u8   data_in_backbuffer[INPUT_DATA_SIZE];
+static u8   i2s_line_in_backbuffer[INPUT_DATA_SIZE];
 
-static u8_t data_in[INPUT_DATA_SIZE];
-static u8_t data_out[OUTPUT_DATA_SIZE];
+static u8_t i2s_line_in[INPUT_DATA_SIZE];
+static u8_t i2s_speaker[OUTPUT_DATA_SIZE];
 
 static m_audio_frame_t frame_OPUS_encode;
 static m_audio_frame_t frame_OPUS_decode = {.data_size = 0};
 
 
-K_MSGQ_DEFINE(msgq_OPUS_OUT , sizeof(m_audio_frame_t), 1, 4);
-struct k_msgq *p_msgq_OPUS_OUT = &msgq_OPUS_OUT ;
+K_MSGQ_DEFINE(msgq_OPUS_ENCODE, sizeof(m_audio_frame_t), 1, 4);
+struct k_msgq *p_msgq_OPUS_ENCODE = &msgq_OPUS_ENCODE;
 
-K_MSGQ_DEFINE(msgq_OPUS_IN_ADC , sizeof(m_audio_frame_t), 3, 4);
-struct k_msgq *p_msgq_OPUS_IN_ADC = &msgq_OPUS_IN_ADC ;
+K_MSGQ_DEFINE(msgq_OPUS_DECODE, sizeof(m_audio_frame_t), 3, 4);
+struct k_msgq *p_msgq_OPUS_DECODE= &msgq_OPUS_DECODE;
 
-K_MSGQ_DEFINE(msgq_OPUS_IN_RADIO, sizeof(m_audio_frame_t), 3, 4);
-struct k_msgq *p_msgq_OPUS_IN_RADIO = &msgq_OPUS_IN_RADIO;
-
-
-K_MSGQ_DEFINE(msgq_rx_IN, INPUT_DATA_SIZE/I2S_BUFFER_RATIO, I2S_BUFFER_RATIO, 4);
-struct k_msgq *p_msgq_rx_IN = &msgq_rx_IN;
-K_MSGQ_DEFINE(msgq_tx_OUT, OUTPUT_DATA_SIZE/I2S_BUFFER_RATIO, I2S_BUFFER_RATIO*2, 4);
-struct k_msgq *p_msgq_tx_OUT = &msgq_tx_OUT;
+K_MSGQ_DEFINE(msgq_i2s_in, INPUT_DATA_SIZE/I2S_BUFFER_RATIO, I2S_BUFFER_RATIO, 4);
+struct k_msgq *p_msgq_i2s_in = &msgq_i2s_in;
+K_MSGQ_DEFINE(msgq_i2s_out, OUTPUT_DATA_SIZE/I2S_BUFFER_RATIO, I2S_BUFFER_RATIO*2, 4);
+struct k_msgq *p_msgq_i2s_out = &msgq_i2s_out;
 
 #ifndef CONFIG_AUDIO_CODEC_SGTL5000
 
@@ -73,7 +69,7 @@ void audio_rx_process()
 
 #if CONFIG_AUDIO_CODEC_SGTL5000
 	for(int i=0; i<INPUT_DATA_SIZE; i+= INPUT_DATA_SIZE/I2S_BUFFER_RATIO){
-		k_msgq_get(p_msgq_rx_IN, &data_in[i], K_FOREVER);
+		k_msgq_get(p_msgq_i2s_in, &i2s_line_in[i], K_FOREVER);
 	}
 #else
 	k_sem_take(&rx_lock, K_FOREVER);
@@ -82,28 +78,28 @@ void audio_rx_process()
 	//
 	audio_stats_counter.Opus_enc++;
 	/*encode pcm to opus*/
-	drv_audio_codec_encode((int16_t *) data_in, p_frame);
-	k_msgq_put(p_msgq_OPUS_OUT, p_frame, K_FOREVER);
+	drv_audio_codec_encode((int16_t *) i2s_line_in, p_frame);
+	k_msgq_put(p_msgq_OPUS_ENCODE, p_frame, K_FOREVER);
 }
 
 void audio_tx_process()
 {
 	m_audio_frame_t *p_frame = &frame_OPUS_decode;
 
-	if(k_msgq_get(p_msgq_OPUS_IN_ADC, p_frame, K_NO_WAIT) == 0) {
+	if(k_msgq_get(p_msgq_OPUS_DECODE, p_frame, K_NO_WAIT) == 0) {
 		/*decode opus to pcm*/
-		drv_audio_codec_decode(p_frame, (int16_t *)data_out);
+		drv_audio_codec_decode(p_frame, (int16_t *)i2s_speaker);
     	audio_stats_counter.Opus_dec++;
 	}else{
 		//LOG_ERR("Missing frame");
 		p_frame->data_size = 0;
 		//
-		drv_audio_codec_decode(p_frame, (int16_t *)data_out);
+		drv_audio_codec_decode(p_frame, (int16_t *)i2s_speaker);
     	audio_stats_counter.Opus_gen++;
 	}
 
 	for(int i=0; i<OUTPUT_DATA_SIZE; i+= OUTPUT_DATA_SIZE/I2S_BUFFER_RATIO){
-		k_msgq_put(p_msgq_tx_out, &data_out[i], K_FOREVER);
+		k_msgq_put(p_msgq_tx_out, &i2s_speaker[i], K_FOREVER);
 	}
 }
 
@@ -132,7 +128,7 @@ void audio_system_init()
 	audio_codec_opus_init();
 
 #if CONFIG_AUDIO_CODEC_SGTL5000
-	audio_codec_I2S_init(p_msgq_rx_IN, p_msgq_tx_OUT);
+	audio_codec_I2S_init(p_msgq_i2s_in, p_msgq_i2s_out);
 #endif
 
 	Audio_Rx_tid = k_thread_create(&audio_rx_thread_data, audio_rx_stack_area,
