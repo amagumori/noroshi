@@ -209,6 +209,48 @@ static void submit_edrx_update( float edrx, float ptw ) {
   EVENT_SUBMIT(event);
 }
 
+static int configure_low_power(void)
+{
+	int err;
+
+#if defined(CONFIG_UDP_PSM_ENABLE)
+	/** Power Saving Mode */
+	err = lte_lc_psm_req(true);
+	if (err) {
+		printk("lte_lc_psm_req, error: %d\n", err);
+	}
+#else
+	err = lte_lc_psm_req(false);
+	if (err) {
+		printk("lte_lc_psm_req, error: %d\n", err);
+	}
+#endif
+
+#if defined(CONFIG_UDP_EDRX_ENABLE)
+	/** enhanced Discontinuous Reception */
+	err = lte_lc_edrx_req(true);
+	if (err) {
+		printk("lte_lc_edrx_req, error: %d\n", err);
+	}
+#else
+	err = lte_lc_edrx_req(false);
+	if (err) {
+		printk("lte_lc_edrx_req, error: %d\n", err);
+	}
+#endif
+
+#if defined(CONFIG_UDP_RAI_ENABLE)
+	/** Release Assistance Indication  */
+	err = lte_lc_rai_req(true);
+	if (err) {
+		printk("lte_lc_rai_req, error: %d\n", err);
+	}
+#endif
+
+	return err;
+}
+
+
 static int get_battery_data( void ) {
   int err;
 

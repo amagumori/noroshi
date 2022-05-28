@@ -32,6 +32,8 @@ LOG_MODULE_DECLARE(audio, LOG_LEVEL_DBG);
 static struct k_msgq *p_msgq_I2S_Rx;
 static struct k_msgq *p_msgq_I2S_Tx;
 
+struct k_msgq *p_msgq_radio_decoded;
+
 //#define AUDIO_FRAME_WORDS                   320
 #define AUDIO_FRAME_WORDS                   CONFIG_AUDIO_FRAME_SIZE_SAMPLES/I2S_BUFFER_RATIO // Sample Left and right in one word
 static uint32_t  m_i2s_rx_buffer[2][AUDIO_FRAME_WORDS];// Double buffered
@@ -75,6 +77,8 @@ static bool i2s_sgtl5000_driver_evt_handler(drv_sgtl5000_evt_t * p_evt)
 {
 	u16_t PCM_Data_RX[AUDIO_FRAME_WORDS]; //mono
 	u16_t PCM_Data_TX[AUDIO_FRAME_WORDS*2]; //stereo
+
+  u16_t Radio_PCM_TX[AUDIO_FRAME_WORDS]; // mono for now?
 	
     bool ret = true;
     //NRF_LOG_INFO("i2s_sgtl5000_driver_evt_handler %d", p_evt->evt);
@@ -116,6 +120,30 @@ static bool i2s_sgtl5000_driver_evt_handler(drv_sgtl5000_evt_t * p_evt)
                 if(type == player)
                 {
                 	if(k_msgq_get(p_msgq_I2S_Tx, PCM_Data_TX, K_NO_WAIT) == 0){
+
+                    // @TODO attempting mixing from two audio streams here
+                    // how slow is this???
+                    // http://www.vttoth.com/CMS/index.php/technical-notes/68
+                    
+                    if ( k_msgq_get( p_msgq_radio_decoded, Radio_PCM_TX, K_NO_WAIT ) == 0 ) {
+                      // both have to obey i2s_buffer_size_words
+                      for ( int i=0; i < (i2s_buffer_size_words); i++ ) {
+                        // https://stackoverflow.com/questions/12089662/mixing-16-bit-linear-pcm-streams-and-avoiding-clipping-overflow?rq=1
+                        if ((PCM_Data_TX[i] < 32768) || (Radio_PCM_TX[i] < 32768)) {
+                          // Viktor's first equation when both sources are "quiet"
+                          // (i.e. less than middle of the dynamic range)
+                          m = PCM_Data_TX[i] * Radio_PCM_TX[i] / 32768;
+                        } else {
+                          // Viktor's second equation when one or both sources are loud
+                          m = 2 * (PCM_Data_TX[i] + Radio_PCM_TX[i]) - (PCM_Data_TX[i] * Radio_PCM_TX[i]) / 32768 - 65536;
+                        }
+                        // mono to stereo 
+                        p_buffer[i*2] = m;
+                        p_buffer[i*2+1] = m;
+                      }
+                    }
+
+
                 		//Mono to Stereo
                 		for(int i=0; i< (i2s_buffer_size_words);i++){
                 			//Copy sample

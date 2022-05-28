@@ -31,20 +31,28 @@ k_tid_t audio_tx_tid;
 
 audio_stats_counter_t audio_stats_counter;
 
-static u8   i2s_line_in_backbuffer[INPUT_DATA_SIZE];
-
 static u8_t i2s_line_in[INPUT_DATA_SIZE];
 static u8_t i2s_speaker[OUTPUT_DATA_SIZE];
 
+// second speaker buffer for radio station audio coming off the air
+static u8_t i2s_speaker_two[OUTPUT_DATA_SIZE];
+
 static m_audio_frame_t frame_OPUS_encode;
 static m_audio_frame_t frame_OPUS_decode = {.data_size = 0};
+
+// encoded frame coming off the air
+static m_audio_frame_t radio_station_frame_rx = {.data_size = 0};
 
 
 K_MSGQ_DEFINE(msgq_OPUS_ENCODE, sizeof(m_audio_frame_t), 1, 4);
 struct k_msgq *p_msgq_OPUS_ENCODE = &msgq_OPUS_ENCODE;
 
 K_MSGQ_DEFINE(msgq_OPUS_DECODE, sizeof(m_audio_frame_t), 3, 4);
-struct k_msgq *p_msgq_OPUS_DECODE= &msgq_OPUS_DECODE;
+struct k_msgq *p_msgq_OPUS_DECODE = &msgq_OPUS_DECODE;
+
+// radio.c
+extern struct k_msgq *radio_station_queue;
+
 
 K_MSGQ_DEFINE(msgq_i2s_in, INPUT_DATA_SIZE/I2S_BUFFER_RATIO, I2S_BUFFER_RATIO, 4);
 struct k_msgq *p_msgq_i2s_in = &msgq_i2s_in;
@@ -99,8 +107,29 @@ void audio_tx_process()
 	}
 
 	for(int i=0; i<OUTPUT_DATA_SIZE; i+= OUTPUT_DATA_SIZE/I2S_BUFFER_RATIO){
-		k_msgq_put(p_msgq_tx_out, &i2s_speaker[i], K_FOREVER);
+		k_msgq_put(p_msgq_i2s_out, &i2s_speaker[i], K_FOREVER);
 	}
+
+  // @TODO adding second decode stream here.
+  // attempting simultaneous VHF/UHF type voice comm + listening to radio stream
+
+	if(k_msgq_get(radio_station_queue, radio_station_frame_rx, K_NO_WAIT) == 0) {
+		/*decode opus to pcm*/
+		drv_audio_codec_decode(p_frame, (int16_t *)i2s_speaker_two);
+    	audio_stats_counter.Opus_dec++;
+	}else{
+		//LOG_ERR("Missing frame");
+		p_frame->data_size = 0;
+		//
+		drv_audio_codec_decode(p_frame, (int16_t *)i2s_speaker_two);
+    	audio_stats_counter.Opus_gen++;
+	}
+
+  for(int i=0; i<OUTPUT_DATA_SIZE; i+= OUTPUT_DATA_SIZE/I2S_BUFFER_RATIO){
+		k_msgq_put(p_msgq_radio_decoded, &i2s_speaker_two[i], K_FOREVER);
+	}
+
+
 }
 
 static void audio_rx_task(){
