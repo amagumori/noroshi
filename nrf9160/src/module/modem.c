@@ -291,7 +291,7 @@ static int lte_connect( void ) {
     return err;
   }
 
-  SEND_EVENT(modem, MODEM_EVT_LTE_CONNECTING);
+  SEND_EVENT(modem, MODEM_EVENT_LTE_CONNECTING);
   return 0;
 }
 
@@ -300,11 +300,11 @@ static void rsrp_handler( char rsrp_val ) {
     return;
   }
 
-  rsrp_value_latest = rsrp_to_db(rsrp_val);
+  rsrp_value_latest = rsrp_to_dbm(rsrp_val);
   LOG_DEBUG("new RSRP value: %d", rsrp_value_latest);
 }
 
-static inline int rsrp_to_db(int input) {
+static inline int rsrp_to_dbm(int input) {
   if ( IS_ENABLED(CONFIG_MODEM_CONVERT_RSRP_AND_RSPQ_TO_DB) ) {
     return input - 140;
   }
@@ -318,146 +318,32 @@ static inline int rsrq_to_db(int input) {
   return input;
 }
 
-// wholesale copy and pasted.  this is just busywork bookkeeping code anyhow
+static void neighbor_cell_update( struct lte_lc_cells_info *cell_info ) {
+  struct modem_event *evt = new_modem_event();
 
-#ifdef CONFIG_LWM2M_CARRIER
-static void print_carrier_error(const lwm2m_carrier_event_t *evt)
-{
-	const lwm2m_carrier_event_error_t *err = (lwm2m_carrier_event_error_t *)evt->data;
-	static const char *const strerr[] = {
-		[LWM2M_CARRIER_ERROR_NO_ERROR] =
-			"No error",
-		[LWM2M_CARRIER_ERROR_BOOTSTRAP] =
-			"Bootstrap error",
-		[LWM2M_CARRIER_ERROR_CONNECT_FAIL] =
-			"Failed to connect to the LTE network",
-		[LWM2M_CARRIER_ERROR_DISCONNECT_FAIL] =
-			"Failed to disconnect from the LTE network",
-		[LWM2M_CARRIER_ERROR_FOTA_PKG] =
-			"Package refused from modem",
-		[LWM2M_CARRIER_ERROR_FOTA_PROTO] =
-			"Protocol error",
-		[LWM2M_CARRIER_ERROR_FOTA_CONN] =
-			"Connection to remote server failed",
-		[LWM2M_CARRIER_ERROR_FOTA_CONN_LOST] =
-			"Connection to remote server lost",
-		[LWM2M_CARRIER_ERROR_FOTA_FAIL] =
-			"Modem firmware update failed",
-		[LWM2M_CARRIER_ERROR_CONFIGURATION] =
-			"Illegal object configuration detected",
-	};
+  // asserts
+  //
+  memcpy( &evt->data.neighbor_cells.cell_data, cell_info, sizeof(struct lte_lc_cells_info) );
+  memcpy( &evt->data.neighbor_cells.neighbor_cells, cell_info->neighbor_cells, 
+    sizeof( struct lte_lc_ncell ) * evt->data.neighbor_cells.cell_data.ncells_count );
+  // convert RSRP to dBm / RSRQ to dB
+  evt->data.neighbor_cells.cell_data.current_cell.rsrp = rsrp_to_dbm(
+      evt->data.neighbor_cells.cell_data.current_cell.rsrp );
+  evt->data.neighbor_cells.cell_data.current_cell.rsrq = rsrq_to_db( 
+      evt->data.neighbor_cells.cell_data.current_cell.rsrq );
 
-	__ASSERT(PART_OF_ARRAY(strerr, &strerr[err->code]), "Unhandled carrier library error");
+  for ( size_t i=0; i < evt->data.neighbor_cells.cell_data.ncells_count; i++ ) {
+    evt->data.neighbor_cells.neighbor_cells[i].rsrp = 
+      rsrp_to_dbm( evt->data.neighbor_cells.neighbor_cells[i].rsrp );
+    evt->data.neighbor_cells.neighbor_cells[i].rsrq = 
+      rsrq_to_db( evt->data.neighbor_cells.neighbor_cells[i].rsrq );
+  }
 
-	LOG_ERR("%s, reason %d\n", strerr[err->code], err->value);
+  evt->type = MODEM_EVENT_NEIGHBOR_CELLS_DATA_READY;
+  evt->data.neighbor_cells.timestamp = k_uptime_get();
+
+  EVENT_SUBMIT(evt);
 }
-
-static void print_carrier_deferred_reason(const lwm2m_carrier_event_t *evt)
-{
-	const lwm2m_carrier_event_deferred_t *def = (lwm2m_carrier_event_deferred_t *)evt->data;
-	static const char *const strdef[] = {
-		[LWM2M_CARRIER_DEFERRED_NO_REASON] =
-			"No reason given",
-		[LWM2M_CARRIER_DEFERRED_PDN_ACTIVATE] =
-			"Failed to activate PDN",
-		[LWM2M_CARRIER_DEFERRED_BOOTSTRAP_NO_ROUTE] =
-			"No route to bootstrap server",
-		[LWM2M_CARRIER_DEFERRED_BOOTSTRAP_CONNECT] =
-			"Failed to connect to bootstrap server",
-		[LWM2M_CARRIER_DEFERRED_BOOTSTRAP_SEQUENCE] =
-			"Bootstrap sequence not completed",
-		[LWM2M_CARRIER_DEFERRED_SERVER_NO_ROUTE] =
-			"No route to server",
-		[LWM2M_CARRIER_DEFERRED_SERVER_CONNECT] =
-			"Failed to connect to server",
-		[LWM2M_CARRIER_DEFERRED_SERVER_REGISTRATION] =
-			"Server registration sequence not completed",
-		[LWM2M_CARRIER_DEFERRED_SERVICE_UNAVAILABLE] =
-			"Server in maintenance mode",
-	};
-
-	__ASSERT(PART_OF_ARRAY(strdef, &strdef[def->reason]),
-		"Unhandled deferred carrier library error");
-
-	LOG_ERR("Reason: %s, timeout: %d seconds\n", strdef[def->reason], def->timeout);
-}
-
-int lwm2m_carrier_event_handler(const lwm2m_carrier_event_t *evt)
-{
-	int err = 0;
-
-	switch (evt->type) {
-	case LWM2M_CARRIER_EVENT_MODEM_INIT:
-		LOG_INF("LWM2M_CARRIER_EVENT_MODEM_INIT");
-		SEND_EVENT(modem, MODEM_EVT_CARRIER_INITIALIZED);
-		break;
-	case LWM2M_CARRIER_EVENT_CONNECTING:
-		LOG_INF("LWM2M_CARRIER_EVENT_CONNECTING");
-		break;
-	case LWM2M_CARRIER_EVENT_CONNECTED:
-		LOG_INF("LWM2M_CARRIER_EVENT_CONNECTED");
-		break;
-	case LWM2M_CARRIER_EVENT_DISCONNECTING:
-		LOG_INF("LWM2M_CARRIER_EVENT_DISCONNECTING");
-		break;
-	case LWM2M_CARRIER_EVENT_DISCONNECTED:
-		LOG_INF("LWM2M_CARRIER_EVENT_DISCONNECTED");
-		break;
-	case LWM2M_CARRIER_EVENT_BOOTSTRAPPED:
-		LOG_INF("LWM2M_CARRIER_EVENT_BOOTSTRAPPED");
-		break;
-	case LWM2M_CARRIER_EVENT_LTE_READY: {
-		LOG_INF("LWM2M_CARRIER_EVENT_LTE_READY");
-		SEND_EVENT(modem, MODEM_EVT_LTE_CONNECTED);
-		break;
-	}
-	case LWM2M_CARRIER_EVENT_REGISTERED:
-		LOG_INF("LWM2M_CARRIER_EVENT_REGISTERED");
-		break;
-	case LWM2M_CARRIER_EVENT_DEFERRED:
-		LOG_INF("LWM2M_CARRIER_EVENT_DEFERRED");
-		print_carrier_deferred_reason(evt);
-		break;
-	case LWM2M_CARRIER_EVENT_FOTA_START: {
-		LOG_INF("LWM2M_CARRIER_EVENT_FOTA_START");
-		SEND_EVENT(modem, MODEM_EVT_CARRIER_FOTA_PENDING);
-		break;
-	}
-	case LWM2M_CARRIER_EVENT_REBOOT: {
-		LOG_INF("LWM2M_CARRIER_EVENT_REBOOT");
-		SEND_EVENT(modem, MODEM_EVT_CARRIER_REBOOT_REQUEST);
-
-		/* 1 is returned here to indicate to the carrier library that
-		 * the application will handle rebooting of the system to
-		 * ensure it happens gracefully. The alternative is to
-		 * return 0 and let the library reboot at its convenience.
-		 */
-		return 1;
-	}
-	case LWM2M_CARRIER_EVENT_ERROR: {
-		const lwm2m_carrier_event_error_t *err = (lwm2m_carrier_event_error_t *)evt->data;
-
-		LOG_ERR("LWM2M_CARRIER_EVENT_ERROR");
-		print_carrier_error(evt);
-
-		if (err->code == LWM2M_CARRIER_ERROR_FOTA_FAIL) {
-			SEND_EVENT(modem, MODEM_EVT_CARRIER_FOTA_STOPPED);
-		}
-		break;
-	}
-	case LWM2M_CARRIER_EVENT_CERTS_INIT:
-		err = carrier_certs_provision((ca_cert_tags_t *)evt->data);
-		break;
-	}
-
-	return err;
-}
-
-/* @TODO
- *
- *
- * REFACTOR FROM HERE 
- *
 
 static int modem_data_init(void)
 {
@@ -515,7 +401,7 @@ static int setup(void)
 
 static void on_state_init(struct modem_msg_data *msg)
 {
-	if (IS_EVENT(msg, modem, MODEM_EVT_CARRIER_INITIALIZED)) {
+	if (IS_EVENT(msg, modem, MODEM_EVENT_CARRIER_INITIALIZED)) {
 		int err;
 
 		state_set(STATE_DISCONNECTED);
@@ -529,51 +415,51 @@ static void on_state_init(struct modem_msg_data *msg)
 		err = setup();
 		__ASSERT(err == 0, "Failed running setup()");
 
-		SEND_EVENT(modem, MODEM_EVT_INITIALIZED);
+		SEND_EVENT(modem, MODEM_EVENT_INITIALIZED);
 	}
 }
 
 static void on_state_disconnected(struct modem_msg_data *msg)
 {
-	if (IS_EVENT(msg, modem, MODEM_EVT_LTE_CONNECTED)) {
+	if (IS_EVENT(msg, modem, MODEM_EVENT_LTE_CONNECTED)) {
 		state_set(STATE_CONNECTED);
 	}
 
-	if (IS_EVENT(msg, modem, MODEM_EVT_LTE_CONNECTING)) {
+	if (IS_EVENT(msg, modem, MODEM_EVENT_LTE_CONNECTING)) {
 		state_set(STATE_CONNECTING);
 	}
 }
 
 static void on_state_connecting(struct modem_msg_data *msg)
 {
-	if (IS_EVENT(msg, app, APP_EVT_LTE_DISCONNECT)) {
+	if (IS_EVENT(msg, app, APP_EVENT_LTE_DISCONNECT)) {
 		int err;
 
 		err = lte_lc_offline();
 		if (err) {
 			LOG_ERR("LTE disconnect failed, error: %d", err);
-			SEND_ERROR(modem, MODEM_EVT_ERROR, err);
+			SEND_ERROR(modem, MODEM_EVENT_ERROR, err);
 			return;
 		}
 
 		state_set(STATE_DISCONNECTED);
 	}
 
-	if (IS_EVENT(msg, modem, MODEM_EVT_LTE_CONNECTED)) {
+	if (IS_EVENT(msg, modem, MODEM_EVENT_LTE_CONNECTED)) {
 		state_set(STATE_CONNECTED);
 	}
 }
 
 static void on_state_connected(struct modem_msg_data *msg)
 {
-	if (IS_EVENT(msg, modem, MODEM_EVT_LTE_DISCONNECTED)) {
+	if (IS_EVENT(msg, modem, MODEM_EVENT_LTE_DISCONNECTED)) {
 		state_set(STATE_DISCONNECTED);
 	}
 }
 
 static void on_all_states(struct modem_msg_data *msg)
 {
-	if (IS_EVENT(msg, app, APP_EVT_START)) {
+	if (IS_EVENT(msg, app, APP_EVENT_START)) {
 		int err;
 
 		if (IS_ENABLED(CONFIG_LWM2M_CARRIER)) {
@@ -584,12 +470,12 @@ static void on_all_states(struct modem_msg_data *msg)
 		err = lte_connect();
 		if (err) {
 			LOG_ERR("Failed connecting to LTE, error: %d", err);
-			SEND_ERROR(modem, MODEM_EVT_ERROR, err);
+			SEND_ERROR(modem, MODEM_EVENT_ERROR, err);
 			return;
 		}
 	}
 
-	if (IS_EVENT(msg, app, APP_EVT_DATA_GET)) {
+	if (IS_EVENT(msg, app, APP_EVENT_DATA_GET)) {
 		if (static_modem_data_requested(msg->module.app.data_list,
 						msg->module.app.count)) {
 
@@ -598,7 +484,7 @@ static void on_all_states(struct modem_msg_data *msg)
 			err = static_modem_data_get();
 			if (err) {
 				SEND_EVENT(modem,
-					MODEM_EVT_MODEM_STATIC_DATA_NOT_READY);
+					MODEM_EVENT_MODEM_STATIC_DATA_NOT_READY);
 			}
 		}
 
@@ -610,7 +496,7 @@ static void on_all_states(struct modem_msg_data *msg)
 			err = dynamic_modem_data_get();
 			if (err) {
 				SEND_EVENT(modem,
-					MODEM_EVT_MODEM_DYNAMIC_DATA_NOT_READY);
+					MODEM_EVENT_MODEM_DYNAMIC_DATA_NOT_READY);
 			}
 		}
 
@@ -622,7 +508,7 @@ static void on_all_states(struct modem_msg_data *msg)
 			err = battery_data_get();
 			if (err) {
 				SEND_EVENT(modem,
-					MODEM_EVT_BATTERY_DATA_NOT_READY);
+					MODEM_EVENT_BATTERY_DATA_NOT_READY);
 			}
 		}
 
@@ -632,7 +518,7 @@ static void on_all_states(struct modem_msg_data *msg)
 
 			err = neighbor_cells_measurement_start();
 			if (err) {
-				SEND_EVENT(modem, MODEM_EVT_NEIGHBOR_CELLS_DATA_NOT_READY);
+				SEND_EVENT(modem, MODEM_EVENT_NEIGHBOR_CELLS_DATA_NOT_READY);
 			}
 		}
 	}
@@ -640,12 +526,9 @@ static void on_all_states(struct modem_msg_data *msg)
 	if (IS_EVENT(msg, util, UTIL_EVT_SHUTDOWN_REQUEST)) {
 		lte_lc_power_off();
 		state_set(STATE_SHUTDOWN);
-		SEND_SHUTDOWN_ACK(modem, MODEM_EVT_SHUTDOWN_READY, self.id);
+		SEND_SHUTDOWN_ACK(modem, MODEM_EVENT_SHUTDOWN_READY, self.id);
 	}
 }
-
-* to here
-*/
 
 static void entry_point(void)
 {
@@ -657,19 +540,19 @@ static void entry_point(void)
 	err = module_start(&self);
 	if (err) {
 		LOG_ERR("Failed starting module, error: %d", err);
-		SEND_ERROR(modem, MODEM_EVT_ERROR, err);
+		SEND_ERROR(modem, MODEM_EVENT_ERROR, err);
 	}
 
 	if (IS_ENABLED(CONFIG_LWM2M_CARRIER)) {
 		state_set(STATE_INIT);
 	} else {
 		state_set(STATE_DISCONNECTED);
-		SEND_EVENT(modem, MODEM_EVT_INITIALIZED);
+		SEND_EVENT(modem, MODEM_EVENT_INITIALIZED);
 
 		err = setup();
 		if (err) {
 			LOG_ERR("Failed setting up the modem, error: %d", err);
-			SEND_ERROR(modem, MODEM_EVT_ERROR, err);
+			SEND_ERROR(modem, MODEM_EVENT_ERROR, err);
 		}
 	}
 
