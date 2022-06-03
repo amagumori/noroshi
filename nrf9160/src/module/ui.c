@@ -234,4 +234,5 @@ EVENT_SUBSCRIBE_EARLY(MODULE, radio_event);
 EVENT_SUBSCRIBE_EARLY(MODULE, hw_event);
 EVENT_SUBSCRIBE_EARLY(MODULE, server_event);
 
-SYS_INIT(setup, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
+// this isn't strictly necessary but for an instant response when powering on is nice.
+SYS_INIT(init_ui, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);

@@ -86,30 +86,6 @@ static void submit_edrx_update(float edrx, float ptw);
 static inline int rsrp_to_db( int input );
 static inline int rsrq_to_db( int input );
 
-static int init_modem_data( void ) {
-  int err;
-
-  err = modem_info_init();
-  if ( err ) {
-    LOG_ERROR("error: modem_info_init: %d", err);
-    return err;
-  }
-
-  err = modem_info_params_init(&modem_info);
-  if ( err ) {
-    LOG_ERROR("error modem_info_params_init: %d", err);
-    return err;
-  }
-
-  err = modem_info_rsrp_register(rsrp_handler);
-  if ( err ) {
-    LOG_ERROR("error modem_info_rsrp_register: %d", err);
-    return err;
-  }
-
-  return 0;
-}
-
 static void lte_event_handler(const struct lte_lc_evt *const event) {
   switch( event->type ) {
     case LTE_LC_EVT_NW_REG_STATUS:
@@ -473,9 +449,12 @@ static void on_all_states(struct modem_msg_data *msg)
 			SEND_ERROR(modem, MODEM_EVENT_ERROR, err);
 			return;
 		}
+    SEND_EVENT(modem, MODEM_EVENT_LTE_CONNECTED);
 	}
 
 	if (IS_EVENT(msg, app, APP_EVENT_DATA_GET)) {
+
+    SEND_EVENT(modem, MODEM_EVENT_LTE_CONNECTED);
 		if (static_modem_data_requested(msg->module.app.data_list,
 						msg->module.app.count)) {
 
