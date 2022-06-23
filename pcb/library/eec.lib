@@ -1,0 +1,82 @@
+EESchema-LIBRARY Version 2.4
+#encoding utf-8
+#
+# ROHM RE1C002UNTCL
+#
+DEF RE1C002UNTCL Q 0 40 Y Y 1 L N
+F0 "Q" 0 400 50 H V L CNN 
+F1 "RE1C002UNTCL" 0 500 50 H V L CNN 
+F2 "ROHM-EMT3F-01_2016-A-*" 0 600 50 H I L CNN 
+F3 "https://www.rohm.com/datasheet/RE1C002UN/re1c002untcl-e" 0 700 50 H I L CNN 
+F4 "Trans" 0 800 50 H I L CNN "category"
+F5 "200mA" 0 900 50 H I L CNN "continuous drain current"
+F6 "Discrete Semiconductors" 0 1000 50 H I L CNN "device class L1"
+F7 "Transistors" 0 1100 50 H I L CNN "device class L2"
+F8 "MOSFETs" 0 1200 50 H I L CNN "device class L3"
+F9 "MOSFET N-CH 20V 0.2A EMT3" 0 1300 50 H I L CNN "digikey description"
+F10 "RE1C002UNTCLCT-ND" 0 1400 50 H I L CNN "digikey part number"
+F11 "20V" 0 1500 50 H I L CNN "drain to source breakdown voltage"
+F12 "0.8Ω" 0 1600 50 H I L CNN "drain to source resistance"
+F13 "20V" 0 1700 50 H I L CNN "drain to source voltage"
+F14 "https://d1d2qsbl8m0m72.cloudfront.net/en/techdata_basic/transistor/dimension/EMT3F_Dimension.pdf" 0 1800 50 H I L CNN "footprint url"
+F15 "8V" 0 1900 50 H I L CNN "gate to source voltage"
+F16 "0.85mm" 0 2000 50 H I L CNN "height"
+F17 "25pF @ 10V" 0 2100 50 H I L CNN "input capacitace at vds"
+F18 "yes" 0 2200 50 H I L CNN "lead free"
+F19 "ee0943a25c9dfce7" 0 2300 50 H I L CNN "library id"
+F20 "ROHM" 0 2400 50 H I L CNN "manufacturer"
+F21 "+150°C" 0 2500 50 H I L CNN "max junction temp"
+F22 "RE1C002UN Series 20 V 1.2 Ohm 200 mA Surface Mount Small Signal Mosfet - EMT-3F" 0 2600 50 H I L CNN "mouser description"
+F23 "755-RE1C002UNTCL" 0 2700 50 H I L CNN "mouser part number"
+F24 "1" 0 2800 50 H I L CNN "number of N channels"
+F25 "1" 0 2900 50 H I L CNN "number of channels"
+F26 "SOT-416FL" 0 3000 50 H I L CNN "package"
+F27 "150mW" 0 3100 50 H I L CNN "power dissipation"
+F28 "yes" 0 3200 50 H I L CNN "rohs"
+F29 "0mm" 0 3300 50 H I L CNN "standoff height"
+F30 "MOSFET" 0 3400 50 H I L CNN "technology"
+F31 "+150°C" 0 3500 50 H I L CNN "temperature range high"
+F32 "-55°C" 0 3600 50 H I L CNN "temperature range low"
+F33 "0.3-1V" 0 3700 50 H I L CNN "threshold vgs"
+F34 "15ns" 0 3800 50 H I L CNN "turn off delay time"
+F35 "5ns" 0 3900 50 H I L CNN "turn on delay time"
+DRAW
+X Gate 1 100 0 240 R 40 0 1 1 P 
+X Source 2 500 -200 300 U 40 0 1 1 P 
+X Drain 3 500 300 120 D 40 0 1 1 P 
+P 2 1 1 0 340 0 340 200 N
+P 2 1 1 0 370 160 370 200 N
+P 2 1 1 0 370 20 500 20 N
+P 2 1 1 0 370 180 500 180 N
+P 2 1 1 0 400 100 500 100 N
+P 2 1 1 0 390 100 440 130 N
+P 2 1 1 0 390 100 440 70 N
+P 2 1 1 0 440 130 440 70 N
+P 2 1 1 0 430 110 430 80 N
+P 2 1 1 0 370 40 370 0 N
+P 2 1 1 0 370 120 370 80 N
+P 2 1 1 0 500 20 570 20 N
+P 2 1 1 0 570 20 570 180 N
+P 2 1 1 0 570 180 500 180 N
+C 500 180 10 1 1 0 N
+C 500 20 10 1 1 0 N
+P 2 1 1 0 570 120 550 80 N
+P 2 1 1 0 550 80 590 80 N
+P 2 1 1 0 590 80 570 120 N
+P 2 1 1 0 570 120 590 120 N
+P 2 1 1 0 570 120 550 120 N
+P 2 1 1 0 200 0 200 -100 N
+P 2 1 1 0 200 -100 500 -100 N
+P 2 1 1 0 300 -80 300 -120 N
+P 2 1 1 0 300 -80 330 -100 N
+P 2 1 1 0 330 -100 300 -120 N
+P 2 1 1 0 330 -60 340 -70 N
+P 2 1 1 0 340 -70 340 -120 N
+P 2 1 1 0 340 -120 350 -130 N
+P 2 1 1 0 360 -100 390 -80 N
+P 2 1 1 0 390 -80 390 -120 N
+P 2 1 1 0 390 -120 350 -100 N
+ENDDRAW
+ENDDEF
+#
+# End Library

@@ -1,0 +1,6 @@
+(sym_lib_table
+  (lib (name TPD3F303DQDR)(type Legacy)(uri ${KIPRJMOD}/library/TPD3F303DQDR.lib)(options "")(descr ""))
+  (lib (name MAX9880AETM)(type Legacy)(uri ${KIPRJMOD}/library/MAX9880AETM.lib)(options "")(descr ""))
+  (lib (name SGTL5000XNLA3)(type Legacy)(uri ${KIPRJMOD}/library/SGTL5000XNLA3.lib)(options "")(descr ""))
+  (lib (name SJ2-35863A1-SMT-TR)(type Legacy)(uri ${KIPRJMOD}/library/SJ2-35863A1-SMT-TR.lib)(options "")(descr ""))
+)

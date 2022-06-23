@@ -1,5 +1,51 @@
 # ansible
 
+---
+
+chain of events on boot:
+
+app_event_start
+
+  concurrently:
+    modem - on_all_states - setup()
+    modem - EVENT_LTE_CONNECTED
+
+    **ui** - load "codeplug"
+    render start screen  
+
+  EVENT_LTE_CONNECTED:
+    **ui** show codeplug server list (contact list?)
+    
+    do ui stuff, handle inputs in ui until:
+
+  EVENT_UI_CONNECT_TO_TALKSERVER:
+    
+    pass codeplug data to motorola in ui_msg 
+    attempt mqtt connect
+      success: MOTOROLA_EVENT_TALK_CONNECTED
+      fail:    MOTOROLA_EVENT_TALK_CONNECT_FAIL
+      
+      motorola module handles everything from here, with events for when ppl talk etc.
+
+  EVENT_UI_CONNECT_TO_STATION:
+    
+    pass codeplug data to radio in ui_msg
+    attempt socket connect
+      success: RADIO_EVENT_CONNECTED
+      fail: RADIO_EVENT_CONNECT_FAIL
+    
+    etc.
+
+  and that's pretty much it for now.
+  other states of note:
+
+    RADIO_EVENT_START_BROADCAST
+     
+      
+
+
+---
+
 [Scalable Protocols for Authenticated Group Key Exchange](https://www.cs.umd.edu/~jkatz/papers/multi-auth.pdf)
 
 [Wideband Antenna - 8dBi](https://www.amazon.com/Wide-Band-Internal-LoRa-Antenna/dp/B08WJQ7ZS3)

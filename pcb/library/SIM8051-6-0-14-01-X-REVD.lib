@@ -1,0 +1,25 @@
+EESchema-LIBRARY Version 2.3
+#encoding utf-8
+#(c) SnapEDA 2016 (snapeda.com)
+#This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA) with Design Exception 1.0
+#
+# SIM8051-6-0-14-01-X-REVD
+#
+DEF SIM8051-6-0-14-01-X-REVD J 0 40 N Y 1 L N
+F0 "J" -200 220 50 H V L BNN
+F1 "SIM8051-6-0-14-01-X-REVD" -200 -300 50 H V L BNN
+F2 "GCT_SIM8051-6-0-14-01-X-REVD" 0 0 50 H I L BNN
+F3 "" 0 0 50 H I L BNN
+F4 "GCT" 0 0 50 H I L BNN "MANUFACTURER"
+DRAW
+S -200 -200 400 200 0 0 10 f
+X VCC C1 500 100 100 L 40 40 0 0 W 
+X RST C2 -300 100 100 R 40 40 0 0 I 
+X CLK C3 -300 0 100 R 40 40 0 0 I C
+X GND C5 500 -100 100 L 40 40 0 0 W 
+X VPP C6 500 0 100 L 40 40 0 0 W 
+X I/O C7 -300 -100 100 R 40 40 0 0 B 
+ENDDRAW
+ENDDEF
+#
+# End Library
