@@ -1,3 +1,5 @@
+#define PASS_MAX 64 // ESP32 API pass-max is 64
+#define NAME_MAX 64
 
 typedef struct friend_t {
   u64 id;

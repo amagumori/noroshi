@@ -44,7 +44,10 @@ static struct pollfd fds;
 struct m_audio_frame_t *tx_frame;
 struct m_audio_frame_t *rx_frame;
 struct mqtt_publish_param tx_publish_param;
+struct mqtt_publish_param tx_publish_param_pdm;
 
+// from codec2_pdm_mic.c
+extern i16 *codec2_encoded_buffer;
 
 struct radio_msg {
   union {
@@ -147,12 +150,22 @@ static int init_client( void ) {
     .message.topic.topic.utf8 = "radio",
     .message.topic.topic.size = strlen("radio"),
     .message.payload.data = tx_frame,
-    .message.payload.len  = sizeof(tx_frame),
+    .message.payload.len  = sizeof(m_audio_frame_t),
     .message_id = sys_rand32_get(),
     .dup_flag = 0,
     .retain_flag = 0
   };
 
+  tx_publish_param_pdm = {
+    .message.topic.qos = QOS,
+    .message.topic.topic.utf8 = "radio",
+    .message.topic.topic.size = strlen("radio"),
+    .message.payload.data = pdm_buffer,
+    .message.payload.len  = CODEC2_PDM_BUFFER_SIZE,
+    .message_id = sys_rand32_get(),
+    .dup_flag = 0,
+    .retain_flag = 0
+  };
 
   mqtt_client_init(client);
 
@@ -338,6 +351,10 @@ do_connect:
     // keepalive ping
     err = poll(&fds, 1, mqtt_keepalive_time_left(&client));
 
+    // hm
+    module_get_next_msg( &self, &msg );
+    on_all_states(&msg);
+
     // poll codec message queue to see if TX frames are ready.
     if ( k_msgq_num_used_get( p_opus_outgoing) ) {
       k_msgq_get( &p_opus_outgoing, tx_frame, K_NO_WAIT );
@@ -383,6 +400,16 @@ do_connect:
   goto do_connect;
 }
 
+static void on_all_states ( radio_msg *msg ) {
+  if ( IS_EVENT( msg, audio, AUDIO_EVENT_PDM_BUFFER_READY ) ) {
+    int err = mqtt_publish( client, tx_publish_param );
+    if ( err ) {
+
+    }
+  }
+}
+
+// this is a module-internal event handler
 void mqtt_event_handler( struct mqtt_client *client, struct mqtt_evt *evt ) {
   int err;
 

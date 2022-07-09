@@ -213,7 +213,7 @@ void create_listening_screen( void ) {
 }
 
 void create_connecting_lte( void ) {
-
+  
 }
 
 void create_connecting_server( void ) {

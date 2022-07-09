@@ -82,9 +82,38 @@ K_MSGQ_DEFINE(radio_msg_queue, sizeof(struct modem_msg), DATA_QUEUE_ENTRY_COUNT,
 static void submit_cell_update(u32 cell_id, u32 tac);
 static void submit_psm_update(int tau, int active_time);
 static void submit_edrx_update(float edrx, float ptw);
-//static void submit_neighbor_update(u32 cell_id, u32 tac);
+static void submit_neighbor_update(u32 cell_id, u32 tac);
 static inline int rsrp_to_db( int input );
 static inline int rsrq_to_db( int input );
+
+static bool app_event_handler( const struct app_event_header *h ) {
+  struct modem_msg message = {0};
+  bool enqueue_msg = false;
+
+  if ( is_modem_module_event(h) ) {
+    struct modem_event *e = cast_modem_event(h);
+    message.module.modem = *e;
+    enqueue_msg = true;
+  }
+  if ( is_radio_module_event(h) ) {
+    struct radio_event *e = cast_radio_event(h);
+    message.module.radio = *e;
+    enqueue_msg = true
+  }
+  if ( is_app_module_event(h) ) {
+    struct app_event *e = cast_app_event(h);
+    message.module.app = *e;
+    enqueue_msg = true;
+  }
+  if ( enqueue_msg ) {
+    int err = module_enqueue_msg(&self, &msg);
+    if ( err ) {
+      LOG_ERR("message couldn't be enqueued.");
+      SEND_ERROR(modem, MODEM_EVENT_ERROR, err);
+    }
+  }
+  return false;
+}
 
 static void lte_event_handler(const struct lte_lc_evt *const event) {
   switch( event->type ) {
@@ -146,7 +175,7 @@ static void lte_event_handler(const struct lte_lc_evt *const event) {
     case LTE_LC_EVT_NEIGHBOR_CELL_MEAS:
       if (evt->cells_info.current_cell.id != LTE_LC_CELL_EUTRAN_ID_INVALID) {
         LOG_DEBUG("Neighbor cell measurements received");
-        send_neighbor_cell_update((struct lte_lc_cells_info *)&evt->cells_info);
+        update_neighbor_cell((struct lte_lc_cells_info *)&evt->cells_info);
       } else {
         LOG_DEBUG("Neighbor cell measurement was not successful");
       }
@@ -294,7 +323,7 @@ static inline int rsrq_to_db(int input) {
   return input;
 }
 
-static void neighbor_cell_update( struct lte_lc_cells_info *cell_info ) {
+static void update_neighbor_cell( struct lte_lc_cells_info *cell_info ) {
   struct modem_event *evt = new_modem_event();
 
   // asserts

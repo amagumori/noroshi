@@ -5,16 +5,26 @@
 
 #include "modem.h"
 
-// http://wiki.shoutcast.com/wiki/SHOUTcast_2_(Ultravox_2.1)_Protocol_Details
+#include "hw/audio.h"
 
+// http://wiki.shoutcast.com/wiki/SHOUTcast_2_(Ultravox_2.1)_Protocol_Details
 
 static int client_fd;
 static struct sockaddr_storage host_addr;
 
-#define RX_SIZE sizeof(struct m_audio_frame_t)
-static char RX_BUFFER[RX_SIZE];   // frame size
+#define FRAME_SIZE sizeof(struct m_audio_frame_t)
+static char RX_BUFFER[FRAME_SIZE];   
+static char TX_BUFFER[FRAME_SIZE];   
 
-struct k_msgq *radio_station_queue;
+K_MSGQ_DEFINE(msgq_station_rx, sizeof(struct m_audio_frame_t), 10, 4);
+struct k_msgq *station_rx = &msgq_station_rx;
+extern struct k_msgq *p_msgq_OPUS_ENCODE;
+
+// not doing this unless it ends up being needed.
+/*
+K_MSGQ_DEFINE(msgq_station_tx, sizeof(struct m_audio_frame_t), 10, 4);
+struct k_msgq *station_tx = &msgq_station_tx;
+*/
 
 // @TODO determine optimum queue size = number of audio frames
 #define DATA_QUEUE_ENTRY_COUNT 10
@@ -71,15 +81,43 @@ error:
 // we want to monitor our connection health / bitrate and drop down to a lower-bitrate
 // stream if we can't handle X kbps.
 
-void radio_job( void ) {
+void radio_rx_job( void ) {
   // setup connection
 
   int err;
   while ( 1 ) {
     err = recv( socket, RX_BUFFER, sizeof(RX_BUFFER) - 1, 0 );
     // check err
-    if ( k_msgq_put( &radio_station_queue, rx_buffer, K_NO_WAIT ) != 0 ) {
-
+    if ( k_msgq_put( &station_rx, rx_buffer, K_NO_WAIT ) != 0 ) {
+      LOG_ERR("STATION: couldn't put RX frame in message queue.");
     }
   }
 }
+
+void radio_tx_job( void ) {
+  int err;
+  while ( 1 ) {
+    if ( k_msgq_get( &p_msgq_OPUS_ENCODE, tx_buffer, K_NO_WAIT ) != 0 ) {
+      LOG_ERR("STATION: couldn't get TX frame from TX msgq.");
+    } else {
+      err = send( socket, TX_BUFFER, sizeof(TX_BUFFER) - 1, 0 );
+      if ( err ) {
+        LOG_ERR("STATION [TX]: error sending audio frame on socket %d", socket);
+      }
+    }
+  }
+}
+
+void thread_fn( void ) {
+
+}
+
+K_THREAD_DEFINE(station_thread, CONFIG_STATION_THREAD_STACK_SIZE,
+		thread_fn, NULL, NULL, NULL,
+		5, 0, 0);
+// figure out a specific priority for this one
+
+EVENT_LISTENER(MODULE, event_handler);
+EVENT_SUBSCRIBE_EARLY(MODULE, radio_event);
+EVENT_SUBSCRIBE(MODULE, hw_event );
+

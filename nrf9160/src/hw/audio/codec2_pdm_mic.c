@@ -155,6 +155,7 @@ void nrfx_pdm_event_handler( nrfx_pdm_evt_t *event ) {
     if ( err != 0 ) {
       printf("error in freedv_tx, %d", err);
     }
+    SEND_EVENT(audio, AUDIO_EVENT_PDM_BUFFER_READY);
   } 
   if ( event->buffer_released != 0 ) {
     

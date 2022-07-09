@@ -1,4 +1,22 @@
 #include "wifi.h"
+#include "friends.h"
+
+#define DUMMY_FRIENDS_MAX 64 
+
+enum {
+  WIFI_EVENT_DISCONNECTED = 1 << 0,
+  WIFI_EVENT_CONNECTED = 1 << 1,
+
+
+};
+
+friend_t friends_list[DUMMY_FRIENDS_MAX];
+
+uint8_t friends_list[33][NUM_FRIEND_IDS];
+wifi_ap_record_t access_points[20];
+TaskHandle_t wifi_task_handle;
+TimerHandle_t reconnect_timer;
+EventGroupHandle_t wifi_event_group;
 
 typedef enum {
   ESP_STATE_BOOT,
@@ -53,8 +71,6 @@ void IRAM_ATTR doIrq( int irq ) {
     portYIELD_FROM_ISR();
   }
 }
-void IRAM_ATTR DisplayIRQ() { doIrq(DISPLAY_IRQ) }
-
 
 ////
 
@@ -69,15 +85,24 @@ static void init_nvs( void ) {
 }
 
 /*
- * we want to use xEventGroupSetBits instead of using IRQs directly...?
+ * since our app flow is relatively simple, should use an enum + direct-to-task notifs.
+ * we make an enum full of u32 integer flags.
+ * use xTaskNotify if the task only needs to know one piece of state at a time
+ * or xTaskNotifyIndexed if it has to be aware of multiple different state flags.
+ *
+ * this is way faster and more performant / lower-RAM than using event groups or messaging etc.
+ *
+ * i think one top-level "broker" task controlling state mgmt 
+ * but the lower-level sync type tasks have ultimate priority and give back to broker only
+ * when they're ready to relinquish.
+ *
  */
 
 void app_main( void ) {
 
-  // WIFI
-  wifi_event_group = xEventGroupCreate();
-  ESP_ERROR_CHECK( esp_event_loop_create_default() );
-  init_wifi( wifi_event_group );
+
+/* HARDWARE SETUP */
+
 
   // SD CARD / FILESYSTEM
   sdmmc_host_t host = SDMMC_HOST_DEFAULT();
@@ -94,4 +119,162 @@ void app_main( void ) {
   if ( err != ESP_OK ) {
     ESP_LOGE(TAG, "Failed to initialize SD in main.");
   }
+
+  // WIFI
+  wifi_event_group = xEventGroupCreate();
+  ESP_ERROR_CHECK( esp_event_loop_create_default() );
+  init_wifi( wifi_event_group );
+
+
+  // create the tasks
+
+  if ( xTaskCreate( 
 }
+
+static void wifi_event_handler( void *arg, esp_event_base_t event_base, i32 event_id, void *event_data ) {
+
+  if ( event_id == WIFI_EVENT_AP_STACONNECTED ) {
+    wifi_event_ap_staconnected_t *event = (wifi_event_ap_staconnected_t *) event_data;
+    ESP_LOGI(TAG, "station "MACSTR" join, AID=%d", MAC2STR(event->mac), event->aid);
+  } else if ( event_id == WIFI_EVENT_AP_STADISCONNECTED ) {
+    wifi_event_ap_stadisconnected_t *event = ( wifi_event_ap_stadisconnected_t*) event_data;
+    ESP_LOGI(TAG, "station "MACSTR" leave, AID=%d", MAC2STR(event->mac), event->aid);
+  }
+}
+
+int reconnect_callback( TimerHandle_t timer ) {
+
+  ESP_ERROR_CHECK( esp_wifi_scan_start( &scan_config, false ) );
+  ESP_ERROR_CHECK( esp_wifi_scan_get_ap_records( 20, access_points ) );
+   
+  for ( int i=0; i < NUM_FRIEND_IDS; i++ ) {
+    for ( int j=0; j < 20; j++ ) {
+      // would want a way to temporarily "blacklist" friends recently
+      // connected to and synced so we don't just endlessly reconnect.
+      // could implement friends as a linked-list of structs, friend id
+      // + metadata like recently synced flag etc
+      long ssid = strtol( access_points[j].ssid )
+      if ( ssid == friends_list[i].id ) {
+        strncpy( ap_config.ssid, access_points[j].ssid, 33 );
+        ap_config.ssid_len = strnlen( ap_config.ssid, 32 );
+        strncpy( ap_config.password, friends_list[i].pass, 64 );
+        ap_config.authmode = WIFI_AUTH_WPA3_PSK;
+        ap_config.pairwise_cipher = WIFI_CIPHER_TYPE_AES_GMAC256;
+      } else {
+        ESP_LOGI(tag, "failed to find a valid password for id %s:", access_points[j].ssid );
+        return 0;
+      }
+      esp_err_t connect_err;
+      connect_err = esp_wifi_connect();
+      if ( connect_err != ESP_OK ) {
+        ESP_LOGE(tag, "failed to connect to ssid %s", ap_config.ssid );
+        return 0;
+      } else {
+        xEventGroupSetBits( wifi_event_group, WIFI_EVENT_CONNECTED );
+        return 1;
+      }
+    }
+  }
+
+}
+
+// https://techtutorialsx.com/2019/09/22/esp32-arduino-soft-ap-obtaining-ip-address-of-connected-stations/
+
+void task_wifi ( void *pvParam ) { 
+  while ( ;; ) {
+    switch( xEventGroupGetBits( wifi_event_group ) ) {
+      case WIFI_EVENT_DISCONNECTED:
+        // just return because we handle this in the timer
+        return;
+      // need separate flags for connected to AP and someone connected to US
+      case WIFI_EVENT_CONNECTED:
+
+        wifi_sta_list_t wifi_sta_list;
+        tcpip_adapter_sta_list_t tcpip_sta_list;
+        memset(&wifi_sta_list, 0, sizeof(wifi_sta_list_t));
+        memset(&tcpip_sta_list, 0, sizeof(tcpip_adapter_sta_list_t));
+
+        esp_wifi_ap_get_sta_list(&wifi_sta_list);
+        tcpip_adapter_get_sta_list(&wifi_sta_list, &tcpip_sta_list);
+        
+        for ( int i=0; i < tcpip_sta_list.num; i++ ) {
+          tcpip_adapter_sta_info_t station = tcpip_sta_list[i];
+          
+        } 
+    
+
+
+
+    }
+    if ( xEventGroupGetBits( wifi_event_group ) == WIFI_EVENT_NO_SSIDS_FOUND ) {
+
+    }
+  }
+}
+
+void wifi_init ( void ) {
+  wifi_init_config_t config = WIFI_INIT_CONFIG_DEFAULT();
+  ESP_ERROR_CHECK( esp_wifi_init(&config) );
+
+  ESP_ERROR_CHECK( esp_event_handler_instance_register( WIFI_EVENT,
+                                                        ESP_EVENT_ANY_ID,
+                                                        &wifi_event_handler,
+                                                        NULL, NULL ) );
+  wifi_config_t ap_config = {
+    .ap = {
+      .ssid = 
+      .ssid_len =
+      .channel = 
+      .password = 
+      .max_connection =
+      .authmode = 
+      .pmf_cfg = {
+        .required = false,  // should set to true for production
+      },
+    },
+  };
+
+  // @FIXME
+  wifi_config_t sta_config = {
+    .sta = {
+      .ssid = 
+      .password = 
+      .scan_method = WIFI_ALL_CHANNEL_SCAN,
+      .sort_method = WIFI_CONNECT_AP_BY_SIGNAL,   // or WIFI_CONNECT_AP_BY_SECURITY
+      .threshold = {
+        .rssi = 60,   // min acceptable RSSI
+        .authmode = WIFI_AUTH_WPA2_PSK  // acceptable auth mode
+      },
+      .pmf_cfg = {
+        .required = false,  // set to true for production
+      },
+    },
+  };
+
+  // https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/wifi.html
+
+  wifi_scan_config_t scan_config = { 0 };
+  // for now we're listening for beacon frames, but this is a massive concern.
+  // is it safer to active scan and have listeners silent?  probably.
+  scan_config.scan_type = WIFI_SCAN_TYPE_PASSIVE;
+
+  ESP_ERROR_CHECK( esp_wifi_set_mode( WIFI_MODE_APSTA )
+  ESP_ERROR_CHECK( esp_wifi_set_config( WIFI_IF_AP, &ap_config ) );
+  ESP_ERROR_CHECK( esp_wifi_set_config( WIFI_IF_STA, &sta_config ) );
+
+  // task, name, stack depth in words, params passed in, priority 0-25
+  xTaskCreate( &task_wifi, "Wifi", 10000, wifiParam, 23 );
+  reconnect_timer = xTimerCreate( "reconnectTimer", 
+                                  pdMS_TO_TICKS(15000),
+                                  pdTRUE,
+                                  0,
+                                  reconnect_callback );
+
+  wifi_event_group = xEventGroupCreate();
+  // check wifi_event_group not null
+
+  // false - non-blocking / async
+  ESP_ERROR_CHECK( esp_wifi_scan_start( &scan_config, false ) );
+
+}
+

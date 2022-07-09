@@ -28,11 +28,11 @@ LOG_MODULE_DECLARE(audio, LOG_LEVEL_DBG);
 
 #define NRFX_I2S_CONFIG_IRQ_PRIORITY 1
 
-
 static struct k_msgq *p_msgq_I2S_Rx;
 static struct k_msgq *p_msgq_I2S_Tx;
 
 struct k_msgq *p_msgq_radio_decoded;
+extern struct k_msgq *station_rx;
 
 //#define AUDIO_FRAME_WORDS                   320
 #define AUDIO_FRAME_WORDS                   CONFIG_AUDIO_FRAME_SIZE_SAMPLES/I2S_BUFFER_RATIO // Sample Left and right in one word
@@ -125,7 +125,7 @@ static bool i2s_sgtl5000_driver_evt_handler(drv_sgtl5000_evt_t * p_evt)
                     // how slow is this???
                     // http://www.vttoth.com/CMS/index.php/technical-notes/68
                     
-                    if ( k_msgq_get( p_msgq_radio_decoded, Radio_PCM_TX, K_NO_WAIT ) == 0 ) {
+                    if ( k_msgq_get( station_rx, Radio_PCM_TX, K_NO_WAIT ) == 0 ) {
                       // both have to obey i2s_buffer_size_words
                       for ( int i=0; i < (i2s_buffer_size_words); i++ ) {
                         // https://stackoverflow.com/questions/12089662/mixing-16-bit-linear-pcm-streams-and-avoiding-clipping-overflow?rq=1
@@ -142,7 +142,6 @@ static bool i2s_sgtl5000_driver_evt_handler(drv_sgtl5000_evt_t * p_evt)
                         p_buffer[i*2+1] = m;
                       }
                     }
-
 
                 		//Mono to Stereo
                 		for(int i=0; i< (i2s_buffer_size_words);i++){

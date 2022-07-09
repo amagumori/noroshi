@@ -13,6 +13,7 @@ LOG_MODULE_REGISTER(audio, LOG_LEVEL_DBG);
 #include "audio_codec_I2S_api.h"
 
 #define OPUS_PRIORITY 10
+#define CODEC2_PDM_BUFFER_SIZE 4096
 
 #define INPUT_DATA_SIZE CONFIG_AUDIO_FRAME_SIZE_SAMPLES*CONFIG_CHANNELS*sizeof(int16_t)
 #define OUTPUT_DATA_SIZE CONFIG_AUDIO_FRAME_SIZE_SAMPLES*CONFIG_CHANNELS*sizeof(int16_t)
@@ -29,10 +30,27 @@ struct k_thread audio_tx_thread_data;;
 k_tid_t audio_rx_tid;
 k_tid_t audio_tx_tid;
 
+// i dunno
+#define RING_BUF_NUM_FRAMES 10
+#define RING_BUF_SIZE sizeof(m_audio_frame_t) * RINGBUF_NUM_FRAMES
+
+struct audio_ring_buffer {
+  struct ring_buf rb;
+  u16 buffer[RING_BUF_SIZE];
+};
+
+struct audio_ring_buffer encoded;
+struct audio_ring_buffer decoded;
+
+
 audio_stats_counter_t audio_stats_counter;
 
 static u8_t i2s_line_in[INPUT_DATA_SIZE];
 static u8_t i2s_speaker[OUTPUT_DATA_SIZE];
+
+// pdm-> codec2 buffer
+// frmo codec2_pdm_mic.c
+extern u16_t pdm_mic_buffer;
 
 // second speaker buffer for radio station audio coming off the air
 static u8_t i2s_speaker_two[OUTPUT_DATA_SIZE];
@@ -42,7 +60,6 @@ static m_audio_frame_t frame_OPUS_decode = {.data_size = 0};
 
 // encoded frame coming off the air
 static m_audio_frame_t radio_station_frame_rx = {.data_size = 0};
-
 
 K_MSGQ_DEFINE(msgq_OPUS_ENCODE, sizeof(m_audio_frame_t), 1, 4);
 struct k_msgq *p_msgq_OPUS_ENCODE = &msgq_OPUS_ENCODE;
@@ -87,7 +104,21 @@ void audio_rx_process()
 	audio_stats_counter.Opus_enc++;
 	/*encode pcm to opus*/
 	drv_audio_codec_encode((int16_t *) i2s_line_in, p_frame);
-	k_msgq_put(p_msgq_OPUS_ENCODE, p_frame, K_FOREVER);
+
+  // depending on the overhead, would put the encoded frame in another msgq
+  // or a ringbuffer.  i think one msgq for I2S frames and one ringbuf
+  // is a good tradeoff, and that way the SGTL5000 driver can be used unchanged.
+
+  int ret = ring_buf_item_put(&encoded.rb,
+                              TYPE_AUDIO_FRAME,  // ???
+                              value,             // u8 value...??
+                              (u32 *)p_frame,    // this has to be < 1020 bytes..
+                              sizeof(m_audio_frame_t) / sizeof(u32) // ...
+                             );
+  // could call ring_buf_put_finish here but if we're always adding m_audio_frame_t bytes
+  // then if ret == good then we're good to read m_audio_frame_t bytes
+
+	//k_msgq_put(p_msgq_OPUS_ENCODE, p_frame, K_FOREVER);
 }
 
 void audio_tx_process()
@@ -113,7 +144,7 @@ void audio_tx_process()
   // @TODO adding second decode stream here.
   // attempting simultaneous VHF/UHF type voice comm + listening to radio stream
 
-	if(k_msgq_get(radio_station_queue, radio_station_frame_rx, K_NO_WAIT) == 0) {
+	if(k_msgq_get(station_rx, radio_station_frame_rx, K_NO_WAIT) == 0) {
 		/*decode opus to pcm*/
 		drv_audio_codec_decode(p_frame, (int16_t *)i2s_speaker_two);
     	audio_stats_counter.Opus_dec++;
@@ -124,6 +155,11 @@ void audio_tx_process()
 		drv_audio_codec_decode(p_frame, (int16_t *)i2s_speaker_two);
     	audio_stats_counter.Opus_gen++;
 	}
+
+  // @TODO this is where we'd sum the PCM from both decode streams
+  // before putting it into the i2s output buf
+  //
+  // need to streamline the number of msgqs because this is getting out of hand.
 
   for(int i=0; i<OUTPUT_DATA_SIZE; i+= OUTPUT_DATA_SIZE/I2S_BUFFER_RATIO){
 		k_msgq_put(p_msgq_radio_decoded, &i2s_speaker_two[i], K_FOREVER);
