@@ -148,6 +148,23 @@ char *ht_search( ht_table *ht, const char *key ) {
   return NULL;
 }
 
+int ht_update( ht_table *ht, const char *key, const char *value ) {
+  int index = ht_get_hash(key, ht->size, 0 );
+  ht_item *item = ht->items[index];
+  int i=1;
+  while ( item != NULL ) {
+    if ( item != &HT_DELETED_ITEM ) {
+      if ( strcmp( item->key, key ) == 0 ) {
+        item->value = strdup( value );
+      }
+      index = ht_get_hash( key, ht->size, i );
+      item = ht->items[index];
+      i++;
+    }
+  }
+  return 1;
+}
+
 void ht_delete( ht_table *ht, const char *key ) {
   int index = ht_get_hash( key, ht->size, 0 );
   ht_item *item = ht->items[index];

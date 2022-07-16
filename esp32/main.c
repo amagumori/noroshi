@@ -3,16 +3,16 @@
 
 #define DUMMY_FRIENDS_MAX 64 
 
+struct ht_table *mac_ip_table;
+
 enum {
   WIFI_EVENT_DISCONNECTED = 1 << 0,
   WIFI_EVENT_CONNECTED = 1 << 1,
-
-
 };
 
 friend_t friends_list[DUMMY_FRIENDS_MAX];
 
-uint8_t friends_list[33][NUM_FRIEND_IDS];
+uint8_t friends_list[NUM_FRIEND_IDS][33]
 wifi_ap_record_t access_points[20];
 TaskHandle_t wifi_task_handle;
 TimerHandle_t reconnect_timer;
@@ -135,10 +135,34 @@ static void wifi_event_handler( void *arg, esp_event_base_t event_base, i32 even
 
   if ( event_id == WIFI_EVENT_AP_STACONNECTED ) {
     wifi_event_ap_staconnected_t *event = (wifi_event_ap_staconnected_t *) event_data;
+    // now this is dumb.
+    ht_insert( mac_ip_table, (char*)event.mac, (char*)0 );
     ESP_LOGI(TAG, "station "MACSTR" join, AID=%d", MAC2STR(event->mac), event->aid);
-  } else if ( event_id == WIFI_EVENT_AP_STADISCONNECTED ) {
+  } 
+
+  if ( event_id == WIFI_EVENT_AP_STADISCONNECTED ) {
     wifi_event_ap_stadisconnected_t *event = ( wifi_event_ap_stadisconnected_t*) event_data;
     ESP_LOGI(TAG, "station "MACSTR" leave, AID=%d", MAC2STR(event->mac), event->aid);
+  }
+
+}
+
+static void ip_event_handler( void *arg, esp_event_base_t event_bases, i32 event_id, void *event_data ) {
+
+  switch ( event_id ) {
+
+    case IP_EVENT_AP_STAIPASSIGNED: {
+      esp_ip4_addr_t station_ip = (ip_event_ap_staipassigned_t) event_data->ip;
+      printf("station assigned ip: %s\n", ip4addr_ntoa(&station_ip) ); 
+      // assign our ip in our friends data structure.  hashtable lookup
+      char ip = event_data->ip.addr;
+      int res = ht_update( &mac_ip_table, (char*)event_data->mac, &ip );
+      // can't even error check this rn bc hash table update always returns 1
+      break;
+    }
+    default:
+      break;
+
   }
 }
 
@@ -178,6 +202,23 @@ int reconnect_callback( TimerHandle_t timer ) {
 
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // https://techtutorialsx.com/2019/09/22/esp32-arduino-soft-ap-obtaining-ip-address-of-connected-stations/
 
 void task_wifi ( void *pvParam ) { 
@@ -214,6 +255,9 @@ void task_wifi ( void *pvParam ) {
 
 void wifi_init ( void ) {
   wifi_init_config_t config = WIFI_INIT_CONFIG_DEFAULT();
+
+  mac_ip_table = new_ht();
+
   ESP_ERROR_CHECK( esp_wifi_init(&config) );
 
   ESP_ERROR_CHECK( esp_event_handler_instance_register( WIFI_EVENT,
