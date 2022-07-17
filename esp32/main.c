@@ -36,6 +36,7 @@ typedef enum {
   ESP_STATE_SHUTDOWN
 } AppState;
 
+const QueueHandle_t peer_ip_queue;
 const static EventGroupHandle_t wifi_event_group;
 uint32_t irq_source;
 TaskHandle_t irqHandlerTask = NULL;
@@ -128,7 +129,7 @@ void app_main( void ) {
 
   // create the tasks
 
-  if ( xTaskCreate( 
+//  if ( xTaskCreate( 
 }
 
 static void wifi_event_handler( void *arg, esp_event_base_t event_base, i32 event_id, void *event_data ) {
@@ -138,7 +139,15 @@ static void wifi_event_handler( void *arg, esp_event_base_t event_base, i32 even
     // now this is dumb.
     ht_insert( mac_ip_table, (char*)event.mac, (char*)0 );
     ESP_LOGI(TAG, "station "MACSTR" join, AID=%d", MAC2STR(event->mac), event->aid);
-  } 
+  }
+
+  if ( event_id = IP_EVENT_AP_STAIPASSIGNED ) {
+    esp_ip4_addr_t station_ip = ( ip_event_ap_staipassigned_t) event_data->ip;
+    printf("station assigned ip: %s\n", ip4addr_ntoa(&station_ip) ); 
+    // rather than trying to associate mac and ip, we just connect once we receive an ip assign.
+    // portMAX_DELAY = wait indefinitely if queue is full?
+    xQueueSendToFront( peer_ip_queue, station_ip, portMAX_DELAY );
+  }
 
   if ( event_id == WIFI_EVENT_AP_STADISCONNECTED ) {
     wifi_event_ap_stadisconnected_t *event = ( wifi_event_ap_stadisconnected_t*) event_data;
@@ -147,6 +156,7 @@ static void wifi_event_handler( void *arg, esp_event_base_t event_base, i32 even
 
 }
 
+/*
 static void ip_event_handler( void *arg, esp_event_base_t event_bases, i32 event_id, void *event_data ) {
 
   switch ( event_id ) {
@@ -165,6 +175,7 @@ static void ip_event_handler( void *arg, esp_event_base_t event_bases, i32 event
 
   }
 }
+*/
 
 int reconnect_callback( TimerHandle_t timer ) {
 
@@ -313,6 +324,8 @@ void wifi_init ( void ) {
                                   pdTRUE,
                                   0,
                                   reconnect_callback );
+  // create list of ips to connect and sync.
+  peer_ip_queue = xQueueCreate( 10, sizeof(esp_ip4_addr_t) );
 
   wifi_event_group = xEventGroupCreate();
   // check wifi_event_group not null

@@ -23,6 +23,9 @@
 #define PATH_MAX 128
 #define CHUNK_SIZE 1024
 
+extern QueueHandle_t peer_ip_queue;
+
+esp_ip4_addr_t PEER_IP;
 const int SOCKET;
 const char file_rx_buffer[1024];
 
@@ -92,31 +95,38 @@ void task_synchronous( void *pvParam ) {
   switch( xEventGroupGetBits(sync_event_group) ) {
 
     case SYNC_IDLE: {
-      xEventGroupSetBits( sync_event_group, SYNC_CONNECTING ); 
-      struct sockaddr_in destination;
-      destination.sin_addr.s_addr = inet_addr(host_ip);
-      destination.sin_family = AF_INET;
-      destination.sin_port = htons(PORT);
-      addr_family = AF_INET;
-      ip_protocol = IPPROTO_IP;
 
-      SOCKET = socket(addr_family, SOCK_STREAM, ip_protocol);
-      if ( SOCKET < 0 ) {
-        ESP_LOGE(TAG, "unable to create socket: errno %d", errno);
+      if ( xQueueReceive( peer_ip_queue, &PEER_IP, 0 ) ) {
+
+        xEventGroupSetBits( sync_event_group, SYNC_CONNECTING ); 
+        struct sockaddr_in peer;
+        peer.sin_addr.s_addr = PEER_IP; // should just be a u32 so can assign.
+        peer.sin_family = AF_INET;
+        peer.sin_port = htons(PORT);    // just do a default port for now, change later.
+        addr_family = AF_INET;
+        ip_protocol = IPPROTO_IP;
+
+        SOCKET = socket(addr_family, SOCK_STREAM, ip_protocol);
+        if ( SOCKET < 0 ) {
+          ESP_LOGE(TAG, "unable to create socket: errno %d", errno);
+          break;
+        }
+        ESP_LOGI(TAG, "socket created, connecting to %s:%d", host_ip, PORT);
+        internal_state = SYNC_CONNECTING;
+
+        int err = connect(SOCKET, (struct sockaddr *)&peer, sizeof(struct sockaddr_in));
+        if ( err != 0 ) {
+          ESP_LOGE(TAG, "unable to connect to IP %s :  errno %d", IP2STR(PEER_IP), errno);
+          break;
+        }
+        ESP_LOGI(TAG, "successfully connected!");
+        xEventGroupSetBits(sync_event_group, SYNC_CONNECTED); 
+
         break;
+      } else {
+        return; // ??
       }
-      ESP_LOGI(TAG, "socket created, connecting to %s:%d", host_ip, PORT);
-      internal_state = SYNC_CONNECTING;
 
-      int err = connect(SOCKET, (struct sockaddr *)&dest_addr, sizeof(struct sockaddr_in6));
-      if ( err != 0 ) {
-        ESP_LOGE(TAG, "unable to connect: errno %d", errno);
-        break;
-      }
-      ESP_LOGI(TAG, "successfully connected!");
-      xEventGroupSetBits(sync_event_group, SYNC_CONNECTED); 
-
-      break;
     }
 
     // @TODO this is an infinite loop rn
