@@ -206,8 +206,8 @@ int check_info( struct modified_t *mod ) {
   }
 }
 
-// passing in socket pointer with fdopen(), to send signature directly ota
-rs_result generate_signature( const char *path, FILE *sock ) {
+// passing in socket pointer with fdopen(), to write signature directly to socket
+rs_result send_signature( const char *path, FILE *sock ) {
   FILE *basis;
   //  FILE *sig;
   rs_stats_t stats;

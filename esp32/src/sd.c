@@ -11,7 +11,7 @@ static const char *TAG = "SD_CARD";
 
 #define MOUNT_POINT "/sd"
 
-void main ( void ) {
+esp_err_t init_sd( void ) {
   esp_err_t err;
 
   esp_vfs_fat_sdmmc_mount_config_t mount_config = {
@@ -40,17 +40,20 @@ void main ( void ) {
   if ( err != ESP_OK ) {
     if ( err != ESP_FAIL ) {
       ESP_LOGE(TAG, "failed to mount fs.");
+      return err;
     } else {
       ESP_LOGE(TAG, "failed to init card ( %s ) ", esp_err_to_name(err));
+      return err;
     }
-    return;
+    return err;
   }
   ESP_LOGI(TAG, "fs mounted!");
 
   sdmmc_card_print_info(stdout, sd_card);
+  
+  return ESP_OK;
+}
 
-  // then do stuff.
-
+void unmount_sd( void ) {
   esp_vfs_fat_sdcard_unmount(mount_point, sd_card);
-
 }
