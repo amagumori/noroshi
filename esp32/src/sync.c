@@ -14,7 +14,11 @@
 #include "types.h"
 
 /* **************************************************
+ * the general idea is to compute friends list intersections securely
+ * based on keys using a private set intersection approach like Pinkas 2014
+ * https://github.com/encryptogroup/PSI
  *
+ * 
  *
  * **************************************************
 */
@@ -28,6 +32,11 @@ extern QueueHandle_t peer_ip_queue;
 esp_ip4_addr_t PEER_IP;
 const int SOCKET;
 const char file_rx_buffer[1024];
+
+static enum {
+  SERVER_MODE,
+  CLIENT_MODE
+};
 
 static enum {
   SYNC_IDLE = 1 << 0,
@@ -107,10 +116,7 @@ int request_file ( const char *path ) {
   }
 }
 
-int send_sig ( const char *path ) {
-  
-}
-
+// "server mode" sync - we're the AP, they're the STA
 void sync( void *pvParam ) {
 
   switch( xEventGroupGetBits(sync_event_group) ) {
@@ -154,19 +160,22 @@ void sync( void *pvParam ) {
     case SYNC_CONNECTED: {
 
       do {
-        len = recv( SOCKET, rx_buffer, sizeof( struct other_packet_t ), 0 );
+        len = recv( SOCKET, rx_buffer, sizeof( struct packet_t ), 0 );
         if ( len < 0 ) {
           ESP_LOGE(TAG, "negative len value %d in recv.", len );
           break;
-        } else if ( len == 0 ) {
-          xEventGroupSetBits( sync_event_group, SYNC_COMPLETE );
-          break;
         } else {
+          
+          if ( len < sizeof(packet_t) ) {
+            ESP_LOGE(TAG, "received less than a valid packet...");
+            break;
+          }
+
           rx_buffer[len] = 0;
           ESP_LOGI(TAG, "received %d bytes: %s", len, rx_buffer);
-          // how do you correctly cast the data?
-          struct other_packet_t *packet = (struct packet_t *)rx_buffer;
-          // we "ack" the state packets by sending the same "request" back.
+
+          struct packet_t *packet = (struct packet_t *)rx_buffer;
+
           switch ( packet->msg ) {
 
             case MSG_MTIME:
@@ -216,7 +225,35 @@ void sync( void *pvParam ) {
                 fclose(fp);
                 break;
 
+            case MSG_DELTA:
+                FILE *fp;
+                int delta_len = 0;
+                int write_len = 0;
+                int written = 0;
 
+                fp = fopen(delta_path, "w+");
+
+                do {
+                  delta_len = recv( SOCKET, rx_buffer, CHUNK_SIZE, 0 );
+                  write_len = fwrite( rx_buffer, sizeof(char), delta_len, fp );
+                  written += write_len;
+                } while ( delta_len > 0 && write_len != 0 );
+                // test by checking char delta_len of rx_buffer for EOF?
+
+                fclose(fp);
+
+            case MSG_FILE:
+                FILE *fp;
+                int recv_len = 0;
+                int write_len = 0;
+                fp = fopen(packet.file_path, "w+");
+                do {
+                  recv_len = recv( SOCKET, rx_buffer, CHUNK_SIZE, 0 );
+                  write_len = fwrite(rx_buffer, sizeof(char), recv_len, fp );
+                  written += write_len;
+                } while ( recv_len > 0 && write_len > 0 );  // figure out fwrite return vals
+
+                fclose(fp);
 
             case MSG_FILE:
               char sig_path[PATH_MAX];
